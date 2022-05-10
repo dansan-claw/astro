@@ -17,45 +17,44 @@ dependencyResolutionManagement {
             // Spring
             version("spring", "5.3.19")
             version("springBoot", "2.6.7")
-            library("springCore", "org.springframework", "spring-core").versionRef("spring")
-            alias("springContext").to("org.springframework", "spring-context").versionRef("spring")
-            alias("springBoot").to("org.springframework.boot", "spring-boot")
+            library("springCore", "org.springframework", "spring-core")
+                .versionRef("spring")
+            library("springContext", "org.springframework", "spring-context")
+                .versionRef("spring")
+            library("springBoot", "org.springframework.boot", "spring-boot")
                 .versionRef("springBoot")
-            alias("springBootStarter").to("org.springframework.boot", "spring-boot-starter")
+            library("springBootStarter", "org.springframework.boot", "spring-boot-starter")
                 .versionRef("springBoot")
-            alias("springBootWebflux").to("org.springframework.boot", "spring-boot-starter-webflux")
+            library("springBootWebflux", "org.springframework.boot", "spring-boot-starter-webflux")
                 .versionRef("springBoot")
-            alias("springBootActuator").to(
-                "org.springframework.boot",
-                "spring-boot-starter-actuator"
-            ).versionRef("springBoot")
-            alias("springBootConfigurationProcessor").to(
-                "org.springframework.boot",
-                "spring-boot-configuration-processor"
-            ).versionRef("springBoot")
+            library("springBootActuator", "org.springframework.boot", "spring-boot-starter-actuator")
+                .versionRef("springBoot")
+            library("springBootConfigurationProcessor", "org.springframework.boot", "spring-boot-configuration-processor")
+                .versionRef("springBoot")
 
             // Logging
             version("kotlinLogging", "2.1.21")
-            alias("kotlinLogging").to("io.github.microutils", "kotlin-logging")
+            library("kotlinLogging", "io.github.microutils", "kotlin-logging")
                 .versionRef("kotlinLogging")
 
             // Databases
             version("lettuce", "6.1.5.RELEASE")
-            alias("lettuce").to("io.lettuce", "lettuce-core").versionRef("lettuce")
+            library("lettuce", "io.lettuce", "lettuce-core")
+                .versionRef("lettuce")
 
             // Serializing
             version("jacksonKotlin", "2.13.0")
             version("kotlinxSerialization", "1.3.1")
-            alias("jacksonKotlin").to("com.fasterxml.jackson.module", "jackson-module-kotlin")
+            library("jacksonKotlin", "com.fasterxml.jackson.module", "jackson-module-kotlin")
                 .versionRef("jacksonKotlin")
-            alias("kotlinxSerialization").to("org.jetbrains.kotlinx", "kotlinx-serialization-json")
+            library("kotlinxSerialization", "org.jetbrains.kotlinx", "kotlinx-serialization-json")
                 .versionRef("kotlinxSerialization")
 
             // Kotlin
             version("coroutines", "1.5.2")
-            alias("coroutinesCore").to("org.jetbrains.kotlinx", "kotlinx-coroutines-core")
+            library("coroutinesCore", "org.jetbrains.kotlinx", "kotlinx-coroutines-core")
                 .versionRef("coroutines")
-            alias("coroutinesReactor").to("org.jetbrains.kotlinx", "kotlinx-coroutines-reactor")
+            library("coroutinesReactor", "org.jetbrains.kotlinx", "kotlinx-coroutines-reactor")
                 .versionRef("coroutines")
 
             // Base bundle

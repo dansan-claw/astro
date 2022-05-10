@@ -1,7 +1,7 @@
 info:
   app:
     name: "Central API"
-    description: "A fast and reliable Central API application to mange data for the web."
+    description: "A fast and reliable Central API application to manage data for the web."
     version: "1.0.0"
 
 server:
