@@ -24,7 +24,7 @@ jib {
     }
 
     to {
-        image = "ghcr.io/xavinlol/$name"
+        image = "ghcr.io/Astro-Discord-Bot/$name"
         tags = setOf(System.getenv("SEMAPHORE_GIT_SHA"), "latest")
         auth {
             username = System.getenv("GITHUB_ACTOR")
