@@ -1,0 +1,12 @@
+version = "1.0-SNAPSHOT"
+
+plugins {
+    base
+    java
+}
+
+dependencies {
+    implementation(libs.bundles.base)
+    implementation(libs.bundles.web)
+    implementation(libs.bundles.serialization)
+}
