@@ -9,4 +9,7 @@ dependencies {
     implementation(libs.bundles.base)
     implementation(libs.bundles.web)
     implementation(libs.bundles.serialization)
+
+    implementation(libs.lettuce)
+    implementation(libs.mongo)
 }
