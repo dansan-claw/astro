@@ -27,9 +27,17 @@ dependencyResolutionManagement {
                 .versionRef("springBoot")
             library("springBootWebflux", "org.springframework.boot", "spring-boot-starter-webflux")
                 .versionRef("springBoot")
-            library("springBootActuator", "org.springframework.boot", "spring-boot-starter-actuator")
+            library(
+                "springBootActuator",
+                "org.springframework.boot",
+                "spring-boot-starter-actuator"
+            )
                 .versionRef("springBoot")
-            library("springBootConfigurationProcessor", "org.springframework.boot", "spring-boot-configuration-processor")
+            library(
+                "springBootConfigurationProcessor",
+                "org.springframework.boot",
+                "spring-boot-configuration-processor"
+            )
                 .versionRef("springBoot")
 
             // Logging
@@ -39,8 +47,11 @@ dependencyResolutionManagement {
 
             // Databases
             version("lettuce", "6.1.5.RELEASE")
+            version("mongo", "4.6.0")
             library("lettuce", "io.lettuce", "lettuce-core")
                 .versionRef("lettuce")
+            library("mongo", "org.mongodb", "mongodb-driver-sync")
+                .versionRef("mongo")
 
             // Serializing
             version("jacksonKotlin", "2.13.0")
@@ -56,6 +67,17 @@ dependencyResolutionManagement {
                 .versionRef("coroutines")
             library("coroutinesReactor", "org.jetbrains.kotlinx", "kotlinx-coroutines-reactor")
                 .versionRef("coroutines")
+
+            // JWT
+            version("jjwt", "0.11.5")
+            library("jjwtApi", "io.jsonwebtoken", "jjwt-api").versionRef("jjwt")
+            library("jjwtImpl", "io.jsonwebtoken", "jjwt-impl").versionRef("jjwt")
+            library("jjwtJackson", "io.jsonwebtoken", "jjwt-jackson").versionRef("jjwt")
+
+
+            // Caching
+            version("caffeine", "3.0.5")
+            library("caffeine", "com.github.ben-manes.caffeine", "caffeine").versionRef("caffeine")
 
             // Base bundle
             bundle(
@@ -100,6 +122,16 @@ dependencyResolutionManagement {
                 listOf(
                     "jacksonKotlin",
                     "kotlinxSerialization",
+                )
+            )
+
+            // JWT bundle
+            bundle(
+                "jwt",
+                listOf(
+                    "jjwtApi",
+                    "jjwtImpl",
+                    "jjwtJackson"
                 )
             )
         }
