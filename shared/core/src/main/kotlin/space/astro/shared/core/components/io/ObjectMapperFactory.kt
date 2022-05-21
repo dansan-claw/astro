@@ -1,4 +1,4 @@
-package space.astro.shared.core.configs
+package space.astro.shared.core.components.io
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.DeserializationFeature
@@ -7,11 +7,11 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.PropertyNamingStrategies
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder
+import org.springframework.stereotype.Component
 
-@Configuration
-class JsonConfig {
+@Component
+class ObjectMapperFactory {
 
     @Bean
     fun objectMapper(builder: Jackson2ObjectMapperBuilder): ObjectMapper {
