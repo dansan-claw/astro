@@ -1,0 +1,94 @@
+[versions]
+# Spring
+spring = "5.3.19"
+spring-boot = "2.6.7"
+
+# Logging
+kotlin-logging = "2.1.21"
+
+# Databases
+# TODO: Migrate to new official kotlin driver
+lettuce = "6.1.5.RELEASE"
+mongo = "4.6.0"
+
+# Serializing
+jackson-kotlin = "2.13.0"
+kotlinx-serialization = "1.3.1"
+
+# Kotlin
+kotlin = "1.6.10"
+coroutines = "1.5.2"
+
+# JWT
+jjwt = "0.11.5"
+
+# Caching
+caffeine = "3.0.5"
+
+[libraries]
+# Spring
+spring-core = { module = "org.springframework:spring-core", version.ref = "spring"}
+spring-context = { module = "org.springframework:spring-context", version.ref = "spring"}
+spring-boot = { module = "org.springframework.boot:spring-boot", version.ref = "spring-boot"}
+spring-boot-starter = { module = "org.springframework.boot:spring-boot-starter", version.ref = "spring-boot"}
+spring-boot-webflux = { module = "org.springframework.boot:spring-boot-starter-webflux", version.ref = "spring-boot"}
+
+spring-boot-actuator = { module = "org.springframework.boot:spring-boot-starter-actuator", version.ref = "spring-boot"}
+spring-boot-configuration-processor = { module = "org.springframework.boot:spring-boot-configuration-processor", version.ref = "spring-boot"}
+
+# Logging
+kotlin-logging = { module = "io.github.microutils:kotlin-logging", version.ref = "kotlin-logging"}
+
+# Databases
+lettuce = { module = "io.lettuce:lettuce-core", version.ref = "lettuce"}
+mongo = { module = "org.mongodb:mongodb-driver-sync", version.ref = "mongo"}
+
+# Serializing
+jackson-kotlin = { module = "com.fasterxml.jackson.module:jackson-module-kotlin", version.ref = "jackson-kotlin"}
+kotlinx-serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization"}
+
+# Kotlin
+coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines"}
+coroutines-reactor = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-reactor", version.ref = "coroutines"}
+
+# JWT
+jjwt-api = { module = "io.jsonwebtoken:jjwt-api", version.ref = "jjwt"}
+jjwt-impl = { module = "io.jsonwebtoken:jjwt-impl", version.ref = "jjwt"}
+jjwt-jackson = { module = "io.jsonwebtoken:jjwt-jackson", version.ref = "jjwt"}
+
+# Caching
+caffeine = { module = "com.github.ben-manes.caffeine:caffeine", version.ref = "caffeine"}
+
+[bundles]
+base = [
+    "kotlin-logging",
+    "spring-boot-configuration-processor"
+]
+spring-core = [
+    "spring-core",
+    "spring-context",
+    "spring-boot"
+]
+web = [
+    "spring-boot-webflux",
+    "spring-boot-actuator",
+    "jackson-kotlin"
+]
+coroutines = [
+    "coroutines-core",
+    "coroutines-reactor"
+]
+serialization = [
+    "jackson-kotlin",
+    "kotlinx-serialization"
+]
+jwt = [
+    "jjwt-api",
+    "jjwt-impl",
+    "jjwt-jackson"
+]
+
+[plugins]
+jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin"}
+spring = { id = "org.jetbrains.kotlin.plugin.spring", version.ref = "kotlin"}
+serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin"}
