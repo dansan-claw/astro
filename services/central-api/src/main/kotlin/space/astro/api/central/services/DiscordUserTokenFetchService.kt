@@ -43,9 +43,9 @@ class DiscordUserTokenFetchService(
     private val webClient: WebClient = WebClient.builder()
         .clientConnector(ReactorClientHttpConnector(HttpClient.create(provider)))
         .codecs { configurer ->
-            val codecs = configurer.defaultCodecs();
-            codecs.jackson2JsonDecoder(Jackson2JsonDecoder(objectMapper));
-            codecs.jackson2JsonEncoder(Jackson2JsonEncoder(objectMapper));
+            val codecs = configurer.defaultCodecs()
+            codecs.jackson2JsonDecoder(Jackson2JsonDecoder(objectMapper))
+            codecs.jackson2JsonEncoder(Jackson2JsonEncoder(objectMapper))
         }
         .baseUrl(discordConfig.baseUrl)
         .build()
