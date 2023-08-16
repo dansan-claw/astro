@@ -14,6 +14,7 @@ import net.dv8tion.jda.api.sharding.ShardManager
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
+import space.astro.bot.config.DiscordApplicationConfig
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 import kotlin.reflect.KClass
@@ -28,7 +29,6 @@ class CommandHandler(
     val discordApplicationConfig: DiscordApplicationConfig,
     val applicationEventPublisher: ApplicationEventPublisher,
     val objectMapper: ObjectMapper,
-    val statsClient: StatsClient
 ) {
 
     val commandsMap = HashMap<String, ICommand>()
@@ -132,56 +132,9 @@ class CommandHandler(
 
         val commandContext = CommandContext(this, guild, member, event.user, channel)
 
-        fireCommandAnalyticsEvent(key, event, guild?.idLong ?: 0L, channel.idLong, event.options)
-
         GlobalScope.launch {
             command.callSuspend(commandContainer, event, commandContext, *optionArgs)
-
-            statsClient.submit(
-                AbstractMeasurement(
-                    "command_executions",
-                    mapOf(
-                        "count" to 1
-                    ),
-                    mapOf(
-                        "name" to command.name,
-                        "result" to CommandExecutionResult.SUCCEEDED.toString(),
-                        "type" to CommandExecutionType.SLASH.toString(),
-                    )
-                )
-            )
         }
-    }
-
-    private fun fireCommandAnalyticsEvent(
-        key: String,
-        event: SlashCommandInteractionEvent,
-        guildId: Long,
-        channelId: Long,
-        options: MutableList<OptionMapping>
-    ) {
-        val optionsPairs = options.map {
-            OptionPair(it.name, it.asString)
-        }
-
-        val analyticsEventMetaData = SlashCommandInvocationOptionsMetaData(optionsPairs)
-
-        val analyticsEvent = AnalyticsEvent(
-            listOf(AnalyticsEventReceiver.BIGQUERY),
-            AnalyticsEventType.SLASH_COMMAND_INVOCATION,
-            SlashCommandInvocationEventData(
-                key,
-                guildId,
-                channelId,
-                event.user.idLong,
-                if (optionsPairs.isNotEmpty()) optionsPairs[0].name else null,
-                if (optionsPairs.isNotEmpty()) optionsPairs[0].value else null,
-                serialize(analyticsEventMetaData),
-                LocalDateTime.now(ZoneOffset.UTC).atOffset(ZoneOffset.UTC).toString(),
-            )
-        )
-
-        applicationEventPublisher.publishEvent(analyticsEvent)
     }
 
     fun getFullKeyFromEvent(event: SlashCommandInteractionEvent): String {
@@ -195,12 +148,5 @@ class CommandHandler(
         } else {
             event.name
         }
-    }
-
-    private fun serialize(metaData: SlashCommandInvocationOptionsMetaData): String? {
-        if (metaData.options.isEmpty()) {
-            return null
-        }
-        return objectMapper.writeValueAsString(metaData)
     }
 }

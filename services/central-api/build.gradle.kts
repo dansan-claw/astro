@@ -7,15 +7,10 @@ dependencies {
     implementation(libs.bundles.serialization)
     implementation(libs.bundles.coroutines)
     implementation(libs.bundles.jwt)
+    implementation(libs.bundles.caching)
 
     // Database
     implementation(libs.mongo)
-
-    // Redis
-    implementation(libs.lettuce)
-
-    // Cache
-    implementation(libs.caffeine)
 
     // Project
     implementation(project(":shared:core"))

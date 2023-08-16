@@ -18,5 +18,7 @@ dependencies {
         )
     }
 
+    implementation(libs.guava)
+
     implementation(project(":shared:core"))
 }

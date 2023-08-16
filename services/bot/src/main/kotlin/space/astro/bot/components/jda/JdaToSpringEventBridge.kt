@@ -1,4 +1,4 @@
-package com.netflix.bot.components.jda
+package space.astro.bot.components.jda
 
 import net.dv8tion.jda.api.events.GenericEvent
 import net.dv8tion.jda.api.hooks.EventListener

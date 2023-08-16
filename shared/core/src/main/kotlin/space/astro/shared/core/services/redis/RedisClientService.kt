@@ -1,4 +1,4 @@
-package space.astro.shared.core.components.redis
+package space.astro.shared.core.services.redis
 
 import io.lettuce.core.RedisClient
 import io.lettuce.core.RedisURI
@@ -11,17 +11,18 @@ import io.lettuce.core.cluster.api.StatefulRedisClusterConnection
 import io.lettuce.core.cluster.api.async.RedisClusterAsyncCommands
 import io.lettuce.core.cluster.api.reactive.RedisClusterReactiveCommands
 import io.lettuce.core.cluster.api.sync.RedisClusterCommands
-import org.springframework.context.annotation.Bean
 import org.springframework.stereotype.Service
+import space.astro.shared.core.components.redis.RedisConfig
 import java.time.Duration
 
 @Service
-class RedisFactory(redisConfig: RedisConfig) {
+class RedisClientService(redisConfig: RedisConfig) {
 
-    private var statefulRedisClusterConnection: StatefulRedisClusterConnection<String, String>? =
-        null
-
-    private var statefulRedisConnection: StatefulRedisConnection<String, String>? = null
+    private var isCluster = false
+    private lateinit var client: RedisClient
+    private lateinit var clusterClient: RedisClusterClient
+    private var connection: StatefulRedisConnection<String, String>? = null
+    private var clusterConnection: StatefulRedisClusterConnection<String, String>? = null
 
     init {
         val redisUris = redisConfig.uris.split(",").stream()
@@ -29,7 +30,7 @@ class RedisFactory(redisConfig: RedisConfig) {
             .toList()
 
         if (redisConfig.cluster) {
-            val clusterClient = RedisClusterClient.create(redisUris)
+            clusterClient = RedisClusterClient.create(redisUris)
             clusterClient.setOptions(
                 ClusterClientOptions.builder()
                     .timeoutOptions(
@@ -45,44 +46,23 @@ class RedisFactory(redisConfig: RedisConfig) {
                             .build()
                     ).build()
             )
-            statefulRedisClusterConnection = clusterClient.connect()
+            clusterConnection = clusterClient.connect()
         } else {
-            val client = RedisClient.create(redisUris[0])
-            statefulRedisConnection = client.connect()
-        }
-
-    }
-
-    @Bean
-    fun reactiveCommands(
-        redisConfig: RedisConfig
-    ): RedisClusterReactiveCommands<String, String>? {
-        return if (redisConfig.cluster) {
-            statefulRedisClusterConnection!!.reactive()
-        } else {
-            statefulRedisConnection!!.reactive()
+            client = RedisClient.create(redisUris[0])
+            connection = client.connect()
         }
     }
 
-    @Bean
-    fun asyncCommands(
-        redisConfig: RedisConfig
-    ): RedisClusterAsyncCommands<String, String>? {
-        return if (redisConfig.cluster) {
-            statefulRedisClusterConnection!!.async()
-        } else {
-            statefulRedisConnection!!.async()
-        }
+    fun asyncCommands(): RedisClusterAsyncCommands<String, String> {
+        return if (isCluster) clusterConnection!!.async() else connection!!.async()
     }
 
-    @Bean
-    fun syncCommands(
-        redisConfig: RedisConfig
-    ): RedisClusterCommands<String, String> {
-        return if (redisConfig.cluster) {
-            statefulRedisClusterConnection!!.sync()
-        } else {
-            statefulRedisConnection!!.sync()
-        }
+    fun syncCommands(): RedisClusterCommands<String, String> {
+        return if (isCluster) clusterConnection!!.sync() else connection!!.sync()
     }
+
+    fun reactiveCommands(): RedisClusterReactiveCommands<String, String> {
+        return if (isCluster) clusterConnection!!.reactive() else connection!!.reactive()
+    }
+
 }

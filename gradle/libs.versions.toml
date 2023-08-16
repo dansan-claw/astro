@@ -1,4 +1,6 @@
 [versions]
+# Core
+guava = "32.1.2-jre"
 # Spring
 spring = "5.3.19"
 spring-boot = "2.6.7"
@@ -30,6 +32,9 @@ jda = "5.0.0-beta.13"
 jda-ktx = "9370cb1"
 
 [libraries]
+# Core
+guava = { module = "com.google.guava:guava", version.ref = "guava" }
+
 # Spring
 spring-core = { module = "org.springframework:spring-core", version.ref = "spring"}
 spring-context = { module = "org.springframework:spring-context", version.ref = "spring"}
@@ -89,6 +94,10 @@ coroutines = [
 serialization = [
     "jackson-kotlin",
     "kotlinx-serialization"
+]
+caching = [
+    "caffeine",
+    "lettuce"
 ]
 jwt = [
     "jjwt-api",
