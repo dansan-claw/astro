@@ -11,6 +11,7 @@ repositories {
 dependencies {
     implementation(libs.bundles.base)
     implementation(libs.bundles.web)
+    implementation(libs.bundles.caching)
     implementation(libs.bundles.discord) {
         exclude(
             group = "club.minnced",
