@@ -7,9 +7,9 @@ services:
     ports:
       - "27017:27017"
     volumes:
-      - astro:/data
+      - mongo:/data
     networks:
-      - astro-network
+      - mongo-network
     environment:
       - MONGO_INITDB_DATABASE=AstroDev
   astro-mongo-express:
