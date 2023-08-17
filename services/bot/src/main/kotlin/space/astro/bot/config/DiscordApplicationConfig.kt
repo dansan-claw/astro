@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Configuration
 @Configuration
 @ConfigurationProperties("discord.application")
 class DiscordApplicationConfig {
-    var botId: Long = 1006899610624741466
+    var botId: Long = 715621848489918495
     var token: String = "token"
     var activityType = "WATCHING"
     var activityText = "new infrastructure"
