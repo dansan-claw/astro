@@ -9,6 +9,7 @@ import space.astro.bot.command.Command
 import space.astro.bot.command.CommandContext
 import space.astro.bot.util.Buttons
 import space.astro.bot.util.Emojis
+import space.astro.shared.core.util.Colors
 import space.astro.shared.core.util.Links
 
 
@@ -30,6 +31,7 @@ class HelpCommand() : AbstractCommand() {
 
     private fun buildHelpEmbed(): MessageEmbed {
         return Embed(
+            color = Colors.purple.rgb,
             authorName = "Help panel",
             authorUrl = Links.base,
             authorIcon = Links.logo,
