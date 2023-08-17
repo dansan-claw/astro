@@ -7,6 +7,6 @@ import org.springframework.context.annotation.Configuration
 @ConfigurationProperties(prefix = "io.mongo")
 class MongoConfig {
 
-    var connectionString = ""
-    var database = ""
+    var connectionString = "mongodb://localhost:27017"
+    var database = "AstroDev"
 }
