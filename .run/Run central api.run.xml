@@ -1,0 +1,9 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Run central api" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+    <module name="astro.services.central-api.main" />
+    <option name="SPRING_BOOT_MAIN_CLASS" value="space.astro.api.central.ApplicationKt" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

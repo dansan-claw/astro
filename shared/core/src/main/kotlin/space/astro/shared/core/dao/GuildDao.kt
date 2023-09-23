@@ -14,7 +14,7 @@ import space.astro.shared.core.models.database.GuildDto
 class GuildDao(
     mongoDatabase: MongoDatabase
 ) {
-    lateinit var collection: MongoCollection<GuildDto>
+    private final var collection: MongoCollection<GuildDto>
 
     init {
         collection = mongoDatabase.getCollection("guilds", GuildDto::class.java)
