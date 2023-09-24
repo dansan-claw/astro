@@ -6,5 +6,6 @@ import org.springframework.context.annotation.Configuration
 @Configuration
 @ConfigurationProperties("application.features")
 class ApplicationFeaturesConfig {
-    val premiumRestrictions: Boolean = true
+    var premiumRestrictions: Boolean = true
+    var generatorCooldown: Long = 3000
 }
