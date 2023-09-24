@@ -4,7 +4,7 @@ import net.dv8tion.jda.api.entities.channel.ChannelType
 import space.astro.shared.core.models.database.ConnectionDto
 import space.astro.shared.core.models.database.TemporaryVCDto
 
-object VCEventDetector {
+class VCEventDetector {
 
     /**
      * Detects any event related to Astro features that got triggered by a user moving between voice channels

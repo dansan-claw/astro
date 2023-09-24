@@ -8,6 +8,7 @@ import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
 import space.astro.bot.listeners.voice.handlers.VCEventHandler
 import space.astro.bot.managers.roles.SimpleMemberRolesManager
+import space.astro.bot.managers.util.GuildErrorNotifier
 import space.astro.bot.managers.vc.VCEventData
 import space.astro.bot.managers.vc.VCEventDetector
 import space.astro.shared.core.dao.GuildDao
@@ -18,7 +19,9 @@ private val log = KotlinLogging.logger {  }
 @Component
 class GuildVoiceUpdateEventListener(
     val guildDao: GuildDao,
-    val temporaryVCDao: TemporaryVCDao
+    val temporaryVCDao: TemporaryVCDao,
+    val vcEventDetector: VCEventDetector,
+    val vcEventHandler: VCEventHandler
 ) {
 
     @EventListener
@@ -34,21 +37,21 @@ class GuildVoiceUpdateEventListener(
 
         val vcEventData = VCEventData(
             event = event,
-            generators = guildDto.generators,
+            guildDto = guildDto,
             temporaryVCs = temporaryVcs,
-            connections = guildDto.connections,
         )
 
+        val guildErrorNotifier = GuildErrorNotifier()
         val memberRolesManager = SimpleMemberRolesManager(event.guild, event.member)
 
         val events = try {
-            VCEventDetector.detectAstroVCEvents(vcEventData)
+            vcEventDetector.detectAstroVCEvents(vcEventData)
         } catch (e: IllegalStateException) {
             log.error { e.message }
             return
         }
 
-        VCEventHandler.handleEvents(events, memberRolesManager)
+        vcEventHandler.handleEvents(events, guildErrorNotifier, memberRolesManager)
 
         memberRolesManager.queue {
             when (it) {

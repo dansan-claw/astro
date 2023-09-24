@@ -1,6 +1,6 @@
 package space.astro.bot.managers.util
 
-class GuildErrorManager {
+class GuildErrorNotifier {
     fun send() {
 
     }

@@ -12,4 +12,5 @@ class DiscordApplicationConfig {
     var activityText = "new infrastructure"
     var commandGuilds = emptyList<Long>()
     var whitelistedGuilds = emptyList<Long>()
+    var premiumServerSkuId: String = "sku_id"
 }

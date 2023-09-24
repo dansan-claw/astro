@@ -3,6 +3,8 @@ package space.astro.shared.core.io.caching.redis
 enum class RedisKey(val key: String) {
     GLOBAL_RATELIMIT("GR"),
 
+    GENERATOR_RATELIMIT("GENERATOR_RATELIMIT"),
+
     /**
      * Format with: USER_ID
      */
