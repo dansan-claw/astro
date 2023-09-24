@@ -1,9 +1,9 @@
-package space.astro.bot.managers.vc
+package space.astro.shared.core.models.database
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import space.astro.shared.core.models.database.VCState
 
-data class TemporaryVCData(
+data class TemporaryVCDto(
     val id: String,
     @JsonProperty("ownerID")
     var ownerId: String,

@@ -3,6 +3,7 @@ package space.astro.bot.managers.vc
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceUpdateEvent
 import space.astro.shared.core.models.database.ConnectionDto
 import space.astro.shared.core.models.database.GeneratorDto
+import space.astro.shared.core.models.database.TemporaryVCDto
 
 /**
  * @param event the voice update event that triggered this [VCEventData]
@@ -13,7 +14,7 @@ import space.astro.shared.core.models.database.GeneratorDto
 data class VCEventData(
     val event: GuildVoiceUpdateEvent,
     val generators: List<GeneratorDto>,
-    val temporaryVCs: List<TemporaryVCData>,
+    val temporaryVCs: List<TemporaryVCDto>,
     val connections: List<ConnectionDto>
 ) {
     val userId = event.member.id

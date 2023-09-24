@@ -2,6 +2,7 @@ package space.astro.bot.managers.vc
 
 import net.dv8tion.jda.api.entities.channel.ChannelType
 import space.astro.shared.core.models.database.ConnectionDto
+import space.astro.shared.core.models.database.TemporaryVCDto
 
 object VCEventDetector {
 
@@ -10,18 +11,18 @@ object VCEventDetector {
      *
      * @param vcEventData all the necessary data about the voice event
      * @throws IllegalStateException when [vcEventData] doesn't have neither a [VCEventData.joinedChannel] or [VCEventData.leftChannel]
-     * @return a [List] of [AstroVCEvent]s
+     * @return a [List] of [VCEvent]s
      */
-    fun detectAstroVoiceEvents(vcEventData: VCEventData): List<AstroVCEvent> {
-        val events = mutableListOf<AstroVCEvent>()
+    fun detectAstroVCEvents(vcEventData: VCEventData): List<VCEvent> {
+        val events = mutableListOf<VCEvent>()
 
         if (vcEventData.joinedChannel == null && vcEventData.leftChannel == null) {
             throw IllegalStateException("Received invalid astro voice event data: missing both joined and left audio channel")
         }
 
         // These two variables are needed for optimizing connection events calculation
-        var joinedTemporaryVC: TemporaryVCData? = null
-        var leftTemporaryVC: TemporaryVCData? = null
+        var joinedTemporaryVC: TemporaryVCDto? = null
+        var leftTemporaryVC: TemporaryVCDto? = null
         var joinedConnection: ConnectionDto? = null
         var leftConnection: ConnectionDto? = null
 
@@ -31,16 +32,16 @@ object VCEventDetector {
         vcEventData.joinedChannel
             ?.takeIf { it.type == ChannelType.VOICE }
             ?.also { joinedVC ->
-                val indexOfJoinedGenerator = vcEventData.generators.firstOrNull { it.id == joinedVC.id }
+                val joinedGenerator = vcEventData.generators.firstOrNull { it.id == joinedVC.id }
 
-                if (indexOfJoinedGenerator != null) {
-                    events.add(AstroVCEvent.JoinedGenerator())
+                if (joinedGenerator != null) {
+                    events.add(VCEvent.JoinedGenerator(vcEventData, joinedGenerator))
                 } else {
                     vcEventData.temporaryVCs
                         .firstOrNull { it.id == joinedVC.id }
                         ?.also {
                             joinedTemporaryVC = it
-                            events.add(AstroVCEvent.JoinedTemporaryVC())
+                            events.add(VCEvent.JoinedTemporaryVC(vcEventData))
                         }
                 }
             }
@@ -58,9 +59,9 @@ object VCEventDetector {
 
                         events.add(
                             if (temporaryVCData.ownerId == vcEventData.userId)
-                                AstroVCEvent.OwnerLeftTemporaryVC()
+                                VCEvent.OwnerLeftTemporaryVC(vcEventData)
                             else
-                                AstroVCEvent.LeftTemporaryVC()
+                                VCEvent.LeftTemporaryVC(vcEventData)
                         )
                     }
             }
@@ -124,11 +125,11 @@ object VCEventDetector {
         }
 
         if (joinedConnection != null) {
-            events.add(AstroVCEvent.JoinedConnectedVC())
+            events.add(VCEvent.JoinedConnectedVC(vcEventData))
         }
 
         if (leftConnection != null) {
-            events.add(AstroVCEvent.LeftConnectedVC())
+            events.add(VCEvent.LeftConnectedVC(vcEventData))
         }
 
         return events
