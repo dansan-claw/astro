@@ -1,10 +1,10 @@
 package space.astro.bot.listeners
 
-import space.astro.bot.command.CommandHandler
 import mu.KotlinLogging
 import net.dv8tion.jda.api.events.session.ReadyEvent
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
+import space.astro.bot.command.CommandHandler
 
 private val log = KotlinLogging.logger {  }
 

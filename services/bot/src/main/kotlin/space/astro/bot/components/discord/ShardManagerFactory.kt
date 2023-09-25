@@ -1,6 +1,5 @@
 package space.astro.bot.components.discord
 
-import space.astro.bot.components.jda.JdaToSpringEventBridge
 import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.Activity
 import net.dv8tion.jda.api.requests.GatewayIntent
@@ -9,6 +8,7 @@ import net.dv8tion.jda.api.sharding.ShardManager
 import net.dv8tion.jda.api.utils.SessionController
 import org.springframework.context.annotation.Bean
 import org.springframework.stereotype.Component
+import space.astro.bot.components.jda.JdaToSpringEventBridge
 import space.astro.bot.config.DiscordApplicationConfig
 import space.astro.bot.config.PodConfig
 import space.astro.bot.models.discord.RedisSessionController
