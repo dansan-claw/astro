@@ -41,7 +41,6 @@ class GuildVoiceUpdateEventListener(
             temporaryVCs = temporaryVcs,
         )
 
-        val guildErrorNotifier = GuildErrorNotifier()
         val memberRolesManager = SimpleMemberRolesManager(event.guild, event.member)
 
         val events = try {
@@ -51,7 +50,7 @@ class GuildVoiceUpdateEventListener(
             return
         }
 
-        vcEventHandler.handleEvents(events, guildErrorNotifier, memberRolesManager)
+        vcEventHandler.handleEvents(events, memberRolesManager)
 
         memberRolesManager.queue {
             when (it) {

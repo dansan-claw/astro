@@ -45,4 +45,14 @@ object PermissionSets {
         Permission.VOICE_CONNECT,
         Permission.VIEW_CHANNEL
     )
+
+    val userTemporaryVCPermissions = Permission.getRaw(
+        Permission.VIEW_CHANNEL,
+        Permission.VOICE_CONNECT
+    )
+
+    val userTemporaryVCChatPermissions = Permission.getRaw(
+        Permission.VIEW_CHANNEL,
+        Permission.MESSAGE_SEND
+    )
 }

@@ -1,6 +1,7 @@
 package space.astro.bot.managers.vc
 
 import space.astro.shared.core.models.database.GeneratorData
+import space.astro.shared.core.models.database.TemporaryVCData
 
 sealed class VCEvent(
     val vcEventData: VCEventData
@@ -10,16 +11,19 @@ sealed class VCEvent(
         val generatorData: GeneratorData
     ): VCEvent(vcEventData)
     class JoinedTemporaryVC(
-        vcEventData: VCEventData
+        vcEventData: VCEventData,
+        val temporaryVCData: TemporaryVCData
     ): VCEvent(vcEventData)
     class JoinedConnectedVC(
         vcEventData: VCEventData
     ): VCEvent(vcEventData)
     class OwnerLeftTemporaryVC(
-        vcEventData: VCEventData
+        vcEventData: VCEventData,
+        val temporaryVCData: TemporaryVCData
     ): VCEvent(vcEventData)
     class LeftTemporaryVC(
-        vcEventData: VCEventData
+        vcEventData: VCEventData,
+        val temporaryVCData: TemporaryVCData
     ): VCEvent(vcEventData)
     class LeftConnectedVC(
         vcEventData: VCEventData

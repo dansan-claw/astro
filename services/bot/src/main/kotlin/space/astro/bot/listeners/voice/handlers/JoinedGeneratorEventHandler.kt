@@ -7,7 +7,6 @@ import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
 import space.astro.bot.extentions.modifyPermissionOverride
 import space.astro.bot.managers.interfaces.InterfaceManager
 import space.astro.bot.managers.roles.SimpleMemberRolesManager
-import space.astro.bot.managers.util.GuildErrorNotifier
 import space.astro.bot.managers.util.PermissionSets
 import space.astro.bot.managers.vc.*
 import space.astro.bot.ui.Embeds
@@ -22,7 +21,6 @@ import java.util.concurrent.TimeUnit
  */
 suspend fun VCEventHandler.handleJoinedGeneratorEvent(
     event: VCEvent.JoinedGenerator,
-    guildErrorNotifier: GuildErrorNotifier,
     memberRolesManager: SimpleMemberRolesManager,
 ): Boolean {
     val data = event.vcEventData
@@ -188,7 +186,7 @@ suspend fun VCEventHandler.handleJoinedGeneratorEvent(
 
         temporaryVCBuilder.modifyPermissionOverride(
             permissionOverride = targetRolePermissionOverride,
-            target = targetRole,
+            permissionHolder = targetRole,
             allow = 0,
             deny = deniedPermission.rawValue
         )
@@ -208,7 +206,7 @@ suspend fun VCEventHandler.handleJoinedGeneratorEvent(
             val immuneRolePermissionOverride = permissionOverrides.firstOrNull { it.id == role.id }
             temporaryVCBuilder.modifyPermissionOverride(
                 permissionOverride = immuneRolePermissionOverride,
-                target = role,
+                permissionHolder = role,
                 allow = PermissionSets.immuneRoleVCPermissions,
                 deny = 0L
             )
@@ -220,7 +218,7 @@ suspend fun VCEventHandler.handleJoinedGeneratorEvent(
 
     temporaryVCBuilder.modifyPermissionOverride(
         permissionOverride = permissionOverrides.firstOrNull { it.id == owner.id },
-        target = owner,
+        permissionHolder = owner,
         allow = ownerPermissions,
         deny = 0L
     )
