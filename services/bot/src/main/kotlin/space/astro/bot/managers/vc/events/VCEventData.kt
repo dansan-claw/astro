@@ -1,4 +1,4 @@
-package space.astro.bot.managers.vc
+package space.astro.bot.managers.vc.events
 
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceUpdateEvent
 import space.astro.shared.core.models.database.GuildData

@@ -9,6 +9,7 @@ import space.astro.bot.managers.interfaces.InterfaceManager
 import space.astro.bot.managers.roles.SimpleMemberRolesManager
 import space.astro.bot.managers.util.PermissionSets
 import space.astro.bot.managers.vc.*
+import space.astro.bot.managers.vc.events.VCEvent
 import space.astro.bot.ui.Embeds
 import space.astro.shared.core.models.database.PermissionsInherited
 import space.astro.shared.core.models.database.TemporaryVCData
@@ -122,7 +123,7 @@ suspend fun VCEventHandler.handleJoinedGeneratorEvent(
     /////////////////////////////
 
     val generatorVC = data.joinedChannel.asVoiceChannel()
-    val nameTemplate = VariablesManager.getCreationNameTemplate(generatorData)
+    val nameTemplate = VariablesManager.getNameTemplateForCreation(generatorData)
 
     // positional data
     val requiresPositionalData = VariablesManager.doesTemplateRequireVCPositionalData(nameTemplate)
@@ -248,9 +249,9 @@ suspend fun VCEventHandler.handleJoinedGeneratorEvent(
     /// TEXT & WAITING CREATION ///
     ///////////////////////////////
 
-    val textChat = if (generatorData.autoChat) {
+    val privateChat = if (generatorData.autoChat) {
         try {
-            VCTextChatManager.create(
+            VCPrivateChatManager.create(
                 owner = owner,
                 generatorData = generatorData,
                 temporaryVC = temporaryVC
@@ -261,7 +262,7 @@ suspend fun VCEventHandler.handleJoinedGeneratorEvent(
         }
     } else null
 
-    val waitingVC = if (generatorData.autoWaiting) {
+    val waitingRoom = if (generatorData.autoWaiting) {
         try {
             VCWaitingRoomManager.create(
                 owner = owner,
@@ -278,7 +279,7 @@ suspend fun VCEventHandler.handleJoinedGeneratorEvent(
     ////////////////////
     /// CHAT MESSAGE ///
     ////////////////////
-    val chatForMessage = textChat ?: temporaryVC
+    val chatForMessage = privateChat ?: temporaryVC
 
     val interfaceToSend = generatorData.chatInterface
         .takeIf { it > -1 }
@@ -314,8 +315,8 @@ suspend fun VCEventHandler.handleJoinedGeneratorEvent(
 
     // check if user is still in the created temporary vc before saving the data
     if (owner.voiceState!!.channel?.id != temporaryVC.id) {
-        waitingVC?.delete()?.queueAfter(1000, TimeUnit.MILLISECONDS)
-        textChat?.delete()?.queueAfter(2000, TimeUnit.SECONDS)
+        waitingRoom?.delete()?.queueAfter(1000, TimeUnit.MILLISECONDS)
+        privateChat?.delete()?.queueAfter(2000, TimeUnit.SECONDS)
         temporaryVC.delete().queueAfter(3000, TimeUnit.SECONDS)
 
         cooldownsManager.markUserGeneratorsCooldown(data.userId)
@@ -329,7 +330,8 @@ suspend fun VCEventHandler.handleJoinedGeneratorEvent(
         generatorId = generatorData.id,
         state = generatorData.initialState,
         incrementalPosition = incrementalPosition,
-        chatID = textChat?.id
+        chatID = privateChat?.id,
+        waitingID = waitingRoom?.id
     )
 
     temporaryVCDao.save(guild.id, temporaryVCData)

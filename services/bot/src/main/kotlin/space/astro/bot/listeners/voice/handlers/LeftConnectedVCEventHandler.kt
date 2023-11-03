@@ -1,12 +1,12 @@
 package space.astro.bot.listeners.voice.handlers
 
 import space.astro.bot.managers.roles.SimpleMemberRolesManager
-import space.astro.bot.managers.vc.VCEvent
+import space.astro.bot.managers.vc.events.VCEvent
 import space.astro.shared.core.models.database.ConnectionAction
 
 fun VCEventHandler.handleLeftConnectedVCEvent(
-    event: VCEvent.LeftConnectedVC,
-    memberRolesManager: SimpleMemberRolesManager,
+        event: VCEvent.LeftConnectedVC,
+        memberRolesManager: SimpleMemberRolesManager,
 ) {
     val role = event.vcEventData.guild.getRoleById(event.connectionData.roleID) ?: return
 

@@ -22,4 +22,8 @@ data class TemporaryVCData(
     var chatLogs: Boolean = false,
     var chatNameChanges: Int = 0,
     var lastChatNameChange: Long? = null,
+
+    var waitingID: String?,
+    var waitingNameChanges: Int = 0,
+    var lastWaitingNameChange: Long? = null,
 )

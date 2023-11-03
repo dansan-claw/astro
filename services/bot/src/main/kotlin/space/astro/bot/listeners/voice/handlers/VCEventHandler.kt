@@ -6,7 +6,7 @@ import space.astro.bot.managers.cooldown.CooldownsManager
 import space.astro.bot.managers.roles.SimpleMemberRolesManager
 import space.astro.bot.managers.util.GuildErrorNotifier
 import space.astro.bot.managers.util.PremiumRequirementDetector
-import space.astro.bot.managers.vc.VCEvent
+import space.astro.bot.managers.vc.events.VCEvent
 import space.astro.shared.core.services.dao.TemporaryVCDao
 
 @Component
@@ -17,8 +17,8 @@ class VCEventHandler(
     val guildErrorNotifier: GuildErrorNotifier
 ) {
     fun handleEvents(
-        events: List<VCEvent>,
-        memberRolesManager: SimpleMemberRolesManager
+            events: List<VCEvent>,
+            memberRolesManager: SimpleMemberRolesManager
     ) {
         runBlocking {
             events.forEach {

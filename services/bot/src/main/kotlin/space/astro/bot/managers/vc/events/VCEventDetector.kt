@@ -1,4 +1,4 @@
-package space.astro.bot.managers.vc
+package space.astro.bot.managers.vc.events
 
 import net.dv8tion.jda.api.entities.channel.ChannelType
 import org.springframework.stereotype.Component
@@ -62,15 +62,15 @@ class VCEventDetector {
                         events.add(
                             if (temporaryVCData.ownerId == vcEventData.userId)
                                 VCEvent.LeftTemporaryVC(
-                                    vcEventData = vcEventData,
-                                    ownerLeft = true,
-                                    temporaryVCData = temporaryVCData
+                                        vcEventData = vcEventData,
+                                        ownerLeft = true,
+                                        temporaryVCData = temporaryVCData
                                 )
                             else
                                 VCEvent.LeftTemporaryVC(
-                                    vcEventData = vcEventData,
-                                    ownerLeft = false,
-                                    temporaryVCData = temporaryVCData
+                                        vcEventData = vcEventData,
+                                        ownerLeft = false,
+                                        temporaryVCData = temporaryVCData
                                 )
                         )
                     }

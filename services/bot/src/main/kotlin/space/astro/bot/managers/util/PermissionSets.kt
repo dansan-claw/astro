@@ -18,7 +18,7 @@ object PermissionSets {
         Permission.MESSAGE_EXT_EMOJI
     )
 
-    val astroTextChatPermissions = Permission.getRaw(
+    val astroPrivateChatPermissions = Permission.getRaw(
         Permission.VIEW_CHANNEL,
         Permission.MANAGE_CHANNEL,
         Permission.MESSAGE_SEND,
@@ -35,7 +35,7 @@ object PermissionSets {
         Permission.VOICE_SPEAK
     )
 
-    val immuneRoleTextChatPermissions = Permission.getRaw(
+    val immuneRolePrivateChatPermissions = Permission.getRaw(
         Permission.VIEW_CHANNEL
     )
 

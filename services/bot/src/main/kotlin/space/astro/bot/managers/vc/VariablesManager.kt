@@ -5,6 +5,7 @@ import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import space.astro.shared.core.models.database.GeneratorData
+import space.astro.shared.core.models.database.TemporaryVCData
 import space.astro.shared.core.models.database.VCState
 import space.astro.shared.core.util.extention.capitalize
 import java.text.SimpleDateFormat
@@ -146,11 +147,17 @@ object VariablesManager {
     }
 
 
-    fun getCreationNameTemplate(generator: GeneratorData) = when (generator.initialState) {
-        VCState.UNLOCKED -> generator.defaultName
-        VCState.LOCKED -> generator.defaultLockedName
-        VCState.HIDDEN -> generator.defaultHiddenName
-    } ?: generator.defaultName
+    fun getNameTemplateForCreation(generatorData: GeneratorData) = when (generatorData.initialState) {
+        VCState.UNLOCKED -> generatorData.defaultName
+        VCState.LOCKED -> generatorData.defaultLockedName
+        VCState.HIDDEN -> generatorData.defaultHiddenName
+    } ?: generatorData.defaultName
+
+    fun getNameTemplateForRefresh(temporaryVCData: TemporaryVCData, generatorData: GeneratorData) = when (temporaryVCData.state) {
+        VCState.UNLOCKED -> generatorData.defaultName
+        VCState.LOCKED -> generatorData.defaultLockedName
+        VCState.HIDDEN -> generatorData.defaultHiddenName
+    } ?: generatorData.defaultName
 
     fun doesTemplateRequireVCPositionalData(name: String) =
         Variables.incremental.any { it in name.lowercase() }
@@ -191,7 +198,7 @@ object VariablesManager {
     }
 
 
-    fun computeTextChatName(
+    fun computePrivateChatName(
         template: String,
         owner: Member,
         temporaryVC: VoiceChannel
@@ -202,6 +209,24 @@ object VariablesManager {
             .let {
                 Formatters.formatChannelNameLength(it)
             }
+    }
+
+    fun computeWaitingRoomName(
+        template: String,
+        owner: Member,
+        temporaryVC: VoiceChannel,
+        incrementalPosition: Int?
+    ): String {
+        @Suppress("DUPLICATE")
+        var name = Parsers.owner(template, owner)
+            .let { Parsers.activity(it, owner) }
+            .let { Parsers.vc(it, temporaryVC) }
+
+        incrementalPosition?.also {
+            name = Parsers.position(name, it)
+        }
+
+        return Formatters.formatChannelNameLength(name)
     }
 
     fun computeChatMessage(

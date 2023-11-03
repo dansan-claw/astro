@@ -1,14 +1,13 @@
 package space.astro.bot.listeners.voice.handlers
 
-import net.dv8tion.jda.api.Permission
 import space.astro.bot.extentions.modifyPermissionOverride
 import space.astro.bot.managers.roles.SimpleMemberRolesManager
 import space.astro.bot.managers.util.PermissionSets
-import space.astro.bot.managers.vc.VCEvent
+import space.astro.bot.managers.vc.events.VCEvent
 
 fun VCEventHandler.handleJoinedTemporaryVCEvent(
-    event: VCEvent.JoinedTemporaryVC,
-    memberRolesManager: SimpleMemberRolesManager,
+        event: VCEvent.JoinedTemporaryVC,
+        memberRolesManager: SimpleMemberRolesManager,
 ) {
     val data = event.vcEventData
     val guild = data.guild
@@ -39,7 +38,7 @@ fun VCEventHandler.handleJoinedTemporaryVCEvent(
     }
 
     // allow user to see the private text chat of the temporary VC if existing
-    val privateTextChat = temporaryVCData.chatID
+    val privateChat = temporaryVCData.chatID
         ?.let { guild.getTextChannelById(it) }
         ?.also {
             if (premiumRequirementDetector.isGuildPremium(data.guildData)) {
@@ -54,7 +53,7 @@ fun VCEventHandler.handleJoinedTemporaryVCEvent(
         }
 
     if (temporaryVCData.chatLogs) {
-        val textChat = privateTextChat ?: temporaryVC
+        val logsChannel = privateChat ?: temporaryVC
 
         // not sure I wanna keep this feature
     }

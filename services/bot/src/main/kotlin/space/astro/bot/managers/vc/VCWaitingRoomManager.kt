@@ -6,9 +6,11 @@ import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel
 import space.astro.bot.extentions.modifyPermissionOverride
 import space.astro.bot.managers.util.PermissionSets
+import space.astro.bot.managers.vc.dto.VCOperationCTX
 import space.astro.shared.core.models.database.GeneratorData
 import space.astro.shared.core.models.database.InitialPosition
 import space.astro.shared.core.models.database.PermissionsInherited
+import space.astro.shared.core.models.database.TemporaryVCData
 
 object VCWaitingRoomManager {
     suspend fun create(
@@ -101,6 +103,53 @@ object VCWaitingRoomManager {
         } catch (e: Exception) {
             TODO()
             throw e
+        }
+    }
+
+    fun VCOperationCTX.performWaitingRoomNameRefresh() {
+        if (waitingRoom != null && waitingRoomManager != null && temporaryVCData.canBeRenamed()) {
+            val newName = VariablesManager.computeWaitingRoomName(
+                template = generatorData.defaultWaitingName,
+                owner = temporaryVCOwner,
+                temporaryVC = temporaryVC,
+                incrementalPosition = temporaryVCData.incrementalPosition
+            )
+
+            if (waitingRoom.name != newName) {
+                temporaryVCData.performRenameOperationsOnTemporaryVCData()
+                waitingRoomManager.setName(newName)
+                markWaitingRoomManagerAsUpdated()
+            }
+        }
+    }
+
+    /////////////////////////////////
+    /// TEMPORARY VC DATA HELPERS ///
+    /////////////////////////////////
+
+    private fun TemporaryVCData.canBeRenamed(): Boolean {
+        val currentTime = System.currentTimeMillis()
+
+        if (lastWaitingNameChange == null || currentTime - lastWaitingNameChange!! > 600000)
+            return true
+
+        if (waitingNameChanges < 2)
+            return true
+
+        return false
+    }
+
+    private fun TemporaryVCData.performRenameOperationsOnTemporaryVCData() {
+        if (canBeRenamed()) {
+            val currentTime = System.currentTimeMillis()
+
+            if (lastWaitingNameChange == null || currentTime - lastWaitingNameChange!! > 600000) {
+                lastWaitingNameChange = currentTime
+                waitingNameChanges = 1
+            } else {
+                lastWaitingNameChange = currentTime
+                waitingNameChanges++
+            }
         }
     }
 }

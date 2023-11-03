@@ -4,13 +4,13 @@ import dev.minn.jda.ktx.messages.Embed
 import net.dv8tion.jda.api.Permission
 import space.astro.bot.managers.roles.SimpleMemberRolesManager
 import space.astro.bot.managers.util.PermissionSets
-import space.astro.bot.managers.vc.VCEvent
-import space.astro.bot.managers.vc.VCManager
+import space.astro.bot.managers.vc.VCOwnershipManager
+import space.astro.bot.managers.vc.events.VCEvent
 import space.astro.bot.ui.Emojis
 
 fun VCEventHandler.handleLeftTemporaryVCEvent(
-    event: VCEvent.LeftTemporaryVC,
-    memberRolesManager: SimpleMemberRolesManager,
+        event: VCEvent.LeftTemporaryVC,
+        memberRolesManager: SimpleMemberRolesManager,
 ) {
     val data = event.vcEventData
     val guild = data.guild
@@ -46,7 +46,7 @@ fun VCEventHandler.handleLeftTemporaryVCEvent(
             ownerRole?.also { memberRolesManager.remove(it) }
 
             // TODO: Change owner
-            VCManager.changeOwner(guild)
+            // VCOwnershipManager.changeOwner(guild)
 
             ownerRole?.also { guild.addRoleToMember(newOwner, it).queue() }
         }

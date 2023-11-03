@@ -7,10 +7,12 @@ import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel
 import space.astro.bot.extentions.modifyPermissionOverride
 import space.astro.bot.managers.util.PermissionSets
+import space.astro.bot.managers.vc.dto.VCOperationCTX
 import space.astro.shared.core.models.database.GeneratorData
 import space.astro.shared.core.models.database.PermissionsInherited
+import space.astro.shared.core.models.database.TemporaryVCData
 
-object VCTextChatManager {
+object VCPrivateChatManager {
     suspend fun create(
         owner: Member,
         generatorData: GeneratorData,
@@ -19,7 +21,7 @@ object VCTextChatManager {
         try {
             val guild = owner.guild
 
-            val name = VariablesManager.computeTextChatName(generatorData.defaultChatName, owner, temporaryVC)
+            val name = VariablesManager.computePrivateChatName(generatorData.defaultChatName, owner, temporaryVC)
             val category = generatorData.chatCategory?.let { guild.getCategoryById(it) }
 
             val builder = guild.createTextChannel(name)
@@ -36,7 +38,7 @@ object VCTextChatManager {
             // add bot permissions
             builder.addMemberPermissionOverride(
                 guild.selfMember.idLong,
-                PermissionSets.astroTextChatPermissions,
+                PermissionSets.astroPrivateChatPermissions,
                 0L
             )
 
@@ -79,7 +81,7 @@ object VCTextChatManager {
                     builder.modifyPermissionOverride(
                         permissionOverrides.firstOrNull { it.id == immuneRole.id },
                         immuneRole,
-                        PermissionSets.immuneRoleTextChatPermissions,
+                        PermissionSets.immuneRolePrivateChatPermissions,
                         0
                     )
                 }
@@ -100,4 +102,49 @@ object VCTextChatManager {
         }
     }
 
+    fun VCOperationCTX.performPrivateChatNameRefresh() {
+        if (privateChat != null && privateChatManager != null && temporaryVCData.canBeRenamed()) {
+            val newName = VariablesManager.computePrivateChatName(
+                template = generatorData.defaultChatName,
+                owner = temporaryVCOwner,
+                temporaryVC = temporaryVC
+            )
+
+            if (privateChat.name != newName) {
+                temporaryVCData.performRenameOperationsOnTemporaryVCData()
+                privateChatManager.setName(newName)
+                markPrivateChatManagerAsUpdated()
+            }
+        }
+    }
+
+    /////////////////////////////////
+    /// TEMPORARY VC DATA HELPERS ///
+    /////////////////////////////////
+
+    private fun TemporaryVCData.canBeRenamed(): Boolean {
+        val currentTime = System.currentTimeMillis()
+
+        if (lastChatNameChange == null || currentTime - lastChatNameChange!! > 600000)
+            return true
+
+        if (chatNameChanges < 2)
+            return true
+
+        return false
+    }
+
+    private fun TemporaryVCData.performRenameOperationsOnTemporaryVCData() {
+        if (canBeRenamed()) {
+            val currentTime = System.currentTimeMillis()
+
+            if (lastChatNameChange == null || currentTime - lastChatNameChange!! > 600000) {
+                lastChatNameChange = currentTime
+                chatNameChanges = 1
+            } else {
+                lastChatNameChange = currentTime
+                chatNameChanges++
+            }
+        }
+    }
 }
