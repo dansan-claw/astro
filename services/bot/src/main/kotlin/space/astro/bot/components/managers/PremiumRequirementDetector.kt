@@ -49,6 +49,10 @@ class PremiumRequirementDetector(
         return true
     }
 
+    fun canValidateBadwords(guildData: GuildData): Boolean {
+        return isGuildPremium(guildData)
+    }
+
     fun canUseFallbackGenerator(guildData: GuildData) = isGuildPremium(guildData)
     fun canCreatePrivateChatOnVCGeneration(guildData: GuildData) = isGuildPremium(guildData)
     fun canCreateWaitingRoomOnVCGeneration(guildData: GuildData) = isGuildPremium(guildData)

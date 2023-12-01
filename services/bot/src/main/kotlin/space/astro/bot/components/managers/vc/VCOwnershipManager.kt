@@ -4,6 +4,7 @@ import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException
 import org.springframework.stereotype.Component
 import space.astro.bot.core.exceptions.ConfigurationException
+import space.astro.bot.core.exceptions.VcOperationException
 import space.astro.bot.core.extentions.modifyPermissionOverride
 import space.astro.bot.models.discord.PermissionSets
 import space.astro.bot.models.discord.vc.VCOperationCTX
@@ -67,7 +68,9 @@ class VCOwnershipManager(
             /// UPDATE CHANNEL NAMES ///
             ////////////////////////////
             if (generatorData.renameConditions.ownerChange) {
-                vcNameManager.performVCNameRefresh(this)
+                try {
+                    vcNameManager.performVCNameRefresh(this)
+                } catch (_: VcOperationException) {}
                 vcPrivateChatManager.performPrivateChatNameRefresh(this)
                 vcWaitingRoomManager.performWaitingRoomNameRefresh(this)
             }

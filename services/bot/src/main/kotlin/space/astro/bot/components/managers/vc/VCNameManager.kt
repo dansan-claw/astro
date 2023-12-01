@@ -3,6 +3,7 @@ package space.astro.bot.components.managers.vc
 import org.springframework.stereotype.Component
 import space.astro.bot.components.managers.PremiumRequirementDetector
 import space.astro.bot.core.exceptions.ConfigurationException
+import space.astro.bot.core.exceptions.VcOperationException
 import space.astro.bot.models.discord.vc.VCOperationCTX
 import space.astro.bot.services.ConfigurationErrorService
 import space.astro.shared.core.models.database.InitialPosition
@@ -18,20 +19,18 @@ class VCNameManager(
     /**
      * Change the name of a temporary vc
      *
-     * TODO: Maybe return a Result or throw exceptions?
-     *
      * @param newNameTemplate
      *
      * @throws ConfigurationException
+     * @throws VcOperationException
      */
     fun performVCRename(
         vcOperationCTX: VCOperationCTX,
         newNameTemplate: String
     ) {
         vcOperationCTX.apply {
-            // TODO: Badwords check (premium)
             if (!temporaryVCData.canBeRenamed()) {
-                return
+                throw VcOperationException(VcOperationException.Reason.RENAME_IS_RATE_LIMITED)
             }
 
             if (!shouldRenameBasedOnRenameConditions()) {
@@ -39,6 +38,8 @@ class VCNameManager(
             }
 
             validatePremiumRequirements(newNameTemplate)
+
+            validateBadwords(newNameTemplate)
 
             performPositionUpdates(newNameTemplate)
 
@@ -57,11 +58,12 @@ class VCNameManager(
      * Refresh the name of a temporary vc
      *
      * @throws ConfigurationException
+     * @throws VcOperationException
      */
     fun performVCNameRefresh(vcOperationCTX: VCOperationCTX) {
         vcOperationCTX.apply {
             if (!temporaryVCData.canBeRenamed()) {
-                return
+                throw VcOperationException(VcOperationException.Reason.RENAME_IS_RATE_LIMITED)
             }
 
             if (!shouldRenameBasedOnRenameConditions()) {
@@ -74,6 +76,8 @@ class VCNameManager(
             )
 
             validatePremiumRequirements(nameTemplate)
+
+            validateBadwords(nameTemplate)
 
             performPositionUpdates(nameTemplate)
 
@@ -138,6 +142,21 @@ class VCNameManager(
             throw ConfigurationException(configurationErrorService.premiumVariables(
                 encounteredIn = "applying the name $nameTemplate to a temporary VC"
             ))
+        }
+    }
+
+    /**
+     * Checks whether badwords have been used in this name
+     *
+     * @throws ConfigurationException if premium variables have been detected and the guild is not premium
+     */
+    private fun VCOperationCTX.validateBadwords(nameTemplate: String) {
+        if (!premiumRequirementDetector.canValidateBadwords(guildData)) {
+            throw ConfigurationException(configurationErrorService.premiumRequiredForBadwordsValidation())
+        }
+
+        if (!generatorData.commandsSettings.badwordsAllowed && VariablesManager.Checkers.containsBadwords(nameTemplate)) {
+            throw VcOperationException(VcOperationException.Reason.CANNOT_USE_BADWORDS)
         }
     }
 
@@ -228,6 +247,7 @@ class VCNameManager(
         temporaryVCData.performRenameOperationsOnTemporaryVCData(
             renamedByUser = vcOperationOrigin == VCOperationCTX.VCOperationOrigin.USER_RENAME
         )
+
         try {
             temporaryVCManager.setName(name)
         } catch (e: IllegalArgumentException) {

@@ -1,15 +1,20 @@
 package space.astro.bot.components.managers.vc
 
 import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.PermissionOverride
+import net.dv8tion.jda.api.entities.Role
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException
 import org.springframework.stereotype.Component
 import space.astro.bot.core.exceptions.ConfigurationException
+import space.astro.bot.core.exceptions.VcOperationException
 import space.astro.bot.core.extentions.modifyPermissionOverride
+import space.astro.bot.core.ui.Embeds
 import space.astro.bot.models.discord.vc.VCOperationCTX
 import space.astro.bot.services.ConfigurationErrorService
 import space.astro.shared.core.models.database.PermissionsInherited
 import space.astro.shared.core.models.database.VCState
+import space.astro.shared.core.util.extention.asRoleMention
 
 @Component
 class VcPermissionManager(
@@ -62,7 +67,58 @@ class VcPermissionManager(
         }
 
         vcOperationCTX.markTemporaryVCManagerAsUpdated()
-        vcNameManager.performVCNameRefresh(vcOperationCTX)
+
+        try {
+            vcNameManager.performVCNameRefresh(vcOperationCTX)
+        } catch (_: VcOperationException) {}
+    }
+
+    /**
+     * Kicks a user from a VC and denies [Permission.VOICE_CONNECT]
+     *
+     * @throws VcOperationException
+     */
+    fun kickAndBanUser(
+        vcOperationCTX: VCOperationCTX,
+        user: Member
+    ) {
+        val immuneRoleId = vcOperationCTX.generatorData.permissionsImmuneRole
+
+        if (immuneRoleId != null && user.roles.any { it.id == immuneRoleId }) {
+            throw VcOperationException(VcOperationException.Reason.CANNOT_BAN_IMMUNE_ROLE)
+        }
+
+        if (user.voiceState!!.channel?.id == vcOperationCTX.temporaryVC.id) {
+            vcOperationCTX.guild.kickVoiceMember(user).queue()
+        }
+
+        vcOperationCTX.temporaryVC.manager.modifyPermissionOverride(
+            user,
+            0,
+            Permission.VOICE_CONNECT.rawValue
+        ).queue()
+    }
+
+    /**
+     * Denies [Permission.VOICE_CONNECT] to the role
+     *
+     * @throws VcOperationException
+     */
+    fun banRole(
+        vcOperationCTX: VCOperationCTX,
+        role: Role
+    ) {
+        val immuneRoleId = vcOperationCTX.generatorData.permissionsImmuneRole
+
+        if (immuneRoleId == role.id) {
+            throw VcOperationException(VcOperationException.Reason.CANNOT_BAN_IMMUNE_ROLE)
+        }
+
+        vcOperationCTX.temporaryVC.manager.modifyPermissionOverride(
+            role,
+            0,
+            Permission.VOICE_CONNECT.rawValue
+        ).queue()
     }
 
     private fun VCOperationCTX.calculateInheritedPermissions(): List<PermissionOverride> {

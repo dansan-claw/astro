@@ -1,6 +1,5 @@
 package space.astro.bot.services
 
-import net.dv8tion.jda.api.Permission
 import org.springframework.stereotype.Service
 import space.astro.bot.models.error.ConfigurationErrorDto
 
@@ -21,6 +20,11 @@ class ConfigurationErrorService {
     fun premiumVariables(encounteredIn: String) = ConfigurationErrorDto(
         description = "Your are trying to use premium variables and your server isn't premium!" +
                 "\nEncountered in: $encounteredIn",
+    )
+
+    fun premiumRequiredForBadwordsValidation() = ConfigurationErrorDto(
+        description = "Your generator has badwords validation enabled, but premium is required to use it." +
+                "\nEither upgrade to premium or disable badwords validation!"
     )
 
     fun maximumAmountOfGenerator() = ConfigurationErrorDto(

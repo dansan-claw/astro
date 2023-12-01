@@ -10,6 +10,7 @@ import space.astro.bot.components.managers.vc.VCNameManager
 import space.astro.bot.components.managers.vc.VCPrivateChatManager
 import space.astro.bot.components.managers.vc.VCWaitingRoomManager
 import space.astro.bot.core.exceptions.ConfigurationException
+import space.astro.bot.core.exceptions.VcOperationException
 import space.astro.bot.events.publishers.ConfigurationErrorEventPublisher
 import space.astro.bot.models.discord.vc.VCOperationCTX
 import space.astro.bot.services.ConfigurationErrorService
@@ -90,7 +91,7 @@ class MemberUpdateActivitiesEventListener(
                 guildId = guildId,
                 configurationErrorDto = e.configurationErrorDto
             )
-        }
+        } catch (_: VcOperationException) {}
 
         vcOperationCTX.queueUpdatedManagers { managerType, e ->
             configurationErrorEventPublisher.publishConfigurationErrorEvent(

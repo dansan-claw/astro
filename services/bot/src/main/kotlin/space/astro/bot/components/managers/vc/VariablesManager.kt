@@ -4,6 +4,7 @@ import net.dv8tion.jda.api.entities.Activity
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel
 import net.dv8tion.jda.api.entities.emoji.Emoji
+import space.astro.bot.core.ui.TextUtils
 import space.astro.shared.core.models.database.GeneratorData
 import space.astro.shared.core.models.database.TemporaryVCData
 import space.astro.shared.core.models.database.VCState
@@ -152,17 +153,23 @@ object VariablesManager {
         fun containsPremiumVariable(name: String): Boolean {
             return premiumVariablesRegex.containsMatchIn(name)
         }
+
+        fun containsBadwords(name: String): Boolean {
+            return name.split(" ").any { TextUtils.badwords.contains(it.lowercase().trim()) }
+        }
     }
 
 
     fun getNameTemplateForCreation(generatorData: GeneratorData) = when (generatorData.initialState) {
         VCState.UNLOCKED -> generatorData.defaultName
+        VCState.UNHIDDEN -> generatorData.defaultName
         VCState.LOCKED -> generatorData.defaultLockedName
         VCState.HIDDEN -> generatorData.defaultHiddenName
     } ?: generatorData.defaultName
 
     fun getNameTemplateForRefresh(temporaryVCData: TemporaryVCData, generatorData: GeneratorData) = when (temporaryVCData.state) {
         VCState.UNLOCKED -> generatorData.defaultName
+        VCState.UNHIDDEN -> generatorData.defaultName
         VCState.LOCKED -> generatorData.defaultLockedName
         VCState.HIDDEN -> generatorData.defaultHiddenName
     } ?: generatorData.defaultName
