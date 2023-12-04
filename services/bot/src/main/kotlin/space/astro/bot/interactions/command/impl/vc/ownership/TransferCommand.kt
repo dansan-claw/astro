@@ -6,8 +6,8 @@ import space.astro.bot.interactions.command.*
 import space.astro.bot.models.discord.vc.VCOperationCTX
 
 @Command(
-    name = "ban",
-    description = "Bans someone from joining your voice channel",
+    name = "transfer",
+    description = "Transfer the ownership of your voice channel to someone else",
     category = CommandCategory.VC
 )
 class TransferCommand : AbstractCommand() {

@@ -60,6 +60,7 @@ class NameCommand(
                             "\n" +
                             "> I apologize that this went out without a prior announcement. While in general we do not announce rate limit changes as they are dynamically handled by libraries, this change was significant enough to warrant one. If crucial functionality has broken for your implementation because of these changes, please feel free to reach out to me directly (@Mason in the Discord Developers server) so that I can understand!" +
                             "\n\nYou can find this announcement by joining the [Discord Developers Server](https://discord.gg/discord-developers) and navigating to [this link](https://discord.com/channels/613425648685547541/697138785317814292/715995470048264233)."
+                    else -> throw e
                 }
             )).setEphemeral(true).queue()
         }
