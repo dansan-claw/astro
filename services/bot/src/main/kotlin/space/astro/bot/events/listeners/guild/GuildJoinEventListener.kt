@@ -60,7 +60,7 @@ class GuildJoinEventListener(
             data = GuildEventData(
                 guildId = guild.idLong,
                 usersCount = guild.memberCount,
-                action = GuildEventData.GuildEventAction.KICKED,
+                action = GuildEventData.GuildEventAction.JOINED,
                 timestamp = LocalDateTime.now(ZoneOffset.UTC).atOffset(ZoneOffset.UTC).toString()
             )
         )
