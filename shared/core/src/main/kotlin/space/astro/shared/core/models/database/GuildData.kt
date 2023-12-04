@@ -67,7 +67,7 @@ data class GeneratorData(
     var autoWaiting: Boolean = false,
 
     var chatCategory: String? = category,
-    var chatTopic: String? = "Temporary text chat made by Astro | ${Links.base}",
+    var chatTopic: String? = "Temporary text chat made by Astro | ${Links.WEBSITE}",
     var chatNsfw: Boolean = false,
     var chatSlowmode: Int = 0,
     var chatPermissionsInherited: PermissionsInherited = PermissionsInherited.NONE,
@@ -119,7 +119,7 @@ data class InterfaceData(
 )
 
 data class EmbedStyle(
-    var url: String? = Links.base,
+    var url: String? = Links.WEBSITE,
     var title: String? = null,
     var description: String? = "You can use this interface to manage your voice channel.\nYou can also use `/vc` slash commands!",
     var timestamp: Long? = null,
@@ -127,7 +127,7 @@ data class EmbedStyle(
     var thumbnail: String? = null,
     var image: String? = Links.INTERFACE_BUTTONS_IMAGE,
     var authorName: String? = "Astro Interface",
-    var authorUrl: String? = Links.base,
+    var authorUrl: String? = Links.WEBSITE,
     var authorIconUrl: String? = Links.LOGO,
     var footer: String? = "Use the buttons below to manage your voice channel",
     var footerIconUrl: String? = null
