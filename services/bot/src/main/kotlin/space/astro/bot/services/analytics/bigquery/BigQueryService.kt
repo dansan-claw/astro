@@ -6,6 +6,7 @@ import space.astro.shared.core.models.structures.BigQueryBaseClient
 import org.springframework.stereotype.Service
 import space.astro.shared.core.configs.BigQueryConfig
 import space.astro.shared.core.models.analytics.AnalyticsEventType
+import space.astro.shared.core.models.analytics.ConnectionInvocationEventData
 import space.astro.shared.core.models.analytics.SlashCommandInvocationEventData
 import space.astro.shared.core.models.analytics.TemporaryVCGenerationEventData
 import java.util.*
@@ -28,7 +29,8 @@ class BigQueryService(
             val tables: Map<KClass<*>, AnalyticsEventType> = HashMap(
                 mapOf(
                     SlashCommandInvocationEventData::class to AnalyticsEventType.SLASH_COMMAND_INVOCATION,
-                    TemporaryVCGenerationEventData::class to AnalyticsEventType.TEMPORARY_VC_GENERATION
+                    TemporaryVCGenerationEventData::class to AnalyticsEventType.TEMPORARY_VC_GENERATION,
+                    ConnectionInvocationEventData::class to AnalyticsEventType.CONNECTION_INVOCATION
                 )
             )
             TABLES = Collections.unmodifiableMap(tables)
