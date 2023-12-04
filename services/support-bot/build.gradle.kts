@@ -4,6 +4,7 @@ plugins {
 
 dependencies {
     implementation(libs.bundles.base)
+    implementation(libs.bundles.spring.core)
     implementation(libs.bundles.caching)
     implementation(libs.bundles.coroutines)
     implementation(libs.bundles.web)

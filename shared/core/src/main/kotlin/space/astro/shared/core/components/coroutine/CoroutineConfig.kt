@@ -1,4 +1,4 @@
-package space.astro.support.bot.components.coroutine
+package space.astro.shared.core.components.coroutine
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

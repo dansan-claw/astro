@@ -6,7 +6,7 @@ import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
 import space.astro.support.bot.config.DiscordApplicationConfig
-import space.astro.support.bot.services.DiscordEntitlementsFetchService
+import space.astro.shared.core.services.discord.DiscordEntitlementsFetchService
 
 @Component
 class GuildMemberJoinEventListener(
@@ -22,6 +22,8 @@ class GuildMemberJoinEventListener(
 
         applicationScope.launch {
             val entitlements = discordEntitlementsFetchService.fetchEntitlements(
+                applicationId = discordApplicationConfig.entitlementsBotId.toString(),
+                authToken = discordApplicationConfig.entitlementsBotToken,
                 userId = event.user.id,
                 guildId = null
             )
