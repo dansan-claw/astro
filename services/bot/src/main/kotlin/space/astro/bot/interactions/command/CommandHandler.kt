@@ -246,8 +246,6 @@ class CommandHandler(
         GlobalScope.launch {
             try {
                 command.callSuspend(commandContainer, event, interactionContext, *optionArgs)
-
-                TODO("BIGQUERY")
             } catch (e: Exception) {
                 // TODO: reply
                 when (e) {
@@ -280,17 +278,17 @@ class CommandHandler(
         val analyticsEventMetaData = SlashCommandInvocationOptionsMetaData(optionsPairs)
 
         val analyticsEvent = AnalyticsEvent(
-            listOf(AnalyticsEventReceiver.BIGQUERY),
-            AnalyticsEventType.SLASH_COMMAND_INVOCATION,
-            SlashCommandInvocationEventData(
-                key,
-                guild.idLong,
-                event.channelIdLong,
-                event.user.idLong,
-                if (optionsPairs.isNotEmpty()) optionsPairs[0].name else null,
-                if (optionsPairs.isNotEmpty()) optionsPairs[0].value else null,
-                serialize(analyticsEventMetaData),
-                LocalDateTime.now(ZoneOffset.UTC).atOffset(ZoneOffset.UTC).toString(),
+            receivers = listOf(AnalyticsEventReceiver.BIGQUERY),
+            type = AnalyticsEventType.SLASH_COMMAND_INVOCATION,
+            data = SlashCommandInvocationEventData(
+                name = key,
+                guildId = guild.idLong,
+                channelId = event.channelIdLong,
+                userId = event.user.idLong,
+                mainOptionName = if (optionsPairs.isNotEmpty()) optionsPairs[0].name else null,
+                mainOptionValue = if (optionsPairs.isNotEmpty()) optionsPairs[0].value else null,
+                rawOptions = serialize(analyticsEventMetaData),
+                timestamp = LocalDateTime.now(ZoneOffset.UTC).atOffset(ZoneOffset.UTC).toString(),
             )
         )
 

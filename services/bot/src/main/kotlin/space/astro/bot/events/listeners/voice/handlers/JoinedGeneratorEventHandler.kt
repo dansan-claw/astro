@@ -14,8 +14,11 @@ import space.astro.bot.core.ui.Embeds
 import space.astro.bot.models.discord.PermissionSets
 import space.astro.bot.models.discord.SimpleMemberRolesManager
 import space.astro.bot.models.discord.vc.event.VCEvent
+import space.astro.shared.core.models.analytics.*
 import space.astro.shared.core.models.database.PermissionsInherited
 import space.astro.shared.core.models.database.TemporaryVCData
+import java.time.LocalDateTime
+import java.time.ZoneOffset
 import java.util.concurrent.TimeUnit
 
 /**
@@ -365,8 +368,5 @@ suspend fun VCEventHandler.handleJoinedGeneratorEvent(
             }
         }
 
-    // TODO: BIGQUERY - generator statistics
-
     // TODO: PROPOSAL - first time user created a temporary vc private message
 }
-
