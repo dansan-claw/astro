@@ -10,7 +10,7 @@ import space.astro.bot.models.discord.vc.VCOperationCTX
     description = "Apply a template to your VC",
     category = CommandCategory.VC
 )
-class BanCommand : AbstractCommand() {
+class TemplateCommand : AbstractCommand() {
     @BaseCommand
     suspend fun run(
         event: SlashCommandInteractionEvent,

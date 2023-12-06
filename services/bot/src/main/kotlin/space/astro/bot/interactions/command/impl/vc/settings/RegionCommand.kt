@@ -33,7 +33,7 @@ class RegionCommand(
         val regions = ctx.guild.retrieveRegions(false).await()
 
         val regionSelectMenu = interactionComponentBuilder.selectMenu(
-            action = InteractionIds.Menu.VC_REGION,
+            id = InteractionIds.Menu.VC_REGION,
             placeholder = "Set the region for your VC",
             options = regions.map { region ->
                 SelectOption.of(region.getName(), region.key)

@@ -4,6 +4,7 @@ import dev.minn.jda.ktx.coroutines.await
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
+import net.dv8tion.jda.api.interactions.commands.OptionType
 import space.astro.bot.interactions.command.*
 import space.astro.bot.core.extentions.modifyPermissionOverride
 import space.astro.bot.core.ui.Embeds
@@ -27,21 +28,25 @@ class InviteCommand: AbstractCommand() {
         ctx: VcInteractionContext,
         @CommandOption(
             name = "user",
-            description = "The user to invite to join in your VC, he wi"
+            description = "The user to invite to join in your VC, he wi",
+            type = OptionType.USER
         )
-        member: Member?,
+        member: Member,
         @CommandOption(
             name = "second-user",
-            description = "Another user to invite to join in your VC, he wi"
+            description = "Another user to invite to join in your VC, he wi",
+            type = OptionType.USER,
         )
         member2: Member?,
         @CommandOption(
             name = "third-user",
-            description = "Another user to invite to join in your VC, he wi"
+            description = "Another user to invite to join in your VC, he wi",
+            type = OptionType.USER
         )
         member3: Member?,
         @CommandOption(
-            description = "A message that will be included in the DM"
+            description = "A message that will be included in the DM",
+            type = OptionType.STRING
         )
         message: String?
     ) {

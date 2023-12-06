@@ -137,7 +137,7 @@ class CommandHandler(
             ?: throw IllegalArgumentException("Couldn't find matching function name for $key!")
 
         val optionArgs = Array(options.size) { index ->
-            val type = command.parameters[2 + index].type.classifier as KClass<*>
+            val type = command.parameters[3 + index].type.classifier as KClass<*>
             val name = options[index]
             when (type) {
                 String::class -> event.getOption(name)?.asString
@@ -145,7 +145,19 @@ class CommandHandler(
                 Int::class -> event.getOption(name)?.asLong?.toInt()
                 Boolean::class -> event.getOption(name)?.asBoolean
                 User::class -> event.getOption(name)?.asUser
-                Member::class -> event.getOption(name)?.asMember
+                Member::class -> {
+                    val option = event.getOption(name)
+
+                    if (option != null) {
+                        option.asMember
+                            ?: run {
+                                event.replyEmbeds(Embeds.error("You must provide a user from this server for `$name`"))
+                                    .setEphemeral(true).queue()
+
+                                return
+                            }
+                    } else null
+                }
                 GuildChannel::class -> event.getOption(name)?.asChannel
                 Role::class -> event.getOption(name)?.asRole
                 else -> throw UnsupportedOperationException("Unable to handle option $name!")
@@ -159,7 +171,7 @@ class CommandHandler(
             channel = channel
         )
 
-        val interactionContextParameter = command.parameters[1]
+        val interactionContextParameter = command.parameters[2]
 
         val interactionContext =
             when (val commandContextArgType = interactionContextParameter.type.classifier as KClass<*>) {
@@ -172,7 +184,12 @@ class CommandHandler(
                         .channel
                         ?.takeIf { it.type == ChannelType.VOICE }
                         ?.asVoiceChannel()
-                        ?: throw IllegalArgumentException("Member is required to be in a VC for $key because the command requires a VcCommandContext, but the member isn't in a voice channel!")
+                        ?: run {
+                            event.replyEmbeds(Embeds.error("You need to be in a VC to use this command!"))
+                                .setEphemeral(true).queue()
+
+                            return
+                        }
 
                     val temporaryVCsData = temporaryVCDao.getAll(guild.id)
                     val temporaryVCData = temporaryVCsData.firstOrNull { it.id == vc.id }
@@ -242,8 +259,7 @@ class CommandHandler(
 
         GlobalScope.launch {
             try {
-                // command.callSuspend(commandContainer, event, interactionContext, *optionArgs)
-                command.callSuspend(event, interactionContext, *optionArgs)
+                command.callSuspend(commandContainer, event, interactionContext, *optionArgs)
             } catch (e: Exception) {
                 // TODO: reply
                 when (e) {
@@ -293,10 +309,12 @@ class CommandHandler(
         applicationEventPublisher.publishEvent(analyticsEvent)
     }
 
+
     fun getFullKeyFromEvent(event: SlashCommandInteractionEvent): String {
         val isSubCommand = event.subcommandName != null
         val hasSubCommandGroup = event.subcommandGroup != null
 
+        @Suppress("KotlinConstantConditions")
         return if (isSubCommand && hasSubCommandGroup) {
             "${event.name}.${event.subcommandGroup}.${event.subcommandName}"
         } else if (isSubCommand && !hasSubCommandGroup) {

@@ -1,6 +1,7 @@
 package space.astro.bot.interactions.command.impl.vc.settings
 
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
+import net.dv8tion.jda.api.interactions.commands.OptionType
 import space.astro.bot.interactions.command.*
 import space.astro.bot.core.ui.Embeds
 import space.astro.bot.core.ui.Emojis
@@ -23,7 +24,8 @@ class LimitCommand : AbstractCommand() {
         ctx: VcInteractionContext,
         @CommandOption(
             description = "The user limit for your VC (0 for no limit)",
-            maxValue = 99
+            maxValue = 99,
+            type = OptionType.INTEGER
         )
         limit: Int
     ) {

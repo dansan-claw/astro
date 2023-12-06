@@ -31,15 +31,15 @@ abstract class AbstractMenu : IMenu {
     private fun validateOptions(
         function: KFunction<*>
     ) {
-        if (function.parameters.size != 2) {
+        if (function.parameters.size != 3) {
             throw UnsupportedOperationException("Function ${function.name} does not have two parameters!")
         }
 
-        if (!(function.parameters[0].type.classifier as KClass<*>).isSubclassOf(GenericSelectMenuInteractionEvent::class)) {
+        if (!(function.parameters[1].type.classifier as KClass<*>).isSubclassOf(GenericSelectMenuInteractionEvent::class)) {
             throw UnsupportedOperationException("First parameter of ${function.name} must be a subclass of GenericSelectMenuInteractionEvent parameter!")
         }
 
-        if (!function.parameters[1].type.isSubtypeOf(InteractionContext::class.createType())) {
+        if (!function.parameters[2].type.isSubtypeOf(InteractionContext::class.createType())) {
             throw UnsupportedOperationException("Second parameter of ${function.name} must be a subtype of InteractionContext!")
         }
     }

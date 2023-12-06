@@ -1,6 +1,5 @@
 package space.astro.bot.interactions.command.impl.vc.permissions
 
-import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Role
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
@@ -8,12 +7,10 @@ import net.dv8tion.jda.api.interactions.commands.OptionType
 import space.astro.bot.components.managers.vc.VcPermissionManager
 import space.astro.bot.core.exceptions.VcOperationException
 import space.astro.bot.interactions.command.*
-import space.astro.bot.core.extentions.modifyPermissionOverride
 import space.astro.bot.core.ui.Embeds
 import space.astro.bot.core.ui.Emojis
 import space.astro.bot.interactions.VcInteractionContext
 import space.astro.bot.models.discord.vc.VCOperationCTX
-import space.astro.shared.core.util.extention.asRoleMention
 
 @Command(
     name = "ban",
@@ -40,14 +37,8 @@ class BanCommand(
             type = OptionType.USER,
             name = "user",
             description = "The user to ban from your channel"
-        ) member: Member?,
+        ) member: Member,
     ) {
-        if (member == null) {
-            event.replyEmbeds(Embeds.error("The user you provided is not in this server!"))
-                .setEphemeral(true).queue()
-            return
-        }
-
         try {
             vcPermissionManager.kickAndBanUser(ctx.vcOperationCTX, member)
 

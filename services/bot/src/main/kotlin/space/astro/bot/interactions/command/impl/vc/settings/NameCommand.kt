@@ -1,6 +1,7 @@
 package space.astro.bot.interactions.command.impl.vc.settings
 
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
+import net.dv8tion.jda.api.interactions.commands.OptionType
 import space.astro.bot.interactions.command.*
 import space.astro.bot.components.managers.vc.VCNameManager
 import space.astro.bot.core.exceptions.VcOperationException
@@ -28,7 +29,8 @@ class NameCommand(
         @CommandOption(
             description = "The name for your VC",
             minLength = 2,
-            maxLength = 100
+            maxLength = 100,
+            type = OptionType.STRING
         )
         name: String
     ) {

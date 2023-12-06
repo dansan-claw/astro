@@ -1,6 +1,5 @@
 package space.astro.bot.events.publishers
 
-import mu.KotlinLogging
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Component
 import space.astro.bot.events.ConfigurationErrorEvent

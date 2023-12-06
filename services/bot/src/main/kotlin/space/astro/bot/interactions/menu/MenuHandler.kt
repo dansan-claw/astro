@@ -79,8 +79,10 @@ class MenuHandler(
         }
 
         val key = event.componentId
-        val menuRunnable = menuMap[key]?.runnable
+        val menuContainer = menuMap[key]
             ?: throw IllegalArgumentException("Couldn't find menu container with id ${key}!")
+        val menuRunnable = menuContainer.runnable
+            ?: throw IllegalArgumentException("Couldn't find menu runnable with id ${key}!")
 
         val interactionContextBase = InteractionContext(
             guild = guild,
@@ -89,7 +91,7 @@ class MenuHandler(
             channel = channel
         )
 
-        val interactionContextParameter = menuRunnable.parameters[1]
+        val interactionContextParameter = menuRunnable.parameters[2]
 
         val interactionContext =
             when (val commandContextArgType = interactionContextParameter.type.classifier as KClass<*>) {
@@ -102,7 +104,13 @@ class MenuHandler(
                         .channel
                         ?.takeIf { it.type == ChannelType.VOICE }
                         ?.asVoiceChannel()
-                        ?: throw IllegalArgumentException("Member is required to be in a VC for $key because the menu requires a VcCommandContext, but the member isn't in a voice channel!")
+                        ?: run {
+                            event.hook.editOriginalEmbeds(Embeds.error("You need to be in a VC to use this command!"))
+                                .setComponents()
+                                .queue()
+
+                            return
+                        }
 
                     val temporaryVCsData = temporaryVCDao.getAll(guild.id)
                     val temporaryVCData = temporaryVCsData.firstOrNull { it.id == vc.id }
@@ -175,7 +183,7 @@ class MenuHandler(
 
         GlobalScope.launch {
             try {
-                menuRunnable.callSuspend(event, interactionContext)
+                menuRunnable.callSuspend(menuContainer, event, interactionContext)
             } catch (e: Exception) {
                 // TODO: reply
                 when (e) {

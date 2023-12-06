@@ -10,10 +10,7 @@ import net.dv8tion.jda.api.interactions.commands.build.*
 import space.astro.bot.interactions.InteractionContext
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
-import kotlin.reflect.full.createType
-import kotlin.reflect.full.findAnnotation
-import kotlin.reflect.full.isSubtypeOf
-import kotlin.reflect.full.memberFunctions
+import kotlin.reflect.full.*
 
 abstract class AbstractCommand : ICommand {
 
@@ -94,21 +91,21 @@ abstract class AbstractCommand : ICommand {
     private fun parseOptions(
         function: KFunction<*>
     ): List<OptionData> {
-        if (function.parameters.size < 2) {
+        if (function.parameters.size < 3) {
             throw UnsupportedOperationException("Function ${function.name} does not have at least two parameters!")
         }
 
-        if (function.parameters[0].type != SlashCommandInteractionEvent::class.createType()) {
+        if (!(function.parameters[1].type.classifier as KClass<*>).isSubclassOf(SlashCommandInteractionEvent::class)) {
             throw UnsupportedOperationException("First parameter of ${function.name} must be a SlashCommandInteractionEvent parameter!")
         }
 
-        if (!function.parameters[1].type.isSubtypeOf(InteractionContext::class.createType())) {
+        if (!(function.parameters[2].type.classifier as KClass<*>).isSubclassOf(InteractionContext::class)) {
             throw UnsupportedOperationException("Second parameter of ${function.name} must be a subtype of InteractionContext!")
         }
 
         val options = mutableListOf<OptionData>()
         var allowNonOptions = true
-        for (i in 2 until function.parameters.size) {
+        for (i in 3 until function.parameters.size) {
             val parameter = function.parameters[i]
             val type = parameter.type.classifier as KClass<*>
             val commandOptionAnnotation = parameter.findAnnotation<CommandOption>()
@@ -163,11 +160,11 @@ abstract class AbstractCommand : ICommand {
                     if (commandOptionAnnotation.maxValue != 0L) {
                         optionData.setMaxValue(commandOptionAnnotation.maxValue)
                     }
-                    if (commandOptionAnnotation.minLength != 0L) {
-                        optionData.setMinValue(commandOptionAnnotation.minLength)
+                    if (commandOptionAnnotation.minLength != 0) {
+                        optionData.setMinLength(commandOptionAnnotation.minLength)
                     }
-                    if (commandOptionAnnotation.maxLength != 0L) {
-                        optionData.setMaxValue(commandOptionAnnotation.maxLength)
+                    if (commandOptionAnnotation.maxLength != 0) {
+                        optionData.setMaxLength(commandOptionAnnotation.maxLength)
                     }
                     options.add(
                         optionData

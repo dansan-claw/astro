@@ -12,8 +12,8 @@ import space.astro.bot.interactions.VcInteractionContext
 import space.astro.bot.models.discord.vc.VCOperationCTX
 
 @Command(
-    name = "ban",
-    description = "Bans someone from joining your voice channel",
+    name = "permit",
+    description = "Permit a user or role to join your VC",
     category = CommandCategory.VC
 )
 class PermitCommand : AbstractCommand() {
@@ -32,14 +32,8 @@ class PermitCommand : AbstractCommand() {
             type = OptionType.USER,
             name = "user",
             description = "The user to permit in your channel"
-        ) member: Member?,
+        ) member: Member,
     ) {
-        if (member == null) {
-            event.replyEmbeds(Embeds.error("The user you provided is not in this server!"))
-                .setEphemeral(true).queue()
-            return
-        }
-
         ctx.vcOperationCTX.temporaryVC.manager.modifyPermissionOverride(
             member,
             Permission.getRaw(Permission.VIEW_CHANNEL, Permission.VOICE_CONNECT),

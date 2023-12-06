@@ -1,6 +1,7 @@
 package space.astro.bot.interactions.command.impl.vc.settings
 
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
+import net.dv8tion.jda.api.interactions.commands.OptionType
 import space.astro.bot.interactions.command.*
 import space.astro.bot.core.ui.Embeds
 import space.astro.bot.core.ui.Emojis
@@ -14,6 +15,7 @@ import space.astro.bot.models.discord.vc.VCOperationCTX
 )
 class BitrateCommand : AbstractCommand() {
     @SubCommand(
+        name = "kbps",
         description = "Set the bitrate in KBPS"
     )
     suspend fun kbps(
@@ -25,11 +27,12 @@ class BitrateCommand : AbstractCommand() {
         ctx: VcInteractionContext,
         @CommandOption(
             description = "The bitrate expressed in kbps",
-            minValue = 8
+            minValue = 8,
+            type =  OptionType.INTEGER
         )
         bitrate: Int
     ) {
-        val calculatedBitrate = bitrate * 1000;
+        val calculatedBitrate = bitrate * 1000
         val maxBitrate = ctx.vcOperationCTX.generatorData.commandsSettings.maxBitrate?.coerceAtMost(ctx.guild.maxBitrate) ?: ctx.guild.maxBitrate
         val minBitrate = ctx.vcOperationCTX.generatorData.commandsSettings.minBitrate.coerceAtLeast(8000)
 

@@ -23,7 +23,7 @@ annotation class BaseCommand
 @Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.FUNCTION)
 annotation class SubCommand(
-    val name: String = "",
+    val name: String,
     val description: String = "",
     val group: String = "",
     val groupDescription: String = "N/A",
@@ -41,13 +41,13 @@ annotation class VcInteractionContextInfo(
 annotation class CommandOption(
     val name: String = "",
     val description: String = "",
-    val type: OptionType = OptionType.UNKNOWN,
+    val type: OptionType,
     // TODO: find better solution
     vararg val stringChoices: String = [],
     val minValue : Long = 0,
     val maxValue : Long = 0,
-    val minLength : Long = 0,
-    val maxLength : Long = 0,
+    val minLength : Int = 0,
+    val maxLength : Int = 0,
     val autocomplete: Boolean = false
     // CAN'T USE VARARG TWICE
     //vararg val integerChoices: Int = [],

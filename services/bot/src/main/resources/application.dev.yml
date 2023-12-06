@@ -33,3 +33,4 @@ discord:
   application:
     botId: 788708323867885568
     token: ${BOT_TOKEN}
+

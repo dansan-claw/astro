@@ -23,7 +23,7 @@ fun String.linkFromName(url: String) = "[$this]($url)"
 /**
  * Returns a markdown link with this String as its link
  */
-fun String.linkFromLink(name: String) = "[$name][$this]"
+fun String.linkFromLink(name: String) = "[$name]($this)"
 
 /**
  * Returns a relative timestamp from a long: <t:long:style>

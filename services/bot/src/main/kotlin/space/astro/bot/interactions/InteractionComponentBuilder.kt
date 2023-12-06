@@ -15,33 +15,33 @@ class InteractionComponentBuilder {
     ///////////////
     
     fun buttonWithLabel(
-        action: InteractionAction,
+        id: String,
         buttonStyle: ButtonStyle,
         label: String
     ) = Button.of(
         buttonStyle,
-        action.id,
+        id,
         label
     )
 
     fun buttonWithEmoji(
-        action: InteractionAction,
+        id: String,
         buttonStyle: ButtonStyle,
         emoji: Emoji
     ) = Button.of(
         buttonStyle,
-        action.id,
+        id,
         emoji
     )
 
     fun buttonWithLabelAndEmoji(
-        action: InteractionAction,
+        id: String,
         buttonStyle: ButtonStyle,
         label: String,
         emoji: Emoji
     ) = Button.of(
         buttonStyle,
-        action.id,
+        id,
         label,
         emoji
     )
@@ -52,12 +52,12 @@ class InteractionComponentBuilder {
     /////////////
     
     fun selectMenu(
-        action: InteractionAction,
+        id: String,
         options: List<SelectOption>,
         placeholder: String? = null,
         rangeMin: Int = 1,
         rangeMax: Int = 1,
-    ) = StringSelectMenu.create(action.id)
+    ) = StringSelectMenu.create(id)
         .setPlaceholder(placeholder)
         .setRequiredRange(rangeMin, rangeMax)
         .addOptions(options)
