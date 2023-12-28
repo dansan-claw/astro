@@ -9,15 +9,13 @@ import org.springframework.stereotype.Component
 import space.astro.bot.core.exceptions.ConfigurationException
 import space.astro.bot.core.exceptions.VcOperationException
 import space.astro.bot.core.extentions.modifyPermissionOverride
-import space.astro.bot.core.ui.Embeds
 import space.astro.bot.models.discord.vc.VCOperationCTX
 import space.astro.bot.services.ConfigurationErrorService
 import space.astro.shared.core.models.database.PermissionsInherited
 import space.astro.shared.core.models.database.VCState
-import space.astro.shared.core.util.extention.asRoleMention
 
 @Component
-class VcPermissionManager(
+class VCPermissionManager(
     private val vcNameManager: VCNameManager,
     private val configurationErrorService: ConfigurationErrorService
 ) {

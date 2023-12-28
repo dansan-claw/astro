@@ -41,10 +41,8 @@ class RegionCommand(
             },
         )
 
-        // TODO: Test otherwise use reply callback from deferReply
-        event.replyEmbeds(Embeds.default("Set the region of your VC with the menu below"))
-            .addActionRow(regionSelectMenu)
-            .setEphemeral(true)
+        event.hook.editOriginalEmbeds(Embeds.default("Set the region of your VC with the menu below"))
+            .setActionRow(regionSelectMenu)
             .queue()
     }
 }

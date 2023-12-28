@@ -2,7 +2,7 @@ package space.astro.bot.interactions.command.impl.vc.permissions
 
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import space.astro.bot.interactions.command.*
-import space.astro.bot.components.managers.vc.VcPermissionManager
+import space.astro.bot.components.managers.vc.VCPermissionManager
 import space.astro.bot.core.ui.Embeds
 import space.astro.bot.core.ui.Emojis
 import space.astro.bot.interactions.VcInteractionContext
@@ -16,7 +16,7 @@ import space.astro.shared.core.models.database.VCState
     category = CommandCategory.VC
 )
 class UnlockCommand(
-    val vcPermissionManager: VcPermissionManager,
+    val vcPermissionManager: VCPermissionManager,
     val temporaryVCDao: TemporaryVCDao
 ) : AbstractCommand() {
     @BaseCommand

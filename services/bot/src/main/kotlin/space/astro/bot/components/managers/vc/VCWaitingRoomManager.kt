@@ -31,7 +31,7 @@ class VCWaitingRoomManager(
         generatorData: GeneratorData,
         temporaryVC: VoiceChannel,
         temporaryVCIncrementalPosition: Int?
-    ) : VoiceChannel? {
+    ) : VoiceChannel {
         try {
             val guild = owner.guild
 

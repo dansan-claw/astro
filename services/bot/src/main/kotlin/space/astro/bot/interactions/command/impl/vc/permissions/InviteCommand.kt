@@ -81,8 +81,8 @@ class InviteCommand: AbstractCommand() {
 
         ctx.vcOperationCTX.temporaryVCManager.queue()
 
-        event.replyEmbeds(Embeds.default(
+        event.hook.editOriginalEmbeds(Embeds.default(
             "${members.joinToString(", ") { it.asMention }} has been invited to join your VC!"
-        )).setEphemeral(true).queue()
+        )).queue()
     }
 }

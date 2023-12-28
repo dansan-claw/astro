@@ -30,7 +30,7 @@ class VCPrivateChatManager(
         owner: Member,
         generatorData: GeneratorData,
         temporaryVC: VoiceChannel,
-    ) : TextChannel? {
+    ) : TextChannel {
         try {
             val guild = owner.guild
 

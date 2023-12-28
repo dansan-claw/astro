@@ -8,14 +8,12 @@ import space.astro.bot.core.exceptions.VcOperationException
 import space.astro.bot.core.extentions.modifyPermissionOverride
 import space.astro.bot.models.discord.PermissionSets
 import space.astro.bot.models.discord.vc.VCOperationCTX
-import space.astro.bot.services.ConfigurationErrorService
 
 @Component
 class VCOwnershipManager(
-    val vcNameManager: VCNameManager,
-    val vcPrivateChatManager: VCPrivateChatManager,
-    val vcWaitingRoomManager: VCWaitingRoomManager,
-    val configurationErrorService: ConfigurationErrorService
+    private val vcNameManager: VCNameManager,
+    private val vcPrivateChatManager: VCPrivateChatManager,
+    private val vcWaitingRoomManager: VCWaitingRoomManager
 ) {
     /**
      * Change the owner of a temporary vc.
