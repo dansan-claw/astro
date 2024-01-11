@@ -9,8 +9,7 @@ import space.astro.bot.models.discord.vc.VCOperationCTX
 open class InteractionContext(
     val guild: Guild,
     val member: Member,
-    val user: User,
-    val channel: Channel
+    val user: User
 ) {
     val guildId = guild.id
     val memberId = member.id
@@ -20,6 +19,5 @@ class VcInteractionContext(
     val vcOperationCTX: VCOperationCTX,
     guild: Guild,
     member: Member,
-    user: User,
-    channel: Channel
-) : InteractionContext(guild, member, user, channel)
+    user: User
+) : InteractionContext(guild, member, user)

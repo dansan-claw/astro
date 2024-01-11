@@ -15,6 +15,8 @@ import space.astro.bot.core.extentions.toConfigurationErrorDto
 import space.astro.bot.core.ui.Embeds
 import space.astro.bot.events.publishers.ConfigurationErrorEventPublisher
 import space.astro.bot.interactions.InteractionContext
+import space.astro.bot.interactions.InteractionContextBuilder
+import space.astro.bot.interactions.InteractionContextBuilderException
 import space.astro.bot.interactions.VcInteractionContext
 import space.astro.bot.interactions.command.VcInteractionContextInfo
 import space.astro.bot.models.discord.vc.VCOperationCTX
@@ -32,7 +34,7 @@ class ButtonHandler(
     val discordApplicationConfig: DiscordApplicationConfig,
     val configurationErrorEventPublisher: ConfigurationErrorEventPublisher,
     val temporaryVCDao: TemporaryVCDao,
-    val guildDao: GuildDao
+    val interactionContextBuilder: InteractionContextBuilder
 ) {
     val buttonMap = HashMap<String, IButton>()
 
@@ -88,8 +90,7 @@ class ButtonHandler(
         val interactionContextBase = InteractionContext(
             guild = guild,
             member = member,
-            user = event.user,
-            channel = channel
+            user = event.user
         )
 
         val interactionContextParameter = buttonRunnable.parameters[2]
@@ -101,82 +102,18 @@ class ButtonHandler(
                     val vcInteractionContextInfo = interactionContextParameter.findAnnotation<VcInteractionContextInfo>()
                         ?: throw IllegalArgumentException("Found VcCommandContext parameter in button $key without VcCommandContextInfo annotation!")
 
-                    val vc = member.voiceState!!
-                        .channel
-                        ?.takeIf { it.type == ChannelType.VOICE }
-                        ?.asVoiceChannel()
-                        ?: run {
-                            event.hook.editOriginalEmbeds(Embeds.error("You need to be in a VC to use this command!"))
-                                .setComponents()
-                                .queue()
-
-                            return
-                        }
-
-                    val temporaryVCsData = temporaryVCDao.getAll(guild.id)
-                    val temporaryVCData = temporaryVCsData.firstOrNull { it.id == vc.id }
-                        ?: run {
-                            event.hook.editOriginalEmbeds(Embeds.error("You must be in a temporary VC to use this button!"))
-                                .setComponents()
-                                .queue()
-                            return
-                        }
-
-                    if (vcInteractionContextInfo.ownershipRequired) {
-                        if (temporaryVCData.ownerId != member.id) {
-                            event.hook.editOriginalEmbeds(Embeds.error("You need to be the owner of the temporary VC to use this button!"))
-                                .setComponents()
-                                .queue()
-                        }
-                    }
-
-                    val guildData = guildDao.get(guild.id)
-                        ?: run {
-                            event.hook.editOriginalEmbeds(Embeds.error("Astro is not configured in this server!"))
-                                .setComponents()
-                                .queue()
-                            return
-                        }
-
-                    val generatorData = guildData.generators
-                        .firstOrNull { it.id == temporaryVCData.generatorId }
-
-                    val generator = generatorData?.id?.let { guild.getVoiceChannelById(it) }
-
-                    if (generatorData == null || generator == null) {
-                        event.hook.editOriginalEmbeds(Embeds.error("The generator of this temporary VC has been deleted!"))
-                            .setComponents()
+                    try {
+                        interactionContextBuilder.buildVcInteractionContext(
+                            interactionCreateEvent = event,
+                            vcInteractionContextInfo = vcInteractionContextInfo
+                        )
+                    } catch (e: InteractionContextBuilderException) {
+                        event.replyEmbeds(e.errorEmbed)
+                            .setEphemeral(true)
                             .queue()
+
                         return
                     }
-
-                    @Suppress("DUPLICATE")
-                    val privateChat = temporaryVCData.chatID?.let { guild.getTextChannelById(it) }
-                    val waitingRoom = temporaryVCData.waitingID?.let { guild.getVoiceChannelById(it) }
-
-                    val vcOperationCTX = VCOperationCTX(
-                        guildData = guildData,
-                        generator = generator,
-                        generatorData = generatorData,
-                        temporaryVCOwner = member,
-                        temporaryVC = vc,
-                        temporaryVCManager = vc.manager,
-                        temporaryVCData = temporaryVCData,
-                        temporaryVCsData = temporaryVCsData,
-                        privateChat = privateChat,
-                        privateChatManager = privateChat?.manager,
-                        waitingRoom = waitingRoom,
-                        waitingRoomManager = waitingRoom?.manager,
-                        vcOperationOrigin = vcInteractionContextInfo.vcOperationOrigin
-                    )
-
-                    VcInteractionContext(
-                        vcOperationCTX = vcOperationCTX,
-                        guild = guild,
-                        member = member,
-                        user = event.user,
-                        channel = channel
-                    )
                 }
 
                 else -> throw IllegalArgumentException("Command context of type $commandContextArgType is not recognized")

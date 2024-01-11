@@ -9,7 +9,6 @@ import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Role
 import net.dv8tion.jda.api.entities.User
-import net.dv8tion.jda.api.entities.channel.ChannelType
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException
@@ -24,8 +23,9 @@ import space.astro.bot.core.extentions.toConfigurationErrorDto
 import space.astro.bot.core.ui.Embeds
 import space.astro.bot.events.publishers.ConfigurationErrorEventPublisher
 import space.astro.bot.interactions.InteractionContext
+import space.astro.bot.interactions.InteractionContextBuilder
+import space.astro.bot.interactions.InteractionContextBuilderException
 import space.astro.bot.interactions.VcInteractionContext
-import space.astro.bot.models.discord.vc.VCOperationCTX
 import space.astro.shared.core.daos.GuildDao
 import space.astro.shared.core.daos.TemporaryVCDao
 import space.astro.shared.core.models.analytics.AnalyticsEvent
@@ -48,10 +48,10 @@ class CommandHandler(
     val shardManager: ShardManager,
     val discordApplicationConfig: DiscordApplicationConfig,
     val temporaryVCDao: TemporaryVCDao,
-    val guildDao: GuildDao,
     val configurationErrorEventPublisher: ConfigurationErrorEventPublisher,
     val applicationEventPublisher: ApplicationEventPublisher,
-    val objectMapper: ObjectMapper
+    val objectMapper: ObjectMapper,
+    val interactionContextBuilder: InteractionContextBuilder
 ) {
 
     val commandsMap = HashMap<String, ICommand>()
@@ -169,8 +169,7 @@ class CommandHandler(
         val interactionContextBase = InteractionContext(
             guild = guild,
             member = member,
-            user = event.user,
-            channel = channel
+            user = event.user
         )
 
         val interactionContextParameter = command.parameters[2]
@@ -182,76 +181,18 @@ class CommandHandler(
                     val vcInteractionContextInfo = interactionContextParameter.findAnnotation<VcInteractionContextInfo>()
                         ?: throw IllegalArgumentException("Found VcCommandContext parameter in command $key without VcCommandContextInfo annotation!")
 
-                    val vc = member.voiceState!!
-                        .channel
-                        ?.takeIf { it.type == ChannelType.VOICE }
-                        ?.asVoiceChannel()
-                        ?: run {
-                            event.replyEmbeds(Embeds.error("You need to be in a VC to use this command!"))
-                                .setEphemeral(true).queue()
-
-                            return
-                        }
-
-                    val temporaryVCsData = temporaryVCDao.getAll(guild.id)
-                    val temporaryVCData = temporaryVCsData.firstOrNull { it.id == vc.id }
-                        ?: run {
-                            event.replyEmbeds(Embeds.error("You must be in a temporary VC to use this command!"))
-                                .setEphemeral(true).queue()
-                            return
-                        }
-
-                    if (vcInteractionContextInfo.ownershipRequired) {
-                        if (temporaryVCData.ownerId != member.id) {
-                            event.replyEmbeds(Embeds.error("You need to be the owner of the temporary VC to use this command!"))
-                                .setEphemeral(true).queue()
-                        }
-                    }
-
-                    val guildData = guildDao.get(guild.id)
-                        ?: run {
-                            event.replyEmbeds(Embeds.error("Astro is not configured in this server!"))
-                                .setEphemeral(true).queue()
-                            return
-                        }
-
-                    val generatorData = guildData.generators
-                        .firstOrNull { it.id == temporaryVCData.generatorId }
-
-                    val generator = generatorData?.id?.let { guild.getVoiceChannelById(it) }
-
-                    if (generatorData == null || generator == null) {
-                        event.replyEmbeds(Embeds.error("The generator of this temporary VC has been deleted!"))
+                    try {
+                        interactionContextBuilder.buildVcInteractionContext(
+                            interactionCreateEvent = event,
+                            vcInteractionContextInfo = vcInteractionContextInfo
+                        )
+                    } catch (e: InteractionContextBuilderException) {
+                        event.replyEmbeds(e.errorEmbed)
+                            .setEphemeral(true)
                             .queue()
+
                         return
                     }
-
-                    val privateChat = temporaryVCData.chatID?.let { guild.getTextChannelById(it) }
-                    val waitingRoom = temporaryVCData.waitingID?.let { guild.getVoiceChannelById(it) }
-
-                    val vcOperationCTX = VCOperationCTX(
-                        guildData = guildData,
-                        generator = generator,
-                        generatorData = generatorData,
-                        temporaryVCOwner = member,
-                        temporaryVC = vc,
-                        temporaryVCManager = vc.manager,
-                        temporaryVCData = temporaryVCData,
-                        temporaryVCsData = temporaryVCsData,
-                        privateChat = privateChat,
-                        privateChatManager = privateChat?.manager,
-                        waitingRoom = waitingRoom,
-                        waitingRoomManager = waitingRoom?.manager,
-                        vcOperationOrigin = vcInteractionContextInfo.vcOperationOrigin
-                    )
-
-                    VcInteractionContext(
-                        vcOperationCTX = vcOperationCTX,
-                        guild = guild,
-                        member = member,
-                        user = event.user,
-                        channel = channel
-                    )
                 }
 
                 else -> throw IllegalArgumentException("Command context of type $commandContextArgType is not recognized")
