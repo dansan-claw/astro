@@ -17,6 +17,7 @@ import net.dv8tion.jda.api.sharding.ShardManager
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
+import space.astro.bot.components.managers.CooldownsManager
 import space.astro.bot.components.managers.PremiumRequirementDetector
 import space.astro.bot.config.DiscordApplicationConfig
 import space.astro.bot.core.exceptions.ConfigurationException
@@ -35,6 +36,7 @@ import space.astro.shared.core.models.analytics.AnalyticsEventType
 import space.astro.shared.core.models.analytics.SlashCommandInvocationEventData
 import space.astro.shared.core.models.analytics.meta.SlashCommandInvocationOptionsMetaData
 import space.astro.shared.core.models.analytics.meta.structure.OptionPair
+import space.astro.shared.core.util.extention.asRelativeTimestampFromNow
 import space.astro.shared.core.util.ui.Links
 import java.time.LocalDateTime
 import java.time.ZoneOffset
@@ -54,7 +56,8 @@ class CommandHandler(
     private val objectMapper: ObjectMapper,
     private val interactionContextBuilder: InteractionContextBuilder,
     private val premiumRequirementDetector: PremiumRequirementDetector,
-    private val guildDao: GuildDao
+    private val guildDao: GuildDao,
+    private val cooldownsManager: CooldownsManager
 ) {
 
     val commandsMap = HashMap<String, ICommand>()
@@ -171,12 +174,24 @@ class CommandHandler(
             }
         }
 
+        ////////////////
+        /// COOLDOWN ///
+        ////////////////
+        val cooldown = cooldownsManager.getUserActionCooldown(member.id, commandContainer.action)
+        if (cooldown > 0) {
+            event.replyEmbeds(Embeds.error("This command is on cooldown, you will be able to use it again in ${cooldown.asRelativeTimestampFromNow()}"))
+                .setEphemeral(true)
+                .queue()
+
+            return
+        }
+
         /////////////////////
         /// PREMIUM CHECK ///
         /////////////////////
         val guildData = guildDao.get(guild.id)
 
-        if (commandContainer.premium && guildData == null || !premiumRequirementDetector.isGuildPremium(guildData!!)) {
+        if (commandContainer.action.premium && (guildData == null || !premiumRequirementDetector.isGuildPremium(guildData))) {
             event.replyEmbeds(Embeds.error("Premium is required to use this command!"))
                 .setEphemeral(true)
                 .queue()

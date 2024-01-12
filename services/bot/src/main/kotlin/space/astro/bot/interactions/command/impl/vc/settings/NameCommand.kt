@@ -6,6 +6,7 @@ import space.astro.bot.components.managers.vc.VCNameManager
 import space.astro.bot.core.exceptions.VcOperationException
 import space.astro.bot.core.ui.Embeds
 import space.astro.bot.core.ui.Emojis
+import space.astro.bot.interactions.InteractionAction
 import space.astro.bot.interactions.VcInteractionContext
 import space.astro.bot.interactions.command.*
 import space.astro.bot.models.discord.vc.VCOperationCTX
@@ -13,7 +14,8 @@ import space.astro.bot.models.discord.vc.VCOperationCTX
 @Command(
     name = "name",
     description = "Set the name for your VC",
-    category = CommandCategory.VC
+    category = CommandCategory.VC,
+    action = InteractionAction.NAME
 )
 class NameCommand(
     val vcNameManager: VCNameManager

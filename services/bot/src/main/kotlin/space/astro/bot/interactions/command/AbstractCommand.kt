@@ -7,6 +7,7 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.interactions.commands.Command.Choice
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.commands.build.*
+import space.astro.bot.interactions.InteractionAction
 import space.astro.bot.interactions.InteractionContext
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
@@ -24,7 +25,7 @@ abstract class AbstractCommand : ICommand {
         mutableMapOf()
 
     final override val category: CommandCategory
-    final override val premium: Boolean
+    final override val action: InteractionAction
 
 
     init {
@@ -40,7 +41,7 @@ abstract class AbstractCommand : ICommand {
         val commandDescription = commandAnnotation.description
         data = Commands.slash(commandName, commandDescription)
         category = commandAnnotation.category
-        premium = commandAnnotation.premium
+        action = commandAnnotation.action
 
         reflectedClass.memberFunctions.forEach { function ->
             val functionBaseCommandAnnotation = function.findAnnotation<BaseCommand>()

@@ -5,6 +5,7 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import space.astro.bot.components.managers.vc.VCTemplateManager
 import space.astro.bot.core.ui.Embeds
+import space.astro.bot.interactions.InteractionAction
 import space.astro.bot.interactions.VcInteractionContext
 import space.astro.bot.interactions.command.*
 import space.astro.bot.models.discord.vc.VCOperationCTX
@@ -14,7 +15,8 @@ import space.astro.shared.core.daos.TemporaryVCDao
 @Command(
     name = "template",
     description = "Apply a template to your VC",
-    category = CommandCategory.VC
+    category = CommandCategory.VC,
+    action = InteractionAction.TEMPLATE
 )
 class TemplateCommand(
     private val guildDao: GuildDao,

@@ -1,6 +1,7 @@
 package space.astro.bot.interactions.modal
 
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
+import space.astro.bot.interactions.InteractionAction
 import space.astro.bot.interactions.InteractionContext
 import space.astro.bot.interactions.button.Button
 import space.astro.bot.interactions.button.ButtonRunnable
@@ -12,6 +13,7 @@ abstract class AbstractModal : IModal {
 
     final override var id: String
     final override var runnable: KFunction<*>?
+    final override var action: InteractionAction
 
     init {
         val reflectedClass = this::class
@@ -20,6 +22,7 @@ abstract class AbstractModal : IModal {
             ?: throw UnsupportedOperationException("Missing button annotation on class extending AbstractButton!")
 
         id = modalAnnotation.id
+        action = modalAnnotation.action
 
         val modalRunnable = reflectedClass.memberFunctions.firstOrNull { it.hasAnnotation<ButtonRunnable>() }
             ?: throw UnsupportedOperationException("Missing MenuRunnable annotated function in class extending AbstractMenu")

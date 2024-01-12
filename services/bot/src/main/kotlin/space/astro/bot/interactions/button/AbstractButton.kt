@@ -1,6 +1,7 @@
 package space.astro.bot.interactions.button
 
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
+import space.astro.bot.interactions.InteractionAction
 import space.astro.bot.interactions.InteractionContext
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
@@ -10,7 +11,7 @@ abstract class AbstractButton : IButton {
 
     final override var id: String
     final override var runnable: KFunction<*>?
-    final override var premium: Boolean
+    final override val action: InteractionAction
 
     init {
         val reflectedClass = this::class
@@ -19,7 +20,7 @@ abstract class AbstractButton : IButton {
             ?: throw UnsupportedOperationException("Missing button annotation on class extending AbstractButton!")
 
         id = buttonAnnotation.id
-        premium = buttonAnnotation.premium
+        action = buttonAnnotation.action
 
         val buttonRunnable = reflectedClass.memberFunctions.firstOrNull { it.hasAnnotation<ButtonRunnable>() }
             ?: throw UnsupportedOperationException("Missing MenuRunnable annotated function in class extending AbstractMenu")

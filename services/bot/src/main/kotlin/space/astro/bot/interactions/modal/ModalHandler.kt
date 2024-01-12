@@ -8,6 +8,8 @@ import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
+import space.astro.bot.components.managers.CooldownsManager
+import space.astro.bot.components.managers.PremiumRequirementDetector
 import space.astro.bot.config.DiscordApplicationConfig
 import space.astro.bot.core.exceptions.ConfigurationException
 import space.astro.bot.core.extentions.toConfigurationErrorDto
@@ -20,6 +22,7 @@ import space.astro.bot.interactions.VcInteractionContext
 import space.astro.bot.interactions.command.VcInteractionContextInfo
 import space.astro.shared.core.daos.GuildDao
 import space.astro.shared.core.daos.TemporaryVCDao
+import space.astro.shared.core.util.extention.asRelativeTimestampFromNow
 import space.astro.shared.core.util.ui.Links
 import kotlin.reflect.KClass
 import kotlin.reflect.full.callSuspend
@@ -33,7 +36,9 @@ class ModalHandler(
     private val discordApplicationConfig: DiscordApplicationConfig,
     private val configurationErrorEventPublisher: ConfigurationErrorEventPublisher,
     private val interactionContextBuilder: InteractionContextBuilder,
-    private val guildDao: GuildDao
+    private val guildDao: GuildDao,
+    private val cooldownsManager: CooldownsManager,
+    private val premiumRequirementDetector: PremiumRequirementDetector
 ) {
     val modalMap = HashMap<String, IModal>()
 
@@ -82,6 +87,31 @@ class ModalHandler(
             ?: throw IllegalArgumentException("Couldn't find modal container with id ${key}!")
         val modalRunnable = modalContainer.runnable
             ?: throw IllegalArgumentException("Couldn't find modal runnable with id ${key}!")
+
+        ////////////////
+        /// COOLDOWN ///
+        ////////////////
+        val cooldown = cooldownsManager.getUserActionCooldown(member.id, modalContainer.action)
+        if (cooldown > 0) {
+            event.replyEmbeds(Embeds.error("This action is on cooldown, you will be able to use it again in ${cooldown.asRelativeTimestampFromNow()}"))
+                .setEphemeral(true)
+                .queue()
+
+            return
+        }
+
+        /////////////////////
+        /// PREMIUM CHECK ///
+        /////////////////////
+        val guildData = guildDao.get(guild.id)
+
+        if (modalContainer.action.premium && (guildData == null || !premiumRequirementDetector.isGuildPremium(guildData))) {
+            event.replyEmbeds(Embeds.error("Premium is required to use this modal!"))
+                .setEphemeral(true)
+                .queue()
+
+            return
+        }
 
         val interactionContextBase = InteractionContext(
             guild = guild,

@@ -4,6 +4,7 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import space.astro.bot.core.ui.Embeds
 import space.astro.bot.core.ui.Emojis
+import space.astro.bot.interactions.InteractionAction
 import space.astro.bot.interactions.VcInteractionContext
 import space.astro.bot.interactions.command.*
 import space.astro.bot.models.discord.vc.VCOperationCTX
@@ -11,7 +12,8 @@ import space.astro.bot.models.discord.vc.VCOperationCTX
 @Command(
     name = "bitrate",
     description = "Set the bitrate for your VC",
-    category = CommandCategory.VC
+    category = CommandCategory.VC,
+    action = InteractionAction.BITRATE
 )
 class BitrateCommand : AbstractCommand() {
     @SubCommand(

@@ -3,6 +3,7 @@ package space.astro.bot.interactions.command
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import org.springframework.stereotype.Component
+import space.astro.bot.interactions.InteractionAction
 import space.astro.bot.models.discord.vc.VCOperationCTX
 
 @Retention(AnnotationRetention.RUNTIME)
@@ -13,7 +14,7 @@ annotation class Command(
     val description: String = "N/A",
     val requiredPermissions: Array<Permission> = [],
     val category: CommandCategory = CommandCategory.ALL,
-    val premium: Boolean = false
+    val action: InteractionAction = InteractionAction.GENERIC
 )
 
 @Retention(AnnotationRetention.RUNTIME)

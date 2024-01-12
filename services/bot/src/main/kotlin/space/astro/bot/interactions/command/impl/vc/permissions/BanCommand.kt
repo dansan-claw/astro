@@ -8,6 +8,7 @@ import space.astro.bot.components.managers.vc.VCPermissionManager
 import space.astro.bot.core.exceptions.VcOperationException
 import space.astro.bot.core.ui.Embeds
 import space.astro.bot.core.ui.Emojis
+import space.astro.bot.interactions.InteractionAction
 import space.astro.bot.interactions.VcInteractionContext
 import space.astro.bot.interactions.command.*
 import space.astro.bot.models.discord.vc.VCOperationCTX
@@ -16,8 +17,7 @@ import space.astro.bot.models.discord.vc.VCOperationCTX
     name = "ban",
     description = "Ban a user or a role from joining your voice channel",
     category = CommandCategory.VC,
-    premium = true
-    // TODO: Higher cooldown
+    action = InteractionAction.BAN
 )
 class BanCommand(
     val vcPermissionManager: VCPermissionManager

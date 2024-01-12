@@ -8,6 +8,7 @@ import space.astro.bot.components.managers.PremiumRequirementDetector
 import space.astro.bot.components.managers.vc.VCOwnershipManager
 import space.astro.bot.core.exceptions.ConfigurationException
 import space.astro.bot.core.ui.Embeds
+import space.astro.bot.interactions.InteractionAction
 import space.astro.bot.interactions.VcInteractionContext
 import space.astro.bot.interactions.command.*
 import space.astro.bot.models.discord.vc.VCOperationCTX
@@ -17,7 +18,8 @@ import space.astro.shared.core.daos.TemporaryVCDao
 @Command(
     name = "transfer",
     description = "Transfer the ownership of your VC to someone else",
-    category = CommandCategory.VC
+    category = CommandCategory.VC,
+    action = InteractionAction.TRANSFER
 )
 class TransferCommand(
     private val vcOwnershipManager: VCOwnershipManager,

@@ -4,6 +4,7 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import space.astro.bot.components.managers.vc.VCPermissionManager
 import space.astro.bot.core.ui.Embeds
 import space.astro.bot.core.ui.Emojis
+import space.astro.bot.interactions.InteractionAction
 import space.astro.bot.interactions.VcInteractionContext
 import space.astro.bot.interactions.command.*
 import space.astro.bot.models.discord.vc.VCOperationCTX
@@ -13,7 +14,8 @@ import space.astro.shared.core.models.database.VCState
 @Command(
     name = "unhide",
     description = "Un-hide your voice channel making it visible to everyone",
-    category = CommandCategory.VC
+    category = CommandCategory.VC,
+    action = InteractionAction.UNHIDE
 )
 class UnhideCommand(
     val vcPermissionManager: VCPermissionManager,

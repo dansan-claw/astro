@@ -7,6 +7,7 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import space.astro.bot.core.extentions.modifyPermissionOverride
 import space.astro.bot.core.ui.Embeds
+import space.astro.bot.interactions.InteractionAction
 import space.astro.bot.interactions.VcInteractionContext
 import space.astro.bot.interactions.command.*
 import space.astro.bot.models.discord.vc.VCOperationCTX
@@ -15,7 +16,7 @@ import space.astro.bot.models.discord.vc.VCOperationCTX
     name = "invite",
     description = "Invite up to three users to join your VC by sending a DM with an invite link",
     category = CommandCategory.VC,
-    premium = true
+    action = InteractionAction.INVITE
 )
 class InviteCommand: AbstractCommand() {
     @BaseCommand
