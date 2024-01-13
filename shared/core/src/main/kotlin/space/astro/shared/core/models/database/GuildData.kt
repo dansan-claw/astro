@@ -88,11 +88,27 @@ data class GeneratorData(
 
 
 enum class PermissionsInherited {
-    GENERATOR, CATEGORY, NONE
+    GENERATOR, CATEGORY, NONE;
+
+    override fun toString(): String {
+        return when (this) {
+            GENERATOR -> "From the generator"
+            CATEGORY -> "From the category (in which they get generated)"
+            NONE -> "Do not inherit any permission"
+        }
+    }
 }
 
 enum class InitialPosition {
-    BEFORE, AFTER, BOTTOM
+    BEFORE, AFTER, BOTTOM;
+
+    override fun toString(): String {
+        return when(this) {
+            BEFORE -> "Before the generator"
+            AFTER -> "After the generator"
+            BOTTOM -> "Bottom of the category"
+        }
+    }
 }
 
 /**
@@ -103,7 +119,7 @@ enum class VCState(
     val permissionDenied: Permission? = null,
     val permissionReset: Permission? = null
 ) {
-    UNLOCKED(null, Permission.VOICE_CONNECT), LOCKED(Permission.VOICE_CONNECT), HIDDEN(Permission.VIEW_CHANNEL), UNHIDDEN(null, Permission.VIEW_CHANNEL)
+    UNLOCKED(null, Permission.VOICE_CONNECT), LOCKED(Permission.VOICE_CONNECT), HIDDEN(Permission.VIEW_CHANNEL), UNHIDDEN(null, Permission.VIEW_CHANNEL);
 }
 
 

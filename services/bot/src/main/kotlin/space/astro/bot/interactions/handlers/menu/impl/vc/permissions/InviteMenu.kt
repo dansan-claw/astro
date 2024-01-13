@@ -34,14 +34,13 @@ class InviteMenu: AbstractMenu() {
         }
 
         if (members.isEmpty()) {
-            event.hook.editOriginalEmbeds(Embeds.error(
+            ctx.replyHandler.replyEmbed(Embeds.error(
                 "None of the users you provided are in this server (you also can't invite bots)!"
-            )).queue()
-
+            ))
             return
         }
 
-        event.deferReply(true).await()
+        ctx.replyHandler.deferReply()
 
         val vcInvite = ctx.vcOperationCTX.temporaryVC.retrieveInvites().await().firstOrNull()
             ?: ctx.vcOperationCTX.temporaryVC.createInvite().await()
@@ -63,8 +62,8 @@ class InviteMenu: AbstractMenu() {
 
         ctx.vcOperationCTX.temporaryVCManager.queue()
 
-        event.hook.editOriginalEmbeds(Embeds.default(
+        ctx.replyHandler.replyEmbed(Embeds.default(
             "${members.joinToString(", ") { it.asMention }} has been invited to join your VC!"
-        )).queue()
+        ))
     }
 }

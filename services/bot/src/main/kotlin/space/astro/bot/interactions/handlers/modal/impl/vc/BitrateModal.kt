@@ -23,7 +23,7 @@ class BitrateModal : AbstractModal() {
     }
 
     @ModalRunnable
-    fun run(
+    suspend fun run(
         event: ModalInteractionEvent,
         @VcInteractionContextInfo(
             ownershipRequired = true,
@@ -36,19 +36,19 @@ class BitrateModal : AbstractModal() {
         val minBitrate = ctx.vcOperationCTX.generatorData.commandsSettings.minBitrate.coerceAtLeast(8000)
 
         if (calculatedBitrate == null || calculatedBitrate < minBitrate || calculatedBitrate > maxBitrate) {
-            event.replyEmbeds(
+            ctx.replyHandler.replyEmbed(
                 Embeds.error(
                 "The bitrate must be between `${minBitrate / 1000} kbps` and `${maxBitrate / 1000} kbps`!" +
                         "\n(*Those bounds were set by the moderators of the server*)"
-            )).setEphemeral(true).queue()
+            ))
             return
         }
 
         ctx.vcOperationCTX.temporaryVCManager.setBitrate(calculatedBitrate).queue()
 
-        event.replyEmbeds(
+        ctx.replyHandler.replyEmbed(
             Embeds.default(
             "${Emojis.bitrate.formatted} Bitrate set to ${calculatedBitrate / 1000}kbps"
-        )).setEphemeral(true).queue()
+        ))
     }
 }

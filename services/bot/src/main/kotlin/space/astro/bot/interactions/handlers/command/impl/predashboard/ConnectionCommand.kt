@@ -35,7 +35,7 @@ class ConnectionCommand(
         name = "create",
         description = "Assigns temporary roles to users who join specific audio channels or categories",
     )
-    fun create(
+    suspend fun create(
         event: SlashCommandInteractionEvent,
         ctx: SettingsInteractionContext,
         @CommandOption(
@@ -65,23 +65,16 @@ class ConnectionCommand(
         }
 
         if (role.isPublicRole) {
-            event.replyEmbeds(
+            ctx.replyHandler.replyEmbed(
                 Embeds.error(
                 "Astro cannot use the @everyone role in a connection since everyone in the server has that role by default and it cannot be removed." +
                 "\n\nReuse this command and provide a valid role."
-            )).setEphemeral(true)
-                .queue()
-
+            ))
             return
         }
 
         if (!ctx.guild.selfMember.canInteract(role)) {
-            event.replyEmbeds(Embeds.error("The role ${role.asMention} is above Astro's role in the server role hierarchy." +
-                    "\nBecause of that Astro cannot handle this role." +
-                    "\nPut Astro's role above the provided one to fix this, see [this guide](${Links.ExternalGuides.ROLE_HIERARCHY})."))
-                .setEphemeral(true)
-                .queue()
-
+            ctx.replyHandler.replyEmbed(Embeds.requireRoleHierarchy(role.name))
             return
         }
 
@@ -98,16 +91,14 @@ class ConnectionCommand(
         ctx.guildData.connections.add(connection)
         guildDao.save(ctx.guildData)
 
-        event.replyEmbeds(Embeds.default(connection.toString()))
-            .setEphemeral(true)
-            .queue()
+        ctx.replyHandler.replyEmbed(Embeds.default(connection.toString()))
     }
 
     @SubCommand(
         name = "delete",
         description = "Deletes a connection",
     )
-    fun delete(
+    suspend fun delete(
         event: SlashCommandInteractionEvent,
         ctx: ConnectionSettingsInteractionContext
     ) {
@@ -115,16 +106,14 @@ class ConnectionCommand(
 
         guildDao.save(ctx.guildData)
 
-        event.replyEmbeds(Embeds.default("The connection has been deleted"))
-            .setEphemeral(true)
-            .queue()
+        ctx.replyHandler.replyEmbed(Embeds.default("The connection has been deleted"))
     }
 
     @SubCommand(
         name = "edit",
         description = "Change the role, channel and action of a connection"
     )
-    fun edit(
+    suspend fun edit(
         event: SlashCommandInteractionEvent,
         ctx: ConnectionSettingsInteractionContext,
         @CommandOption(
@@ -158,23 +147,16 @@ class ConnectionCommand(
 
         if (role != null && ctx.connectionData.roleID != role.id) {
             if (role.isPublicRole) {
-                event.replyEmbeds(
+                ctx.replyHandler.replyEmbed(
                     Embeds.error(
                         "Astro cannot use the @everyone role in a connection since everyone in the server has that role by default and it cannot be removed." +
                                 "\n\nReuse this command and provide a valid role."
-                    )).setEphemeral(true)
-                    .queue()
-
+                    ))
                 return
             }
 
             if (!ctx.guild.selfMember.canInteract(role)) {
-                event.replyEmbeds(Embeds.error("The role ${role.asMention} is above Astro's role in the server role hierarchy." +
-                        "\nBecause of that Astro cannot handle this role." +
-                        "\nPut Astro's role above the provided one to fix this, see [this guide](${Links.ExternalGuides.ROLE_HIERARCHY})."))
-                    .setEphemeral(true)
-                    .queue()
-
+                ctx.replyHandler.replyEmbed(Embeds.requireRoleHierarchy(role.name))
                 return
             }
 
@@ -193,17 +175,12 @@ class ConnectionCommand(
         }
 
         if (updated) {
-            ctx.guildData.connections.set(
-                index = ctx.guildData.connections.indexOfFirst {
-                    it.id == ctx.connectionData.id && it.roleID == ctx.connectionData.roleID
-                },
-                element = ctx.connectionData
-            )
+            ctx.guildData.connections[ctx.connectionIndex] = ctx.connectionData
 
             guildDao.save(ctx.guildData)
         }
 
-        event.replyEmbeds(
+        ctx.replyHandler.replyEmbed(
             Embeds.default("Connection edited:\n${ctx.connectionData}")
         )
     }

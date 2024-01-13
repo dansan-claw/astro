@@ -13,7 +13,7 @@ import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.*
 
-abstract class AbstractCommand : space.astro.bot.interactions.handlers.command.ICommand {
+abstract class AbstractCommand : ICommand {
 
     private val log = KotlinLogging.logger {}
 
@@ -24,13 +24,13 @@ abstract class AbstractCommand : space.astro.bot.interactions.handlers.command.I
     final override val commands: MutableMap<String, Pair<KFunction<*>, List<String>>> =
         mutableMapOf()
 
-    final override val category: space.astro.bot.interactions.handlers.command.CommandCategory
+    final override val category: CommandCategory
     final override val action: InteractionAction
 
 
     init {
         val reflectedClass = this::class
-        val commandAnnotation = reflectedClass.findAnnotation<space.astro.bot.interactions.handlers.command.Command>()
+        val commandAnnotation = reflectedClass.findAnnotation<Command>()
             ?: throw UnsupportedOperationException("Missing command annotation on class extending AbstractCommand!")
 
         requiredPermissions = commandAnnotation.requiredPermissions
@@ -44,8 +44,8 @@ abstract class AbstractCommand : space.astro.bot.interactions.handlers.command.I
         action = commandAnnotation.action
 
         reflectedClass.memberFunctions.forEach { function ->
-            val functionBaseCommandAnnotation = function.findAnnotation<space.astro.bot.interactions.handlers.command.BaseCommand>()
-            val functionSubCommandAnnotation = function.findAnnotation<space.astro.bot.interactions.handlers.command.SubCommand>()
+            val functionBaseCommandAnnotation = function.findAnnotation<BaseCommand>()
+            val functionSubCommandAnnotation = function.findAnnotation<SubCommand>()
             when {
                 functionBaseCommandAnnotation != null -> {
                     val options = parseOptions(function)
@@ -112,7 +112,7 @@ abstract class AbstractCommand : space.astro.bot.interactions.handlers.command.I
         for (i in 3 until function.parameters.size) {
             val parameter = function.parameters[i]
             val type = parameter.type.classifier as KClass<*>
-            val commandOptionAnnotation = parameter.findAnnotation<space.astro.bot.interactions.handlers.command.CommandOption>()
+            val commandOptionAnnotation = parameter.findAnnotation<CommandOption>()
             if (commandOptionAnnotation == null) {
                 require(allowNonOptions) {
                     "Parameter ${parameter.name} in function " +
@@ -133,7 +133,7 @@ abstract class AbstractCommand : space.astro.bot.interactions.handlers.command.I
                         commandOptionAnnotation.stringChoices.map {
                             Choice(
                                 it,
-                                it
+                                it.lowercase()
                             )
                         }
                     }

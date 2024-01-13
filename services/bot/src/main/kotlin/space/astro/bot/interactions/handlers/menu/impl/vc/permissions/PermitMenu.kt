@@ -20,7 +20,7 @@ class PermitMenu(
     private val vcPermissionManager: VCPermissionManager
 ) : AbstractMenu() {
     @MenuRunnable
-    fun run(
+    suspend fun run(
         event: EntitySelectInteractionEvent,
         @VcInteractionContextInfo(
             ownershipRequired = true,
@@ -28,6 +28,8 @@ class PermitMenu(
         )
         ctx: VcInteractionContext,
     ) {
+        ctx.replyHandler.deferReply()
+
         val entities = event.values.mapNotNull {
             ctx.guild.getMemberById(it.id) ?: ctx.guild.getRoleById(it.id)
         }
@@ -37,10 +39,10 @@ class PermitMenu(
             entities = entities
         )
 
-        event.hook.editOriginalEmbeds(
+        ctx.replyHandler.replyEmbed(
             Embeds.default(
             "The following users and roles have been permitted in your voice channel:" +
                     "\n${entities.joinToString(", ") { it.asMention }}"
-        )).queue()
+        ))
     }
 }

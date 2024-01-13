@@ -23,7 +23,7 @@ class LimitModal : AbstractModal() {
     }
 
     @ModalRunnable
-    fun run(
+    suspend fun run(
         event: ModalInteractionEvent,
         @VcInteractionContextInfo(
             ownershipRequired = true,
@@ -36,16 +36,16 @@ class LimitModal : AbstractModal() {
         val minUserLimit = ctx.vcOperationCTX.generatorData.commandsSettings.minUserLimit
 
         if (limit == null || limit < minUserLimit || limit > maxUserLimit) {
-            event.replyEmbeds(
+            ctx.replyHandler.replyEmbed(
                 Embeds.error(
                 "User limit must be between `$minUserLimit` and `$maxUserLimit`." +
                         "\n(*Those limits were set by the moderators of the server*)",
-            )).setEphemeral(true).queue()
+            ))
             return
         }
         ctx.vcOperationCTX.temporaryVCManager.setUserLimit(limit).queue()
 
-        event.replyEmbeds(
+        ctx.replyHandler.replyEmbed(
             Embeds.default(
             "${Emojis.limit.formatted} User limit set to $limit users!"
         ))

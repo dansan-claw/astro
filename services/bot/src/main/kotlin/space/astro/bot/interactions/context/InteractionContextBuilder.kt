@@ -422,7 +422,11 @@ class InteractionContextBuilder(
                         throw InteractionContextBuilderException(Embeds.error("You took too long to select a $entityName"))
                     }
 
-                    interactionContextBase.replyHandler.setReplyCallback(event)
+                    interactionContextBase.replyHandler.setCallbacks(
+                        replyCallback = event,
+                        modalCallback = event,
+                        premiumReplyCallback = event
+                    )
 
                     if (event is ButtonInteractionEvent) {
                         if (event.componentId == cancelButton.id) {
@@ -486,7 +490,11 @@ class InteractionContextBuilder(
                     throw InteractionContextBuilderException(Embeds.error("You took too long to select a $entityName"))
                 }
 
-                interactionContextBase.replyHandler.setReplyCallback(event)
+                interactionContextBase.replyHandler.setCallbacks(
+                    replyCallback = event,
+                    modalCallback = event,
+                    premiumReplyCallback = event
+                )
 
                 if (event is ButtonInteractionEvent) {
                     throw InteractionContextBuilderException(Embeds.default("Command canceled"))

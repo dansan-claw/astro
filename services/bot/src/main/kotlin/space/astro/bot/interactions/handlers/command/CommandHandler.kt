@@ -232,7 +232,8 @@ class CommandHandler(
                     originatedFromExistingMessage = false,
                     replyCallback = event,
                     modalCallback = event,
-                    premiumReplyCallback = event
+                    premiumReplyCallback = event,
+                    shardManager = shardManager
                 )
             )
 

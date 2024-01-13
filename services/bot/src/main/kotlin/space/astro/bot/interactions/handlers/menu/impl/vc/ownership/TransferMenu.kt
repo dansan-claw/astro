@@ -34,23 +34,17 @@ class TransferMenu(
         val member = event.values.firstOrNull()?.let { ctx.guild.getMemberById(it) }
 
         if (member == null) {
-            event.hook.editOriginalEmbeds(Embeds.error("The user you provided is not in this server!"))
-                .queue()
-
+            ctx.replyHandler.replyEmbed(Embeds.error("The user you provided is not in this server!"))
             return
         }
 
         if (member.user.isBot) {
-            event.hook.editOriginalEmbeds(Embeds.error("Cannot transfer the ownership to a bot"))
-                .queue()
-
+            ctx.replyHandler.replyEmbed(Embeds.error("Cannot transfer the ownership to a bot"))
             return
         }
 
         if (member.voiceState!!.channel?.id != ctx.vcOperationCTX.temporaryVC.id) {
-            event.hook.editOriginalEmbeds(Embeds.error("The user you provided is not in your voice channel!"))
-                .queue()
-
+            ctx.replyHandler.replyEmbed(Embeds.error("The user you provided is not in your voice channel!"))
             return
         }
 
@@ -61,7 +55,6 @@ class TransferMenu(
         temporaryVCDao.save(ctx.guildId, ctx.vcOperationCTX.temporaryVCData)
         vcOwnershipManager.handleOwnerRoleMigration(ctx.vcOperationCTX, ctx.member, member)
 
-        event.hook.editOriginalEmbeds(Embeds.default("Ownership transferred to ${member.asMention}"))
-            .queue()
+        ctx.replyHandler.replyEmbed(Embeds.default("Ownership transferred to ${member.asMention}"))
     }
 }

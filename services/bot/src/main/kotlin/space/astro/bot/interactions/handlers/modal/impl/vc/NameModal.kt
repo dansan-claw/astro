@@ -27,7 +27,7 @@ class NameModal(
     }
 
     @ButtonRunnable
-    fun run(
+    suspend fun run(
         event: ModalInteractionEvent,
         @VcInteractionContextInfo(
             ownershipRequired = true,
@@ -38,10 +38,7 @@ class NameModal(
         val name = event.getValue(NAME_TEXT_INPUT_ID)?.asString
 
         if (name == null) {
-            event.replyEmbeds(Embeds.error("Please provide a valid name"))
-                .setEphemeral(true)
-                .queue()
-
+            ctx.replyHandler.replyEmbed(Embeds.error("Please provide a valid name"))
             return
         }
 
@@ -50,13 +47,13 @@ class NameModal(
 
             ctx.vcOperationCTX.queueUpdatedManagers()
 
-            event.replyEmbeds(
+            ctx.replyHandler.replyEmbed(
                 Embeds.default(
                     "${Emojis.name.formatted} Name of your VC set to `$name`!"
                 )
-            ).setEphemeral(true).queue()
+            )
         } catch (e: VcOperationException) {
-            event.replyEmbeds(
+            ctx.replyHandler.replyEmbed(
                 Embeds.error(
                 when (e.reason) {
                     VcOperationException.Reason.CANNOT_USE_BADWORDS -> "Badwords have been detected in the name you provided and this server doesn't allow them!"
@@ -76,7 +73,7 @@ class NameModal(
                             "\n\nYou can find this announcement by joining the [Discord Developers Server](https://discord.gg/discord-developers) and navigating to [this link](https://discord.com/channels/613425648685547541/697138785317814292/715995470048264233)."
                     else -> throw e
                 }
-            )).setEphemeral(true).queue()
+            ))
         }
     }
 }

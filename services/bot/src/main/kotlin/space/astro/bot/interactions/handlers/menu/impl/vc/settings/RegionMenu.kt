@@ -19,7 +19,7 @@ import space.astro.bot.models.discord.vc.VCOperationCTX
 class RegionMenu : AbstractMenu() {
 
     @MenuRunnable
-    fun run(
+    suspend fun run(
         event: StringSelectInteractionEvent,
         @VcInteractionContextInfo(
             ownershipRequired = true,
@@ -27,12 +27,13 @@ class RegionMenu : AbstractMenu() {
         )
         ctx: VcInteractionContext,
     ) {
+        ctx.replyHandler.deferReply()
+
         val region = Region.fromKey(event.values.firstOrNull())
         if (region != Region.UNKNOWN && ctx.vcOperationCTX.temporaryVC.region.key != region.key) {
             ctx.vcOperationCTX.temporaryVCManager.setRegion(region).queue()
         }
 
-        event.hook.editOriginalEmbeds(Embeds.default("Region set to ${region.emoji?.plus(" ")}${region.name}"))
-            .queue()
+        ctx.replyHandler.replyEmbed(Embeds.default("Region set to ${region.emoji?.plus(" ")}${region.name}"))
     }
 }

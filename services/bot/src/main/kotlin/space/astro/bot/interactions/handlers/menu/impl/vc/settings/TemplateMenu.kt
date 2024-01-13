@@ -23,7 +23,7 @@ class TemplateMenu(
 ) : AbstractMenu() {
 
     @MenuRunnable
-    fun run(
+    suspend fun run(
         event: StringSelectInteractionEvent,
         @VcInteractionContextInfo(
             ownershipRequired = true,
@@ -34,27 +34,22 @@ class TemplateMenu(
         val availableTemplates = ctx.vcOperationCTX.guildData.templates.filter { it.enabledGeneratorIds == null || ctx.vcOperationCTX.generatorData.id in it.enabledGeneratorIds!! }
 
         if (availableTemplates.isEmpty()) {
-            event.hook.editOriginalEmbeds(Embeds.error("This generator doesn't have any available template"))
-                .setComponents()
-                .queue()
-
+            ctx.replyHandler.replyEmbed(Embeds.error("This generator doesn't have any available template"))
             return
         }
 
         val template = availableTemplates.firstOrNull { it.id == event.values.firstOrNull() }
         if (template == null) {
-            event.hook.editOriginalEmbeds(Embeds.error("The template you selected doesn't exist anymore"))
-                .setComponents()
-                .queue()
-
+            ctx.replyHandler.replyEmbed(Embeds.error("The template you selected doesn't exist anymore"))
             return
         }
+
+        ctx.replyHandler.deferReply()
 
         vcTemplateManager.applyTemplate(ctx.vcOperationCTX, template)
         temporaryVCDao.save(ctx.guildId, ctx.vcOperationCTX.temporaryVCData)
         ctx.vcOperationCTX.queueUpdatedManagers()
 
-        event.hook.editOriginalEmbeds(Embeds.default("Template applied!"))
-            .queue()
+        ctx.replyHandler.replyEmbed(Embeds.default("Template applied!"))
     }
 }

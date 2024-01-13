@@ -36,7 +36,9 @@ class GeneratorSettingsInteractionContext(
     guild: Guild,
     member: Member,
     replyHandler: IInteractionReplyHandler
-) : InteractionContext(guild, member, replyHandler)
+) : InteractionContext(guild, member, replyHandler) {
+    val generatorIndex = guildData.generators.indexOfFirst { it.id == generatorData.id }
+}
 
 class InterfaceSettingsInteractionContext(
     val interfaceData: InterfaceData,
@@ -44,7 +46,9 @@ class InterfaceSettingsInteractionContext(
     guild: Guild,
     member: Member,
     replyHandler: IInteractionReplyHandler
-) : InteractionContext(guild, member, replyHandler)
+) : InteractionContext(guild, member, replyHandler) {
+    val interfaceIndex = guildData.interfaces.indexOfFirst { it.messageID == interfaceData.messageID }
+}
 
 class ConnectionSettingsInteractionContext(
     val connectionData: ConnectionData,
@@ -52,7 +56,9 @@ class ConnectionSettingsInteractionContext(
     guild: Guild,
     member: Member,
     replyHandler: IInteractionReplyHandler
-) : InteractionContext(guild, member, replyHandler)
+) : InteractionContext(guild, member, replyHandler) {
+    val connectionIndex = guildData.connections.indexOfFirst { it.id == connectionData.id && it.roleID == connectionData.roleID }
+}
 
 class TemplateSettingsInteractionContext(
     val templateData: TemplateData,
@@ -60,4 +66,6 @@ class TemplateSettingsInteractionContext(
     guild: Guild,
     member: Member,
     replyHandler: IInteractionReplyHandler
-) : InteractionContext(guild, member, replyHandler)
+) : InteractionContext(guild, member, replyHandler) {
+    val templateIndex = guildData.templates.indexOfFirst { it.id == templateData.id }
+}

@@ -20,7 +20,7 @@ class BanMenu(
     private val vcPermissionManager: VCPermissionManager
 ) : AbstractMenu() {
     @MenuRunnable
-    fun run(
+    suspend fun run(
         event: EntitySelectInteractionEvent,
         @VcInteractionContextInfo(
             ownershipRequired = true,
@@ -28,6 +28,8 @@ class BanMenu(
         )
         ctx: VcInteractionContext,
     ) {
+        ctx.replyHandler.deferReply()
+
         val users = event.values.mapNotNull { ctx.guild.getMemberById(it.id) }
         val roles = event.values.mapNotNull { ctx.guild.getRoleById(it.id) }
 
@@ -37,10 +39,10 @@ class BanMenu(
             roles = roles
         )
 
-        event.hook.editOriginalEmbeds(
+        ctx.replyHandler.replyEmbed(
             Embeds.default(
             "The following users and roles have been banned from your voice channel:" +
                     "\n${banned.joinToString(", ") { it.asMention }}"
-        )).queue()
+        ))
     }
 }

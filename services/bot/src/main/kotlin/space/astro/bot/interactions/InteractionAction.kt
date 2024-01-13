@@ -34,5 +34,5 @@ enum class InteractionAction(
     VC_WAITING_ROOM(true, 2000, listOf(Permission.ADMINISTRATOR)),
 
     // PREDASHBOARD
-    SETTINGS(false, 2000, listOf()),
+    SETTINGS(false, 2000, listOf(Permission.ADMINISTRATOR)),
 }
