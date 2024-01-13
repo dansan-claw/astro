@@ -5,6 +5,7 @@ import kotlinx.coroutines.launch
 import mu.KotlinLogging
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+import net.dv8tion.jda.api.sharding.ShardManager
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
 import space.astro.bot.components.managers.CooldownsManager
@@ -37,7 +38,8 @@ class ButtonHandler(
     private val premiumRequirementDetector: PremiumRequirementDetector,
     private val cooldownsManager: CooldownsManager,
     private val configurationErrorService: ConfigurationErrorService,
-    private val coroutineScope: CoroutineScope
+    private val coroutineScope: CoroutineScope,
+    private val shardManager: ShardManager
 ) {
     val buttonMap = HashMap<String, IButton>()
 
@@ -155,7 +157,8 @@ class ButtonHandler(
                     originatedFromExistingMessage = true,
                     replyCallback = event,
                     modalCallback = event,
-                    premiumReplyCallback = event
+                    premiumReplyCallback = event,
+                    shardManager = shardManager
                 )
             )
 

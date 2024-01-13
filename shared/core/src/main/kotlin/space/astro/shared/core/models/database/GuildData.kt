@@ -2,6 +2,7 @@ package space.astro.shared.core.models.database
 
 import com.aventrix.jnanoid.jnanoid.NanoIdUtils
 import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import space.astro.shared.core.util.extention.*
 import space.astro.shared.core.util.ui.Colors
@@ -133,7 +134,9 @@ data class InterfaceData(
 
     val embedStyle: EmbedStyle = EmbedStyle(),
     var generateEmbedFields: Boolean = false
-)
+) {
+    fun asMarkdownLink(guildID: String) = "interface".asMessageMarkdownLink(guildID, channelID, messageID)
+}
 
 data class EmbedStyle(
     var url: String? = Links.WEBSITE,
@@ -170,7 +173,18 @@ data class InterfaceButton(
     var buttonDisabled: Boolean = false,
     var position: Pair<Int, Int>,
     var fieldValue: String = id
-)
+) {
+    companion object {
+        fun fromButton(button: Button, position: Pair<Int, Int>) = InterfaceButton(
+            id = button.id!!,
+            name = button.label,
+            emoji = button.emoji?.formatted,
+            buttonStyleKey = button.style.key,
+            false,
+            position = position,
+        )
+    }
+}
 
 data class ConnectionData(
     var id: String,

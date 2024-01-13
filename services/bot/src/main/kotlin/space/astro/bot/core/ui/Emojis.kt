@@ -43,6 +43,7 @@ object Emojis {
 
     val chat = Emoji.fromCustom("chat", 1029823561063464960, false)
     val logs = Emoji.fromCustom("logs", 1029823587315626124, false)
+    val waiting = Emoji.fromCustom("waiting", 1146421350819450920, false)
     val owner = Emoji.fromCustom("owner", 1030227494630076448, false)
     val transfer = Emoji.fromCustom("transfer_owner", 1030227495892557826, false)
     val ban = Emoji.fromCustom("ban", 1029823553077510327, false)
@@ -57,7 +58,6 @@ object Emojis {
     val info = settings
     val limit = Emoji.fromCustom("limit", 1029823585801478154, false)
     val invite = Emoji.fromCustom("invite", 1029823584287338496, false)
-
     val name = Emoji.fromCustom("name", 1029823591329579039, false)
     val region = Emoji.fromCustom("region", 1029823605346930809, false)
     val mic = Emoji.fromCustom("mic", 1029823588578103330, false)

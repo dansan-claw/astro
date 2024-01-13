@@ -8,7 +8,9 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import space.astro.bot.components.managers.PremiumRequirementDetector
 import space.astro.bot.core.exceptions.ConfigurationException
+import space.astro.bot.core.ui.Buttons
 import space.astro.bot.core.ui.Embeds
+import space.astro.bot.core.ui.Emojis
 import space.astro.bot.interactions.InteractionAction
 import space.astro.bot.interactions.context.ConnectionSettingsInteractionContext
 import space.astro.bot.interactions.context.SettingsInteractionContext
@@ -61,7 +63,15 @@ class ConnectionCommand(
         permanent: Boolean?
     ) {
         if (!premiumRequirementDetector.canCreateConnection(ctx.guildData)) {
-            throw ConfigurationException(configurationErrorService.maximumAmountOfConnections())
+            ctx.replyHandler.replyEmbedAndComponent(
+                embed = Embeds.error("There is already a Connection setup in this server.\nPremium is required to have more than one Connection." +
+                    "\nPossible solutions:" +
+                            "\n• Get ${Emojis.premium.formatted} Premium" +
+                            "\n• Delete the existing connection with `/connection delete`"
+                ),
+                component = Buttons.premium
+            )
+            return
         }
 
         if (role.isPublicRole) {

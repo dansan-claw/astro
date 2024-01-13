@@ -58,7 +58,15 @@ class GeneratorCommand(
         ctx: SettingsInteractionContext
     ) {
         if (!premiumRequirementDetector.canCreateGenerator(ctx.guildData)) {
-            throw ConfigurationException(configurationErrorService.maximumAmountOfGenerator())
+            ctx.replyHandler.replyEmbedAndComponent(
+                embed = Embeds.error("There are already 2 Generators setup in this server.\nPremium is required to have more than 2 Generators." +
+                        "\nPossible solutions:" +
+                        "\n• Get ${Emojis.premium.formatted} Premium" +
+                        "\n• Delete an existing generator with `/generator delete`"
+                ),
+                component = Buttons.premium
+            )
+            return
         }
 
         ctx.replyHandler.deferReply()

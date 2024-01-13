@@ -42,6 +42,11 @@ class ConfigurationErrorService {
                 "\nEither upgrade to premium or delete one or more connection!"
     )
 
+    fun maximumAmountOfInterfaces() = ConfigurationErrorDto(
+        description = "Your server has exceeded the maximum amount of interfaces." +
+                "\nEither upgrade to premium or delete one or more interface!"
+    )
+
     fun maximumAmountOfGenerator() = ConfigurationErrorDto(
         description = "Your server has exceeded the maximum amount of temporary VC generators." +
                 "\nEither upgrade to premium or delete one or more generators!"
