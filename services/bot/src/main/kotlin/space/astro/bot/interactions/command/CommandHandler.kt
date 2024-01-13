@@ -28,8 +28,8 @@ import space.astro.bot.interactions.InteractionContext
 import space.astro.bot.interactions.InteractionContextBuilder
 import space.astro.bot.interactions.InteractionContextBuilderException
 import space.astro.bot.interactions.VcInteractionContext
+import space.astro.bot.services.ConfigurationErrorService
 import space.astro.shared.core.daos.GuildDao
-import space.astro.shared.core.daos.TemporaryVCDao
 import space.astro.shared.core.models.analytics.AnalyticsEvent
 import space.astro.shared.core.models.analytics.AnalyticsEventReceiver
 import space.astro.shared.core.models.analytics.AnalyticsEventType
@@ -57,7 +57,8 @@ class CommandHandler(
     private val interactionContextBuilder: InteractionContextBuilder,
     private val premiumRequirementDetector: PremiumRequirementDetector,
     private val guildDao: GuildDao,
-    private val cooldownsManager: CooldownsManager
+    private val cooldownsManager: CooldownsManager,
+    private val configurationErrorService: ConfigurationErrorService
 ) {
 
     val commandsMap = HashMap<String, ICommand>()
@@ -197,6 +198,21 @@ class CommandHandler(
                 .queue()
 
             return
+        }
+
+        ///////////////////////
+        /// BOT PERMISSIONS ///
+        ///////////////////////
+        val botPermissions = commandContainer.action.botPermissions
+
+        if (botPermissions.isNotEmpty()) {
+            if (!guild.selfMember.hasPermission(botPermissions) && guildData?.allowMissingAdminPerm != true) {
+                event.replyEmbeds(Embeds.error("Astro needs to following permissions to run this command: ${botPermissions.joinToString(", ") { it.getName() }}"))
+                    .setEphemeral(true)
+                    .queue()
+
+                return
+            }
         }
 
         /////////////////////////////////

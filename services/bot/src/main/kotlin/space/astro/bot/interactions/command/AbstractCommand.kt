@@ -126,7 +126,7 @@ abstract class AbstractCommand : ICommand {
                         type.java.enumConstants.map {
                             Choice(
                                 it.toString(),
-                                (it as Enum<*>).name
+                                (it as Enum<*>).name.lowercase()
                             )
                         }
                     } else {
@@ -158,6 +158,12 @@ abstract class AbstractCommand : ICommand {
                         !parameter.type.isMarkedNullable,
                         commandOptionAnnotation.autocomplete
                     )
+                    if (commandOptionAnnotation.channelTypes.isNotEmpty()) {
+                        if (commandOptionAnnotation.type != OptionType.CHANNEL) {
+                            throw IllegalArgumentException("Command option with channel types must be of type CHANNEL")
+                        }
+                        optionData.setChannelTypes(commandOptionAnnotation.channelTypes.toList())
+                    }
                     if (commandOptionAnnotation.minValue != 0L) {
                         optionData.setMinValue(commandOptionAnnotation.minValue)
                     }

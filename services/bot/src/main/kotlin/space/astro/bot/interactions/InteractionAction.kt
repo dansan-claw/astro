@@ -1,5 +1,7 @@
 package space.astro.bot.interactions
 
+import net.dv8tion.jda.api.Permission
+
 /**
  * Generic Astro action
  *
@@ -8,25 +10,29 @@ package space.astro.bot.interactions
  */
 enum class InteractionAction(
     val premium: Boolean,
-    val cooldown: Long
+    val cooldown: Long,
+    val botPermissions: List<Permission>
 ) {
-    GENERIC(false, 0),
+    GENERIC(false, 0, emptyList()),
 
-    VC_CHAT(true, 2000),
-    VC_LOGS(false, 2000),
-    VC_CLAIM(false, 2000),
-    VC_TRANSFER(false, 2000),
-    VC_BAN(false, 2000),
-    VC_HIDE(false, 2000),
-    VC_INVITE(true, 5000),
-    VC_LOCK(false, 2000),
-    VC_PERMIT(false, 2000),
-    VC_UNHIDE(false, 2000),
-    VC_UNLOCK(false, 2000),
-    VC_BITRATE(false, 2000),
-    VC_LIMIT(false, 2000),
-    VC_NAME(false, 2000),
-    VC_REGION(false, 2000),
-    VC_TEMPLATE(false, 2000),
-    VC_WAITING_ROOM(true, 2000)
+    VC_CHAT(true, 2000, listOf(Permission.ADMINISTRATOR)),
+    VC_LOGS(false, 2000, emptyList()),
+    VC_CLAIM(false, 2000, listOf(Permission.ADMINISTRATOR)),
+    VC_TRANSFER(false, 2000, listOf(Permission.ADMINISTRATOR)),
+    VC_BAN(false, 2000, listOf(Permission.ADMINISTRATOR)),
+    VC_HIDE(false, 2000, listOf(Permission.ADMINISTRATOR)),
+    VC_INVITE(true, 5000, listOf(Permission.ADMINISTRATOR)),
+    VC_LOCK(false, 2000, listOf(Permission.ADMINISTRATOR)),
+    VC_PERMIT(false, 2000, listOf(Permission.ADMINISTRATOR)),
+    VC_UNHIDE(false, 2000, listOf(Permission.ADMINISTRATOR)),
+    VC_UNLOCK(false, 2000, listOf(Permission.ADMINISTRATOR)),
+    VC_BITRATE(false, 2000, listOf(Permission.ADMINISTRATOR)),
+    VC_LIMIT(false, 2000, listOf(Permission.ADMINISTRATOR)),
+    VC_NAME(false, 2000, listOf(Permission.ADMINISTRATOR)),
+    VC_REGION(false, 2000, listOf(Permission.ADMINISTRATOR)),
+    VC_TEMPLATE(false, 2000, listOf(Permission.ADMINISTRATOR)),
+    VC_WAITING_ROOM(true, 2000, listOf(Permission.ADMINISTRATOR)),
+
+    // PREDASHBOARD
+    CONNECTION(false, 2000, listOf())
 }

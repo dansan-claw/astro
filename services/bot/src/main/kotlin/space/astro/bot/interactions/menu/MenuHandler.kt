@@ -113,6 +113,21 @@ class MenuHandler(
             return
         }
 
+        ///////////////////////
+        /// BOT PERMISSIONS ///
+        ///////////////////////
+        val botPermissions = menuContainer.action.botPermissions
+
+        if (botPermissions.isNotEmpty()) {
+            if (!guild.selfMember.hasPermission(botPermissions) && guildData?.allowMissingAdminPerm != true) {
+                event.replyEmbeds(Embeds.error("Astro needs to following permissions to run this command: ${botPermissions.joinToString(", ") { it.getName() }}"))
+                    .setEphemeral(true)
+                    .queue()
+
+                return
+            }
+        }
+
         val interactionContextBase = InteractionContext(
             guild = guild,
             member = member,

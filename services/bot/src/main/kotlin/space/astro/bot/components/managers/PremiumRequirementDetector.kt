@@ -31,6 +31,36 @@ class PremiumRequirementDetector(
         }
     }
 
+    fun canCreateConnection(guildData: GuildData): Boolean {
+        if (isGuildPremium(guildData) || !applicationFeaturesConfig.premiumRestrictions) {
+            return true
+        }
+
+        return guildData.connections.size < 1
+    }
+
+    fun canCreateGenerator(guildData: GuildData): Boolean {
+        if (isGuildPremium(guildData) || !applicationFeaturesConfig.premiumRestrictions) {
+            return true
+        }
+
+        return guildData.connections.size < 2
+    }
+
+    fun canCreateInterface(guildData: GuildData): Boolean {
+        if (isGuildPremium(guildData) || !applicationFeaturesConfig.premiumRestrictions) {
+            return true
+        }
+
+        return guildData.connections.size < 1
+    }
+
+    fun exceededMaximumConnectionsAmount(guildData: GuildData): Boolean {
+        return applicationFeaturesConfig.premiumRestrictions
+                && guildData.connections.size > 1
+                && !isGuildPremium(guildData)
+    }
+
     fun exceededMaximumGeneratorAmount(guildData: GuildData): Boolean {
         return applicationFeaturesConfig.premiumRestrictions
                 && guildData.generators.size > 2

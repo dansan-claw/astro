@@ -299,7 +299,7 @@ suspend fun VCEventHandler.handleJoinedGeneratorEvent(
 
 
     val creationChatMessage = if (interfaceToSend != null) {
-        InterfaceManager.computeMessage(interfaceToSend)
+        interfaceManager.computeMessage(interfaceToSend)
     } else if (generatorData.defaultChatText != null) {
         val content = VariablesManager.computeChatMessage(generatorData.defaultChatText!!, owner, temporaryVC)
 
