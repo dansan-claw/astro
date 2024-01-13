@@ -15,10 +15,7 @@ import space.astro.bot.core.exceptions.ConfigurationException
 import space.astro.bot.core.extentions.toConfigurationErrorDto
 import space.astro.bot.core.ui.Embeds
 import space.astro.bot.events.publishers.ConfigurationErrorEventPublisher
-import space.astro.bot.interactions.InteractionContext
-import space.astro.bot.interactions.InteractionContextBuilder
-import space.astro.bot.interactions.InteractionContextBuilderException
-import space.astro.bot.interactions.VcInteractionContext
+import space.astro.bot.interactions.*
 import space.astro.bot.interactions.command.VcInteractionContextInfo
 import space.astro.shared.core.daos.GuildDao
 import space.astro.shared.core.daos.TemporaryVCDao
@@ -55,7 +52,7 @@ class ModalHandler(
 
     @OptIn(DelicateCoroutinesApi::class)
     @EventListener
-    fun receiveModal(event: ModalInteractionEvent) {
+    suspend fun receiveModal(event: ModalInteractionEvent) {
         val guild = event.guild
 
         if (guild == null) {
@@ -128,49 +125,31 @@ class ModalHandler(
             }
         }
 
+        /////////////////////////////////
+        /// BUILD INTERACTION CONTEXT ///
+        /////////////////////////////////
         val interactionContextBase = InteractionContext(
             guild = guild,
             member = member,
-            user = event.user
+            interactionReplyManager = InteractionReplyManager(
+                originatedFromInterface = false,
+                originatedFromExistingMessage = false,
+                replyCallback = event
+            )
         )
 
         val interactionContextParameter = modalRunnable.parameters[2]
 
-        val interactionContext =
-            when (val commandContextArgType = interactionContextParameter.type.classifier as KClass<*>) {
-                InteractionContext::class -> interactionContextBase
-                VcInteractionContext::class -> {
-                    val vcInteractionContextInfo = interactionContextParameter.findAnnotation<VcInteractionContextInfo>()
-                        ?: throw IllegalArgumentException("Found VcCommandContext parameter in modal $key without VcCommandContextInfo annotation!")
-
-                    val guildData = guildDao.get(guild.id)
-                        ?: run {
-                            event.replyEmbeds(Embeds.error("Astro is not configured in this server!"))
-                                .setEphemeral(true)
-                                .queue()
-
-                            return
-                        }
-
-                    try {
-                        interactionContextBuilder.buildVcInteractionContext(
-                            interactionCreateEvent = event,
-                            vcInteractionContextInfo = vcInteractionContextInfo,
-                            usedInterfaceComponent = false,
-                            guildData = guildData
-                        )
-                    } catch (e: InteractionContextBuilderException) {
-                        event.replyEmbeds(e.errorEmbed)
-                            .setEphemeral(true)
-                            .queue()
-
-                        return
-                    }
-                }
-
-                else -> throw IllegalArgumentException("Command context of type $commandContextArgType is not recognized")
-            }
-
+        val interactionContext = try {
+            interactionContextBuilder.buildInteractionContext(
+                interactionContextParameter = interactionContextParameter,
+                interactionContextBase = interactionContextBase,
+                guildData = guildData
+            )
+        } catch (e: InteractionContextBuilderException) {
+            interactionContextBase.interactionReplyManager.replyEmbed(e.errorEmbed)
+            return
+        }
         GlobalScope.launch {
             try {
                 modalRunnable.callSuspend(modalContainer, event, interactionContext)

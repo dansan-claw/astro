@@ -19,7 +19,6 @@ import space.astro.bot.interactions.*
 import space.astro.bot.interactions.command.VcInteractionContextInfo
 import space.astro.bot.services.ConfigurationErrorService
 import space.astro.shared.core.daos.GuildDao
-import space.astro.shared.core.daos.TemporaryVCDao
 import space.astro.shared.core.util.extention.asRelativeTimestampFromNow
 import space.astro.shared.core.util.ui.Links
 import kotlin.reflect.KClass
@@ -54,7 +53,7 @@ class ButtonHandler(
 
     @OptIn(DelicateCoroutinesApi::class)
     @EventListener
-    fun receiveButton(event: ButtonInteractionEvent) {
+    suspend fun receiveButton(event: ButtonInteractionEvent) {
         val guild = event.guild
 
         if (guild == null) {
@@ -83,8 +82,6 @@ class ButtonHandler(
 
         val keyParts = event.componentId.split("?")
         var key = keyParts.first()
-        val usedInterfaceComponent = keyParts.lastOrNull()?.contains("interface=true") ?: false
-
 
         if (key.startsWith("cmd>")) {
             key = mapOldIdToNewId(key.substring(4))
@@ -95,12 +92,6 @@ class ButtonHandler(
             ?: throw IllegalArgumentException("Couldn't find button container with id ${key}!")
         val buttonRunnable = buttonContainer.runnable
             ?: throw IllegalArgumentException("Couldn't find button runnable with id ${key}!")
-
-        val interactionContextBase = InteractionContext(
-            guild = guild,
-            member = member,
-            user = event.user
-        )
 
         ////////////////
         /// COOLDOWN ///
@@ -142,41 +133,33 @@ class ButtonHandler(
             }
         }
 
+        /////////////////////////////////
+        /// BUILD INTERACTION CONTEXT ///
+        /////////////////////////////////
+        val originatedFromInterface = keyParts.lastOrNull()?.contains("interface=true") ?: false
+
+        val interactionContextBase = InteractionContext(
+            guild = guild,
+            member = member,
+            interactionReplyManager = InteractionReplyManager(
+                originatedFromInterface = originatedFromInterface,
+                originatedFromExistingMessage = true,
+                replyCallback = event
+            )
+        )
+
         val interactionContextParameter = buttonRunnable.parameters[2]
 
-        val interactionContext =
-            when (val commandContextArgType = interactionContextParameter.type.classifier as KClass<*>) {
-                InteractionContext::class -> interactionContextBase
-                VcInteractionContext::class -> {
-                    val vcInteractionContextInfo = interactionContextParameter.findAnnotation<VcInteractionContextInfo>()
-                        ?: throw IllegalArgumentException("Found VcCommandContext parameter in button $key without VcCommandContextInfo annotation!")
-
-                    if (guildData == null) {
-                        event.replyEmbeds(Embeds.error("Astro is not configured in this server!"))
-                            .setEphemeral(true)
-                            .queue()
-
-                        return
-                    }
-
-                    try {
-                        interactionContextBuilder.buildVcInteractionContext(
-                            interactionCreateEvent = event,
-                            vcInteractionContextInfo = vcInteractionContextInfo,
-                            usedInterfaceComponent = usedInterfaceComponent,
-                            guildData = guildData
-                        )
-                    } catch (e: InteractionContextBuilderException) {
-                        event.replyEmbeds(e.errorEmbed)
-                            .setEphemeral(true)
-                            .queue()
-
-                        return
-                    }
-                }
-
-                else -> throw IllegalArgumentException("Command context of type $commandContextArgType is not recognized")
-            }
+        val interactionContext = try {
+            interactionContextBuilder.buildInteractionContext(
+                interactionContextParameter = interactionContextParameter,
+                interactionContextBase = interactionContextBase,
+                guildData = guildData
+            )
+        } catch (e: InteractionContextBuilderException) {
+            interactionContextBase.interactionReplyManager.replyEmbed(e.errorEmbed)
+            return
+        }
 
         GlobalScope.launch {
             try {

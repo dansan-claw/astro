@@ -1,5 +1,7 @@
 package space.astro.bot.interactions
 
+import com.aventrix.jnanoid.jnanoid.NanoIdUtils
+
 object InteractionIds {
 
     object Menu {
@@ -57,4 +59,6 @@ object InteractionIds {
         const val VC_BITRATE = "modal/vc/bitrate"
         const val VC_LIMIT = "modal/vc/limit"
     }
+
+    fun getRandom(): String = NanoIdUtils.randomNanoId()
 }

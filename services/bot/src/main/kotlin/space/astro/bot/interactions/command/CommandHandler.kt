@@ -24,11 +24,7 @@ import space.astro.bot.core.exceptions.ConfigurationException
 import space.astro.bot.core.extentions.toConfigurationErrorDto
 import space.astro.bot.core.ui.Embeds
 import space.astro.bot.events.publishers.ConfigurationErrorEventPublisher
-import space.astro.bot.interactions.InteractionContext
-import space.astro.bot.interactions.InteractionContextBuilder
-import space.astro.bot.interactions.InteractionContextBuilderException
-import space.astro.bot.interactions.VcInteractionContext
-import space.astro.bot.services.ConfigurationErrorService
+import space.astro.bot.interactions.*
 import space.astro.shared.core.daos.GuildDao
 import space.astro.shared.core.models.analytics.AnalyticsEvent
 import space.astro.shared.core.models.analytics.AnalyticsEventReceiver
@@ -36,6 +32,7 @@ import space.astro.shared.core.models.analytics.AnalyticsEventType
 import space.astro.shared.core.models.analytics.SlashCommandInvocationEventData
 import space.astro.shared.core.models.analytics.meta.SlashCommandInvocationOptionsMetaData
 import space.astro.shared.core.models.analytics.meta.structure.OptionPair
+import space.astro.shared.core.models.database.GuildData
 import space.astro.shared.core.util.extention.asRelativeTimestampFromNow
 import space.astro.shared.core.util.ui.Links
 import java.time.LocalDateTime
@@ -57,8 +54,7 @@ class CommandHandler(
     private val interactionContextBuilder: InteractionContextBuilder,
     private val premiumRequirementDetector: PremiumRequirementDetector,
     private val guildDao: GuildDao,
-    private val cooldownsManager: CooldownsManager,
-    private val configurationErrorService: ConfigurationErrorService
+    private val cooldownsManager: CooldownsManager
 ) {
 
     val commandsMap = HashMap<String, ICommand>()
@@ -109,7 +105,7 @@ class CommandHandler(
 
     @DelicateCoroutinesApi
     @EventListener
-    fun receiveSlashCommand(event: SlashCommandInteractionEvent) {
+    suspend fun receiveSlashCommand(event: SlashCommandInteractionEvent) {
         val guild = event.guild
 
         if (guild == null) {
@@ -221,44 +217,25 @@ class CommandHandler(
         val interactionContextBase = InteractionContext(
             guild = guild,
             member = member,
-            user = event.user
+            interactionReplyManager = InteractionReplyManager(
+                originatedFromInterface = false,
+                originatedFromExistingMessage = false,
+                replyCallback = event
+            )
         )
 
         val interactionContextParameter = command.parameters[2]
 
-        val interactionContext =
-            when (val commandContextArgType = interactionContextParameter.type.classifier as KClass<*>) {
-                InteractionContext::class -> interactionContextBase
-                VcInteractionContext::class -> {
-                    val vcInteractionContextInfo = interactionContextParameter.findAnnotation<VcInteractionContextInfo>()
-                        ?: throw IllegalArgumentException("Found VcCommandContext parameter in command $key without VcCommandContextInfo annotation!")
-
-                    if (guildData == null) {
-                        event.replyEmbeds(Embeds.error("Astro is not configured in this server!"))
-                            .setEphemeral(true)
-                            .queue()
-
-                        return
-                    }
-
-                    try {
-                        interactionContextBuilder.buildVcInteractionContext(
-                            interactionCreateEvent = event,
-                            vcInteractionContextInfo = vcInteractionContextInfo,
-                            usedInterfaceComponent = false,
-                            guildData = guildData
-                        )
-                    } catch (e: InteractionContextBuilderException) {
-                        event.replyEmbeds(e.errorEmbed)
-                            .setEphemeral(true)
-                            .queue()
-
-                        return
-                    }
-                }
-
-                else -> throw IllegalArgumentException("Command context of type $commandContextArgType is not recognized")
-            }
+        val interactionContext = try {
+            interactionContextBuilder.buildInteractionContext(
+                interactionContextParameter = interactionContextParameter,
+                interactionContextBase = interactionContextBase,
+                guildData = guildData
+            )
+        } catch (e: InteractionContextBuilderException) {
+            interactionContextBase.interactionReplyManager.replyEmbed(e.errorEmbed)
+            return
+        }
 
         /////////////////
         /// ANALYTICS ///
