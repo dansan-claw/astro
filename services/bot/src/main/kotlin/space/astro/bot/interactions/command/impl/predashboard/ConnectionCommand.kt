@@ -23,8 +23,8 @@ import space.astro.shared.core.util.ui.Links
     name = "connection",
     description = "Create, edit and delete connections",
     requiredPermissions = [Permission.MANAGE_CHANNEL],
-    category = CommandCategory.CONNECTION,
-    action = InteractionAction.VC_NAME
+    category = CommandCategory.SETTINGS,
+    action = InteractionAction.SETTINGS
 )
 class ConnectionCommand(
     private val premiumRequirementDetector: PremiumRequirementDetector,

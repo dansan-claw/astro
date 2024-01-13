@@ -5,7 +5,5 @@ enum class CommandCategory {
     VC,
 
     // PREDASHBOARD
-    CONNECTION,
-    GENERATOR,
-    INTERFACE
+    SETTINGS,
 }
