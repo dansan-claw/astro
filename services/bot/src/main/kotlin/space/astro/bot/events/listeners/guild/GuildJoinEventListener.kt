@@ -4,10 +4,16 @@ import dev.minn.jda.ktx.messages.Embed
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent
+import net.dv8tion.jda.api.interactions.components.ActionRow
+import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
 import space.astro.bot.core.extentions.toPermissionList
+import space.astro.bot.core.ui.Buttons
+import space.astro.bot.core.ui.Emojis
+import space.astro.bot.interactions.InteractionComponentBuilder
+import space.astro.bot.interactions.InteractionIds
 import space.astro.bot.models.discord.PermissionSets
 import space.astro.shared.core.models.analytics.AnalyticsEvent
 import space.astro.shared.core.models.analytics.AnalyticsEventReceiver
@@ -21,7 +27,8 @@ import java.time.ZoneOffset
 
 @Component
 class GuildJoinEventListener(
-    private val applicationEventPublisher: ApplicationEventPublisher
+    private val applicationEventPublisher: ApplicationEventPublisher,
+    private val interactionComponentBuilder: InteractionComponentBuilder
 ) {
 
     @EventListener
@@ -40,16 +47,23 @@ class GuildJoinEventListener(
 
         channel
             ?.sendMessageEmbeds(createGuildJoinMessage(guild))
-            /* TODO: Buttons
             ?.setComponents(
                 ActionRow.of(
-                    Buttons.buttonOfAction(SetupA()),
-                    Buttons.buttonOfAction(GeneratorCreateA(), ButtonStyle.PRIMARY, "Create Generator", null),
-                    Buttons.buttonOfAction(CommandsA(), ButtonStyle.PRIMARY),
-                    Buttons.buttonOfAction(HelpA(), ButtonStyle.PRIMARY)
-                ), Buttons.Rows.links
+                    interactionComponentBuilder.buttonWithLabelAndEmoji(
+                        id = InteractionIds.Button.SETUP,
+                        buttonStyle = ButtonStyle.SUCCESS,
+                        label = "Setup",
+                        emoji = Emojis.setup
+                    ),
+                    interactionComponentBuilder.buttonWithLabelAndEmoji(
+                        id = InteractionIds.Button.HELP,
+                        buttonStyle = ButtonStyle.PRIMARY,
+                        label = "Help",
+                        emoji = Emojis.help
+                    ),
+                ),
+                ActionRow.of(Buttons.Bundles.help)
             )
-             */
             ?.queue()
     }
 
@@ -79,6 +93,31 @@ class GuildJoinEventListener(
             fields = listOf(
                 MessageEmbed.Field(
                     "Setup",
+                    "Use the ${Emojis.setup.formatted} Setup button below to setup Astro for your server!",
+                    false
+                ),
+                MessageEmbed.Field(
+                    "Help & other resources",
+                    "You can find some general information about Astro with `/help`.",
+                    false
+                )
+            ),
+            footerText = "Developed by the ${Links.DEVELOPERS.linkFromLink("Astro team")}",
+        )
+    }
+
+    /*
+    private fun createGuildJoinMessage(guild: Guild): MessageEmbed {
+        return Embed(
+            color = Colors.purple.rgb,
+            authorName = "Astro just landed in ${guild.name}!",
+            authorUrl = Links.WEBSITE,
+            authorIcon = guild.selfMember.user.effectiveAvatarUrl,
+            description = "Thanks for inviting Astro in this amazing server, let's get started making it better now!",
+            thumbnail = guild.iconUrl ?: guild.selfMember.user.effectiveAvatarUrl,
+            fields = listOf(
+                MessageEmbed.Field(
+                    "Setup",
                     "Open the ${Links.DASHBOARD.linkFromLink("dashboard")} and configure Astro!",
                     false
                 ),
@@ -91,4 +130,5 @@ class GuildJoinEventListener(
             footerText = "Developed by the ${Links.DEVELOPERS.linkFromLink("Astro team")}",
         )
     }
+     */
 }

@@ -2,6 +2,7 @@ package space.astro.shared.core.models.database
 
 import com.aventrix.jnanoid.jnanoid.NanoIdUtils
 import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import space.astro.shared.core.util.extention.*
 import space.astro.shared.core.util.ui.Colors
@@ -10,7 +11,7 @@ import space.astro.shared.core.util.ui.Links
 data class GuildData(
     val guildID: String,
     @Deprecated("Chargebee premium system is deprecated")
-    val upgradedByUserID: String? = null,
+    var upgradedByUserID: String? = null,
     val entitlements: MutableList<GuildEntitlement> = mutableListOf(),
     var bannedCommands: MutableList<String> = mutableListOf(),
     val templates: MutableList<TemplateData> = mutableListOf(),
@@ -36,12 +37,12 @@ data class GuildEntitlement(
 
 data class TemplateData(
     val id: String = NanoIdUtils.randomNanoId(),
-    val name: String,
-    val enabledGeneratorIds: MutableList<String>? = null,
-    val vcName: String? = null,
-    val vcLimit: Int? = null,
-    val vcBitrate: Int? = null,
-    val vcRegion: String? = null
+    var name: String,
+    var enabledGeneratorIds: MutableList<String>? = null,
+    var vcName: String? = null,
+    var vcLimit: Int? = null,
+    var vcBitrate: Int? = null,
+    var vcRegion: String? = null
 )
 
 data class GeneratorData(
@@ -88,11 +89,27 @@ data class GeneratorData(
 
 
 enum class PermissionsInherited {
-    GENERATOR, CATEGORY, NONE
+    GENERATOR, CATEGORY, NONE;
+
+    override fun toString(): String {
+        return when (this) {
+            GENERATOR -> "From the generator"
+            CATEGORY -> "From the category (in which they get generated)"
+            NONE -> "Do not inherit any permission"
+        }
+    }
 }
 
 enum class InitialPosition {
-    BEFORE, AFTER, BOTTOM
+    BEFORE, AFTER, BOTTOM;
+
+    override fun toString(): String {
+        return when(this) {
+            BEFORE -> "Before the generator"
+            AFTER -> "After the generator"
+            BOTTOM -> "Bottom of the category"
+        }
+    }
 }
 
 /**
@@ -103,7 +120,7 @@ enum class VCState(
     val permissionDenied: Permission? = null,
     val permissionReset: Permission? = null
 ) {
-    UNLOCKED(null, Permission.VOICE_CONNECT), LOCKED(Permission.VOICE_CONNECT), HIDDEN(Permission.VIEW_CHANNEL), UNHIDDEN(null, Permission.VIEW_CHANNEL)
+    UNLOCKED(null, Permission.VOICE_CONNECT), LOCKED(Permission.VOICE_CONNECT), HIDDEN(Permission.VIEW_CHANNEL), UNHIDDEN(null, Permission.VIEW_CHANNEL);
 }
 
 
@@ -117,7 +134,9 @@ data class InterfaceData(
 
     val embedStyle: EmbedStyle = EmbedStyle(),
     var generateEmbedFields: Boolean = false
-)
+) {
+    fun asMarkdownLink(guildID: String) = "interface".asMessageMarkdownLink(guildID, channelID, messageID)
+}
 
 data class EmbedStyle(
     var url: String? = Links.WEBSITE,
@@ -154,7 +173,18 @@ data class InterfaceButton(
     var buttonDisabled: Boolean = false,
     var position: Pair<Int, Int>,
     var fieldValue: String = id
-)
+) {
+    companion object {
+        fun fromButton(button: Button, position: Pair<Int, Int>) = InterfaceButton(
+            id = button.id!!,
+            name = button.label,
+            emoji = button.emoji?.formatted,
+            buttonStyleKey = button.style.key,
+            false,
+            position = position,
+        )
+    }
+}
 
 data class ConnectionData(
     var id: String,
