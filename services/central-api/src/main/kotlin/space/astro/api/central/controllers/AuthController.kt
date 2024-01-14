@@ -1,13 +1,18 @@
 package space.astro.api.central.controllers
 
 import mu.KotlinLogging
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import space.astro.api.central.daos.AuthedUsersDao
 import space.astro.api.central.models.OAuth2AuthorizationResponseDto
+import space.astro.api.central.services.DiscordUserService
 import space.astro.api.central.services.DiscordUserTokenFetchService
+import space.astro.api.central.services.DiscordUserTokenPersistenceService
 import space.astro.api.central.services.WebSessionService
 
 private val log = KotlinLogging.logger { }
@@ -16,6 +21,9 @@ private val log = KotlinLogging.logger { }
 @RequestMapping("/auth")
 class AuthController(
     val discordUserTokenFetchService: DiscordUserTokenFetchService,
+    val discordUserTokenPersistenceService: DiscordUserTokenPersistenceService,
+    val discordUserService: DiscordUserService,
+    val authedUsersDao: AuthedUsersDao,
     val webSessionService: WebSessionService
 ) {
 
@@ -37,5 +45,30 @@ class AuthController(
 
         log.info { "Successfully authorized discord user with id ${user.id} - response $response" }
         return ResponseEntity.ok(response)
+    }
+
+    // TODO: Authenticate the followings with sessionToken (in the "authorization" header)
+
+    @GetMapping("/user/{id}")
+    suspend fun getAuthenticatedDiscordUser(@PathVariable id: String): ResponseEntity<*> {
+        val authedUser = authedUsersDao.getAuthedUser(id)
+            ?: return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null)
+
+        try {
+            val discordUser = discordUserService.fetchSelfUser(authedUser.discordAuthTokenInfo.accessToken)
+            return ResponseEntity.ok(discordUser)
+        } catch (e: Throwable) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null)
+        }
+    }
+
+    @GetMapping("/user/delete/{id}")
+    suspend fun logoutDiscord(
+        @RequestHeader("Authorization") sessionToken: Long,
+        @PathVariable id: String
+    ): ResponseEntity<*> {
+        discordUserTokenPersistenceService.deleteCredentials(id)
+        webSessionService.deleteSessions(sessionToken)
+        return ResponseEntity.ok(null)
     }
 }

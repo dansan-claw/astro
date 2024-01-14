@@ -31,4 +31,9 @@ class DiscordUserTokenPersistenceService(
             serializedClientCredentials
         )
     }
+
+    suspend fun deleteCredentials(userId: String) {
+        authedUsersDao.deleteAuthedUser(userId)
+        redis.del(String.format(RedisKey.DISCORD_USER_CREDENTIALS.key, userId))
+    }
 }

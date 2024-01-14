@@ -12,7 +12,7 @@ import reactor.netty.http.client.HttpClient
 import reactor.netty.resources.ConnectionProvider
 import space.astro.shared.core.configs.DiscordConfig
 import space.astro.shared.core.configs.WebClientConfig
-import space.astro.shared.core.models.discord.DiscordUserDto
+import space.astro.shared.core.models.discord.DiscordUserData
 import java.time.Duration
 
 @Service
@@ -42,7 +42,7 @@ class DiscordUserService(
         .build()
 
 
-    suspend fun fetchSelfUser(accessToken: String): DiscordUserDto {
+    suspend fun fetchSelfUser(accessToken: String): DiscordUserData {
         return webClient.get()
             .uri { uriBuilder ->
                 uriBuilder.pathSegment("users", "@me")
