@@ -7,7 +7,6 @@ import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import space.astro.bot.components.managers.PremiumRequirementDetector
-import space.astro.bot.core.exceptions.ConfigurationException
 import space.astro.bot.core.ui.Buttons
 import space.astro.bot.core.ui.Embeds
 import space.astro.bot.core.ui.Emojis
@@ -19,7 +18,6 @@ import space.astro.bot.services.ConfigurationErrorService
 import space.astro.shared.core.daos.GuildDao
 import space.astro.shared.core.models.database.ConnectionAction
 import space.astro.shared.core.models.database.ConnectionData
-import space.astro.shared.core.util.ui.Links
 
 @Command(
     name = "connection",

@@ -18,7 +18,6 @@ import net.dv8tion.jda.api.interactions.components.LayoutComponent
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 import net.dv8tion.jda.api.interactions.modals.Modal
-import net.dv8tion.jda.api.interactions.modals.ModalMapping
 import net.dv8tion.jda.api.sharding.ShardManager
 import space.astro.bot.core.ui.Buttons
 import space.astro.bot.core.ui.Embeds

@@ -18,7 +18,6 @@ import space.astro.bot.interactions.handlers.command.Command
 import space.astro.bot.interactions.handlers.command.CommandCategory
 import space.astro.shared.core.daos.GuildDao
 import space.astro.shared.core.models.database.GeneratorData
-import space.astro.shared.core.models.database.InterfaceData
 
 @Command(
     name = "setup",

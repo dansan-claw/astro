@@ -2,8 +2,6 @@ package space.astro.bot.interactions.handlers.command.impl.predashboard
 
 import com.chargebee.models.Subscription
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
-import net.dv8tion.jda.api.interactions.commands.OptionType
-import net.dv8tion.jda.api.interactions.commands.PrivilegeConfig
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 import net.dv8tion.jda.api.sharding.ShardManager
@@ -14,7 +12,6 @@ import space.astro.bot.interactions.InteractionIds
 import space.astro.bot.interactions.context.SettingsInteractionContext
 import space.astro.bot.interactions.handlers.command.AbstractCommand
 import space.astro.bot.interactions.handlers.command.Command
-import space.astro.bot.interactions.handlers.command.CommandOption
 import space.astro.bot.interactions.handlers.command.SubCommand
 import space.astro.shared.core.daos.GuildDao
 import space.astro.shared.core.daos.UserDao

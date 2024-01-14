@@ -4,7 +4,6 @@ import dev.minn.jda.ktx.messages.Embed
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.MessageEmbed
 import space.astro.shared.core.util.extention.linkFromLink
-import space.astro.shared.core.util.extention.linkFromName
 import space.astro.shared.core.util.ui.Colors
 import space.astro.shared.core.util.ui.Links
 
