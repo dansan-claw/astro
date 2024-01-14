@@ -15,7 +15,7 @@ import space.astro.bot.interactions.handlers.command.Command
 import space.astro.bot.interactions.handlers.command.SubCommand
 import space.astro.shared.core.daos.GuildDao
 import space.astro.shared.core.daos.UserDao
-import space.astro.shared.core.models.database.GuildUpgradeDto
+import space.astro.shared.core.models.database.GuildUpgradeData
 import space.astro.shared.core.services.chargebee.ChargebeeClientService
 import space.astro.shared.core.util.ui.Links
 
@@ -90,7 +90,7 @@ class PremiumCommand(
 
         // Count the number of used subscriptions from the user
         val upgradesMap: MutableMap<String, Int> = mutableMapOf()
-        for (upgrade: GuildUpgradeDto in userUpgrades)
+        for (upgrade: GuildUpgradeData in userUpgrades)
             upgradesMap[upgrade.subscriptionID] = upgradesMap[upgrade.subscriptionID]?.plus(1) ?: 1
 
         val subscriptionQuantities: MutableMap<String, Int> = mutableMapOf()
@@ -166,7 +166,7 @@ class PremiumCommand(
             val subSelected = userSubs.first { it.subscription().id() == availableSubToUse.keys.toList()[subIndex] }
 
             ctx.userData.guildActiveUpgrades.add(
-                GuildUpgradeDto(
+                GuildUpgradeData(
                     guild.id,
                     subSelected.subscription().id(),
                     subSelected.subscription().billingPeriodUnit() == Subscription.BillingPeriodUnit.YEAR

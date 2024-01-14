@@ -10,7 +10,7 @@ import space.astro.api.central.models.OAuth2AuthorizationResponseDto
 import space.astro.api.central.services.DiscordUserTokenFetchService
 import space.astro.api.central.services.WebSessionService
 
-val log = KotlinLogging.logger { }
+private val log = KotlinLogging.logger { }
 
 @RestController
 @RequestMapping("/auth")

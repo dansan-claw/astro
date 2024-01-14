@@ -24,7 +24,7 @@ class EntitlementUpdateEventListener(
     @EventListener
     fun receiveEntitlementUpdateEvent(event: EntitlementUpdateEvent) {
         coroutineScope.launch {
-            supportBotApiService.forwardCreateEntitlementEvent(event.entitlement)
+            supportBotApiService.forwardUpdateEntitlementEvent(event.entitlement)
         }
 
         when (event.entitlement.skuId) {

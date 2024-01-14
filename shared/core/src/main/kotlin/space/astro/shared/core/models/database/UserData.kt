@@ -8,7 +8,7 @@ data class UserData(
     val settings: UserSettingsDto = UserSettingsDto(),
     val createdFirstVC: Boolean = false,
     var premium: Boolean = false,
-    val guildActiveUpgrades: MutableList<GuildUpgradeDto> = mutableListOf(),
+    val guildActiveUpgrades: MutableList<GuildUpgradeData> = mutableListOf(),
 )
 
 data class UserEntitlement(
@@ -24,7 +24,7 @@ data class UserSettingsDto(
     var interfaceRepliesDeleteAfter: Long? = null
 )
 
-data class GuildUpgradeDto(
+data class GuildUpgradeData(
     val guildID: String,
     val subscriptionID: String,
     val yearly: Boolean
