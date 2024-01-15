@@ -31,7 +31,7 @@ class LimitModal : AbstractModal() {
         )
         ctx: VcInteractionContext,
     ) {
-        val limit = event.getValue(LIMIT_TEXT_INPUT_ID)?.asString?.toIntOrNull()?.times(1000)
+        val limit = event.getValue(LIMIT_TEXT_INPUT_ID)?.asString?.toIntOrNull()
         val maxUserLimit = ctx.vcOperationCTX.generatorData.commandsSettings.maxUserLimit
         val minUserLimit = ctx.vcOperationCTX.generatorData.commandsSettings.minUserLimit
 

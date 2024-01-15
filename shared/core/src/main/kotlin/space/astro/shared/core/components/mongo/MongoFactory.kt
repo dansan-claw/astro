@@ -2,8 +2,9 @@ package space.astro.shared.core.components.mongo
 
 import com.mongodb.ConnectionString
 import com.mongodb.MongoClientSettings
-import com.mongodb.kotlin.client.MongoClient
-import com.mongodb.kotlin.client.MongoDatabase
+import com.mongodb.client.MongoClient
+import com.mongodb.client.MongoClients
+import com.mongodb.client.MongoDatabase
 import org.bson.codecs.configuration.CodecRegistries
 import org.bson.codecs.pojo.PojoCodecProvider
 import org.springframework.context.annotation.Bean
@@ -17,7 +18,7 @@ class MongoFactory {
 
     @Bean
     fun getMongoClient(mongoConfig: MongoConfig): MongoClient {
-        return MongoClient.create(
+        return MongoClients.create(
             MongoClientSettings.builder()
                 .applyConnectionString(
                     ConnectionString(mongoConfig.connectionString)

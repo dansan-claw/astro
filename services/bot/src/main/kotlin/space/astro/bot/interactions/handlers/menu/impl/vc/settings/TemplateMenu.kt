@@ -14,7 +14,7 @@ import space.astro.bot.models.discord.vc.VCOperationCTX
 import space.astro.shared.core.daos.TemporaryVCDao
 
 @Menu(
-    id = InteractionIds.Menu.VC_REGION,
+    id = InteractionIds.Menu.VC_TEMPLATE,
     action = InteractionAction.VC_TEMPLATE
 )
 class TemplateMenu(

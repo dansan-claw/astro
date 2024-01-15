@@ -4,6 +4,7 @@ import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
 import space.astro.bot.components.managers.vc.VCPrivateChatManager
 import space.astro.bot.core.ui.Embeds
 import space.astro.bot.interactions.InteractionAction
+import space.astro.bot.interactions.InteractionIds
 import space.astro.bot.interactions.context.VcInteractionContext
 import space.astro.bot.interactions.context.VcInteractionContextInfo
 import space.astro.bot.interactions.handlers.button.Button
@@ -12,7 +13,7 @@ import space.astro.bot.models.discord.vc.VCOperationCTX
 import space.astro.shared.core.daos.TemporaryVCDao
 
 @Button(
-    id = "chat",
+    id = InteractionIds.Button.VC_CHAT,
     action = InteractionAction.VC_CHAT
 )
 class ChatButton(

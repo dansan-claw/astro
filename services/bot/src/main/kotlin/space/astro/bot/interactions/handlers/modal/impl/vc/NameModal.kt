@@ -12,6 +12,7 @@ import space.astro.bot.interactions.context.VcInteractionContextInfo
 import space.astro.bot.interactions.handlers.button.ButtonRunnable
 import space.astro.bot.interactions.handlers.modal.AbstractModal
 import space.astro.bot.interactions.handlers.modal.Modal
+import space.astro.bot.interactions.handlers.modal.ModalRunnable
 import space.astro.bot.models.discord.vc.VCOperationCTX
 
 @Modal(
@@ -26,7 +27,7 @@ class NameModal(
         const val NAME_TEXT_INPUT_ID = "name"
     }
 
-    @ButtonRunnable
+    @ModalRunnable
     suspend fun run(
         event: ModalInteractionEvent,
         @VcInteractionContextInfo(

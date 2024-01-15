@@ -34,7 +34,7 @@ import space.astro.shared.core.util.extention.asOnOrOff
 
 @Command(
     name = "generator",
-    description = "",
+    description = "0",
     requiredPermissions = [Permission.MANAGE_CHANNEL],
     category = CommandCategory.SETTINGS,
     action = InteractionAction.SETTINGS

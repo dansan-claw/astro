@@ -46,8 +46,6 @@ class InteractionReplyHandler(
     private fun trackReply(): Boolean {
         val shouldEdit = if (originatedFromInterface) {
             sentFirstMessage
-        } else if (originatedFromExistingMessage) {
-            true
         } else {
             sentFirstMessage
         }
@@ -116,6 +114,7 @@ class InteractionReplyHandler(
         if (!shouldEdit) {
             interactionHook = replyCallback.replyEmbeds(embed)
                 .setComponents(components)
+                .setEphemeral(ephemeral)
                 .await()
         } else {
             interactionHook.editOriginalEmbeds(embed)

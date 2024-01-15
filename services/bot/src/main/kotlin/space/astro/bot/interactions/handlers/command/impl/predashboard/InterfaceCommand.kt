@@ -241,7 +241,7 @@ class InterfaceCommand(
     @SubCommand(
         name = "button",
         description = "Deletes a button from an interface",
-        group = "delete",
+        group = "remove",
         groupDescription = "0"
     )
     suspend fun deleteButton(

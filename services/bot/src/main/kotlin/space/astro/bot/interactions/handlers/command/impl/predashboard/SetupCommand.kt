@@ -94,8 +94,7 @@ class SetupCommand(
                 GeneratorData(
                     id = generatorC.id,
                     category = category.id,
-                    chatCategory = category.id,
-                    chatInterface = 0
+                    chatCategory = category.id
                 )
             )
 

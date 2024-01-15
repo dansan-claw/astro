@@ -185,7 +185,7 @@ class ButtonHandler(
                             configurationErrorData = e.configurationErrorData
                         )
 
-                        interactionContext.replyHandler.replyEmbed(Embeds.error("An error occurred because of an invalid configuration:\n> ${e.configurationErrorData.description}"))
+                        interactionContext.replyHandler.replyEmbed(Embeds.error("An error occurred because of an invalid configuration:\n\n${e.configurationErrorData.description}"))
                     }
 
                     is InsufficientPermissionException -> {

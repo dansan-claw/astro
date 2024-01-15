@@ -40,3 +40,9 @@ management:
 logging:
   level:
     root: ${LOG_LEVEL:INFO}
+
+sentry:
+  dsn: https://fd089382ff78ec76d05f0383289c6ec1@o4506570641702912.ingest.sentry.io/4506570643144704
+  # Set traces-sample-rate to 1.0 to capture 100% of transactions for performance monitoring.
+  # We recommend adjusting this value in production.
+  traces-sample-rate: 1.0

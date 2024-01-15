@@ -30,13 +30,13 @@ import space.astro.shared.core.models.database.TemplateData
 import space.astro.shared.core.util.extention.asChannelMention
 
 @Command(
-    name = "template",
+    name = "template-settings",
     description = "Create predefined channel templates and use them anywhere",
     requiredPermissions = [Permission.MANAGE_CHANNEL],
     category = CommandCategory.SETTINGS,
     action = InteractionAction.SETTINGS
 )
-class TemplateCommand(
+class TemplateSettingsCommand(
     private val premiumRequirementDetector: PremiumRequirementDetector,
     private val guildDao: GuildDao,
     private val shardManager: ShardManager

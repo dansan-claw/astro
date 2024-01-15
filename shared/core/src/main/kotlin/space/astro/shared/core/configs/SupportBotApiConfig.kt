@@ -16,6 +16,6 @@ class SupportBotApiConfig {
 
     var baseUrl: String = "http://localhost:9001"
     var originUrl: String = "http://localhost:3000"
-    var auth: String = "password"
+    var auth: String = "authtoken"
 
 }

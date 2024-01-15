@@ -3,8 +3,8 @@ package space.astro.shared.core.daos
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Indexes
 import com.mongodb.client.model.ReplaceOptions
-import com.mongodb.kotlin.client.MongoCollection
-import com.mongodb.kotlin.client.MongoDatabase
+import com.mongodb.client.MongoCollection
+import com.mongodb.client.MongoDatabase
 import io.lettuce.core.cluster.api.sync.RedisClusterCommands
 import org.springframework.stereotype.Repository
 import space.astro.shared.core.components.io.DataSerializer
@@ -35,6 +35,7 @@ class UserDao(
     fun get(id: String): UserData? {
         return cacheManager.get(id)
             ?: collection.find(Filters.eq(UserData::userID.name, id))
+                .limit(1)
                 .firstOrNull()
                 ?.also {
                     cacheManager.cache(id, it)
@@ -48,9 +49,9 @@ class UserDao(
 
     fun save(userData: UserData) {
         collection.replaceOne(
-            filter = Filters.eq(UserData::userID.name, userData.userID),
-            replacement = userData,
-            options = ReplaceOptions().upsert(true)
+            Filters.eq(UserData::userID.name, userData.userID),
+            userData,
+            ReplaceOptions().upsert(true)
         )
 
         cacheManager.cache(userData.userID, userData)

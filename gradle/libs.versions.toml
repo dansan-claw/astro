@@ -10,9 +10,11 @@ spring-boot = "2.6.7"
 
 # Logging
 kotlin-logging = "2.1.21"
+sentryPlugin = "4.1.1"
+sentry = "7.2.0"
 
 # Databases
-mongo = "4.10.2"
+mongo = "4.11.1"
 influx = "6.12.0"
 
 # Serializing
@@ -43,6 +45,8 @@ bigquery = "2.34.2"
 junit="5.9.2"
 
 [libraries]
+# macOS fix
+dnsMacOS = { module = "io.netty:netty-resolver-dns-native-macos", version = "4.1.104.Final" }
 # Core
 guava = { module = "com.google.guava:guava", version.ref = "guava" }
 nanoid = { module = "com.aventrix.jnanoid:jnanoid", version.ref = "nanoid" }
@@ -60,9 +64,10 @@ spring-boot-configuration-processor = { module = "org.springframework.boot:sprin
 
 # Logging
 kotlin-logging = { module = "io.github.microutils:kotlin-logging", version.ref = "kotlin-logging"}
+sentry = { module = "io.sentry:sentry-spring-boot-starter", version.ref = "sentry" }
 
 # Databases
-mongo = { module = "org.mongodb:mongodb-driver-kotlin-sync", version.ref = "mongo"}
+mongo = { module = "org.mongodb:mongodb-driver-sync", version.ref = "mongo"}
 influx = { module = "com.influxdb:influxdb-client-java", version.ref = "influx" }
 
 # Serializing
@@ -97,7 +102,8 @@ junit = { group = "org.junit.jupiter", name = "junit-jupiter", version.ref = "ju
 [bundles]
 base = [
     "kotlin-logging",
-    "spring-boot-configuration-processor"
+    "spring-boot-configuration-processor",
+    "sentry"
 ]
 spring-core = [
     "spring-core",
@@ -135,3 +141,4 @@ discord = [
 jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin"}
 spring = { id = "org.jetbrains.kotlin.plugin.spring", version.ref = "kotlin"}
 serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin"}
+sentry = { id = "io.sentry.jvm.gradle", version.ref = "sentryPlugin" }

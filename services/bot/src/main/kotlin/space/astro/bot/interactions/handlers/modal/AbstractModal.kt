@@ -3,8 +3,6 @@ package space.astro.bot.interactions.handlers.modal
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import space.astro.bot.interactions.InteractionAction
 import space.astro.bot.interactions.context.InteractionContext
-import space.astro.bot.interactions.handlers.button.Button
-import space.astro.bot.interactions.handlers.button.ButtonRunnable
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.*
@@ -18,13 +16,13 @@ abstract class AbstractModal : IModal {
     init {
         val reflectedClass = this::class
 
-        val modalAnnotation = reflectedClass.findAnnotation<Button>()
-            ?: throw UnsupportedOperationException("Missing button annotation on class extending AbstractButton!")
+        val modalAnnotation = reflectedClass.findAnnotation<Modal>()
+            ?: throw UnsupportedOperationException("Missing Modal annotation on class extending AbstractModal!")
 
         id = modalAnnotation.id
         action = modalAnnotation.action
 
-        val modalRunnable = reflectedClass.memberFunctions.firstOrNull { it.hasAnnotation<ButtonRunnable>() }
+        val modalRunnable = reflectedClass.memberFunctions.firstOrNull { it.hasAnnotation<ModalRunnable>() }
             ?: throw UnsupportedOperationException("Missing MenuRunnable annotated function in class extending AbstractMenu")
 
         validateOptions(modalRunnable)

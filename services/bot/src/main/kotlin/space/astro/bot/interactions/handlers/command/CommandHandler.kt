@@ -147,7 +147,9 @@ class CommandHandler(
             val optionArgs = Array(options.size) { index ->
                 val type = command.parameters[3 + index].type.classifier as KClass<*>
                 val name = options[index]
-                when (type) {
+                if (type.java.isEnum) {
+                    // TODO : type.java.enumConstants
+                } else when (type) {
                     String::class -> event.getOption(name)?.asString
                     Long::class -> event.getOption(name)?.asLong
                     Int::class -> event.getOption(name)?.asLong?.toInt()
@@ -166,7 +168,6 @@ class CommandHandler(
                                 }
                         } else null
                     }
-
                     GuildChannel::class -> event.getOption(name)?.asChannel
                     Role::class -> event.getOption(name)?.asRole
                     else -> throw UnsupportedOperationException("Unable to handle option $name!")
@@ -268,7 +269,7 @@ class CommandHandler(
                             configurationErrorData = e.configurationErrorData
                         )
 
-                        interactionContext.replyHandler.replyEmbed(Embeds.error("An error occurred because of an invalid configuration:\n> ${e.configurationErrorData.description}"))
+                        interactionContext.replyHandler.replyEmbed(Embeds.error("An error occurred because of an invalid configuration:\n\n${e.configurationErrorData.description}"))
                     }
 
                     is InsufficientPermissionException -> {

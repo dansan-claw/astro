@@ -27,9 +27,38 @@ logging:
 
 application:
   features:
-    premiumRestrictions: false
+    premium-restrictions: ${PREMIUM_RESTRICTIONS:false}
 
 discord:
   application:
-    botId: 788708323867885568
     token: ${BOT_TOKEN}
+    bot-id: ${BOT_ID:788708323867885568}
+
+bigquery:
+  enabled: ${BIGQUERY_ENABLED:false}
+  dataset-name: ${BIGQUERY_DATASET_NAME:astro_local}
+
+chargebee:
+  api-key: ${CHARGEBEE_API_KEY}
+  webhook-token: ${CHARGEBEE_WEBHOOK_TOKEN}
+  site-name: ${CHARGEBEE_SITE_NAME}
+kube:
+  lifecycle-authorization: ${KUBE_LIFECYCLE_AUTHORIZATION}
+premium:
+  api:
+    base-url: ${PREMIUM_API_BASE_URL:http://localhost:9001}
+    origin-url: ${PREMIUM_API_ORIGIN_URL:http://localhost:3000}
+    auth: ${PREMIUM_API_AUTH:dev-premium-api-auth-token}
+
+io:
+  influx:
+    bucket: ${INFLUX_BUCKET:astro-logs}
+    org: ${INFLUX_ORG:astro-org}
+    token: ${INFLUX_TOKEN:astroverysecuretoken}
+    url: ${INFLUX_URL:http://localhost:8086}
+  mongo:
+    connection-string: ${MONGO_CONNECTION_STRING:mongodb://localhost:27017}
+    database: ${MONGO_DATABASE:AstroDev}
+  redis:
+    uris: ${REDIS_URIS:redis://localhost:6379}
+    cluster: ${REDIS_CLUSTER:false}

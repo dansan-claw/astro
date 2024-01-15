@@ -3,8 +3,8 @@ package space.astro.shared.core.daos
 import com.mongodb.client.model.Filters.eq
 import com.mongodb.client.model.Indexes
 import com.mongodb.client.model.ReplaceOptions
-import com.mongodb.kotlin.client.MongoCollection
-import com.mongodb.kotlin.client.MongoDatabase
+import com.mongodb.client.MongoCollection
+import com.mongodb.client.MongoDatabase
 import io.lettuce.core.cluster.api.sync.RedisClusterCommands
 import org.springframework.stereotype.Repository
 import space.astro.shared.core.components.io.DataSerializer
@@ -35,6 +35,7 @@ class GuildDao(
     fun get(id: String): GuildData? {
         return cacheManager.get(id)
             ?: collection.find(eq(GuildData::guildID.name, id))
+                .limit(1)
                 .firstOrNull()
                 ?.also {
                     cacheManager.cache(id, it)
@@ -48,9 +49,9 @@ class GuildDao(
 
     fun save(guildData: GuildData) {
         collection.replaceOne(
-            filter = eq(GuildData::guildID.name, guildData.guildID),
-            replacement = guildData,
-            options = ReplaceOptions().upsert(true)
+            eq(GuildData::guildID.name, guildData.guildID),
+            guildData,
+            ReplaceOptions().upsert(true)
         )
 
         cacheManager.cache(guildData.guildID, guildData)

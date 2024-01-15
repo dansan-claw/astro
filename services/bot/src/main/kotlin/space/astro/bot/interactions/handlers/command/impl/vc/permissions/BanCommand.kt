@@ -63,7 +63,7 @@ class BanCommand(
         )
         ctx: VcInteractionContext,
         @CommandOption(
-            type = OptionType.USER,
+            type = OptionType.ROLE,
             name = "role",
             description = "The role to ban from your channel"
         ) role: Role,

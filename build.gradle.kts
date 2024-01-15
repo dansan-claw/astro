@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.jvm)
     alias(libs.plugins.spring)
     alias(libs.plugins.serialization)
+    alias(libs.plugins.sentry)
 }
 
 repositories {
@@ -37,6 +38,7 @@ subprojects {
     apply(plugin = "org.jetbrains.kotlin.jvm")
     apply(plugin = "org.jetbrains.kotlin.plugin.spring")
     apply(plugin = "org.jetbrains.kotlin.plugin.serialization")
+    apply(plugin = "io.sentry.jvm.gradle")
 
     base {
         archivesName.set("${group.toString().replace(".", "-")}-$name")
@@ -50,9 +52,14 @@ subprojects {
         }
     }
 
-//    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-//        kotlinOptions {
-//            jvmTarget = "17"
-//        }
-//    }
+    sentry {
+        // Generates a JVM (Java, Kotlin, etc.) source bundle and uploads your source code to Sentry.
+        // This enables source context, allowing you to see your source
+        // code as part of your stack traces in Sentry.
+        includeSourceContext = true
+
+        org = "giuliopime"
+        projectName = name
+        authToken = System.getenv("SENTRY_AUTH_TOKEN")
+    }
 }

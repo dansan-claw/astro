@@ -11,6 +11,10 @@ It creates all the required services and their web dashboards:
 | Service | username | password | endpoint | web dashboard                           |    
 |---------|:----------:|:----------:|:----------|:----------------------------------------|    
 | MongoDB |   |   | localhost:27017 | [localhost:8081](http://localhost:8081) |    
-| Redis |   |   | localhost:6379 | [localhost:8082](http://localhost:8082) |
+| Redis   |   |   | localhost:6379 | [localhost:8082](http://localhost:8082) |
+| Influx  |   |   | localhost:8086 |  |
 
 > Important: editing documents with the MongoDB dashboard **is not recommended** as it tends to mess up data types!
+
+### Sentry
+For Sentry to work correctly make sure to set the `SENTRY_AUTH_TOKEN` environment variable!

@@ -13,8 +13,8 @@ import space.astro.bot.interactions.handlers.menu.MenuRunnable
 import space.astro.bot.models.discord.vc.VCOperationCTX
 
 @Menu(
-    id = InteractionIds.Menu.VC_BAN,
-    action = InteractionAction.VC_BAN
+    id = InteractionIds.Menu.VC_PERMIT,
+    action = InteractionAction.VC_PERMIT
 )
 class PermitMenu(
     private val vcPermissionManager: VCPermissionManager
