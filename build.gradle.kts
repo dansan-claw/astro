@@ -51,15 +51,4 @@ subprojects {
             this.languageVersion.set(JavaLanguageVersion.of(17))
         }
     }
-
-    sentry {
-        // Generates a JVM (Java, Kotlin, etc.) source bundle and uploads your source code to Sentry.
-        // This enables source context, allowing you to see your source
-        // code as part of your stack traces in Sentry.
-        includeSourceContext = true
-
-        org = "giuliopime"
-        projectName = name
-        authToken = System.getenv("SENTRY_AUTH_TOKEN")
-    }
 }

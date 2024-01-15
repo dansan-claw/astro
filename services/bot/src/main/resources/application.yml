@@ -62,3 +62,9 @@ io:
   redis:
     uris: ${REDIS_URIS:redis://localhost:6379}
     cluster: ${REDIS_CLUSTER:false}
+
+sentry:
+  dsn: https://6b38b9b99e0d693f67b3355d0c4c83f6@o4506570641702912.ingest.sentry.io/4506575860203520
+  # Set traces-sample-rate to 1.0 to capture 100% of transactions for performance monitoring.
+  # We recommend adjusting this value in production.
+  traces-sample-rate: 1.0

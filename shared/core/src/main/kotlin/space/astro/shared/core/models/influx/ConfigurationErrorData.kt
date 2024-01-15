@@ -1,5 +1,7 @@
 package space.astro.shared.core.models.influx
 
+import com.influxdb.annotations.Column
+import com.influxdb.annotations.Measurement
 import java.time.Instant
 
 /**
@@ -12,9 +14,4 @@ data class ConfigurationErrorData(
     override fun toString(): String {
         return description
     }
-
-    data class ConfigurationErrorWithInstantData(
-        val description: String,
-        val instant: Instant?
-    )
 }

@@ -72,6 +72,7 @@ class InteractionReplyHandler(
         this.replyCallback = replyCallback
         this.modalCallback = modalCallback
         this.premiumReplyCallback = premiumReplyCallback
+        sentFirstMessage = false
         interactionHook = replyCallback.hook
         ephemeralLocked = false
         deferringLocked = false

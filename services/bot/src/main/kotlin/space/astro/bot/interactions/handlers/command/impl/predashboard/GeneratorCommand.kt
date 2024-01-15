@@ -101,6 +101,7 @@ class GeneratorCommand(
         ctx: GeneratorSettingsInteractionContext
     ) {
         ctx.guildData.generators.removeIf { it.id == ctx.generatorData.id }
+        guildDao.save(ctx.guildData)
         ctx.guild.getVoiceChannelById(ctx.generatorData.id)?.delete()?.await()
 
         ctx.replyHandler.replyEmbed(Embeds.default("The generator has been deleted, to create a new one use `/generator create`"))
@@ -483,7 +484,7 @@ class GeneratorCommand(
         ctx.replyHandler.replyEmbed(
             Embeds.success(
                 permissionsResult +
-                        "\nCommands *like* `/lock` and `/hide` will modify only the permissions of ${targetRole.asMention}." +
+                        "\nCommands like `/lock` and `/hide` will modify only the permissions of ${targetRole.asMention}." +
                         if (moderatorRole != null) "\n(*${moderatorRole.asMention} is immune to all the voice channel commands*)" else ""
             )
         )

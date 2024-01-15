@@ -148,7 +148,16 @@ class CommandHandler(
                 val type = command.parameters[3 + index].type.classifier as KClass<*>
                 val name = options[index]
                 if (type.java.isEnum) {
-                    // TODO : type.java.enumConstants
+                    val enumNameValue = event.getOption(name)?.asString?.uppercase()
+
+                    if (enumNameValue == null) {
+                        enumNameValue
+                    } else {
+                        val enumConstants = type.java.enumConstants
+                        enumConstants?.firstOrNull {
+                            (it as Enum<*>).name == enumNameValue
+                        }
+                    }
                 } else when (type) {
                     String::class -> event.getOption(name)?.asString
                     Long::class -> event.getOption(name)?.asLong

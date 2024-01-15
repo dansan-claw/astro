@@ -76,7 +76,7 @@ class SettingsCommand(
 
         val description = "Here are the last detected errors by Astro:" +
                 "\n\n${errors.joinToString("\n\n") { 
-                    "> ${it.description}" + if (it.instant != null) "\n${simpleDateFormat.format(Date.from(it.instant!!))}" else ""
+                    "${it.description}" + if (it.instant != null) "\n> ${simpleDateFormat.format(Date.from(it.instant!!))}" else ""
                 }}"
                     .take(MessageEmbed.DESCRIPTION_MAX_LENGTH)
 

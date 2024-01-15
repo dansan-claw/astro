@@ -4,9 +4,13 @@ import com.influxdb.client.QueryApi
 import com.influxdb.client.WriteApi
 import com.influxdb.client.write.Point
 import com.influxdb.query.FluxTable
+import mu.KotlinLogging
 import org.springframework.stereotype.Repository
 import space.astro.shared.core.components.influx.InfluxConfig
 import space.astro.shared.core.models.influx.ConfigurationErrorData
+import space.astro.shared.core.models.influx.ConfigurationErrorWithTimeData
+
+private val log = KotlinLogging.logger {  }
 
 @Repository
 class ConfigurationErrorDao(
@@ -14,20 +18,12 @@ class ConfigurationErrorDao(
     private val influxQueryApi: QueryApi,
     private val influxWriteApi: WriteApi
 ) {
-    fun get(guildID: String, lookback: String = "-7d"): List<ConfigurationErrorData.ConfigurationErrorWithInstantData> {
-        val query = "from(bucket:\"${influxConfig.bucket}\") |> range(start: $lookback) |> filter(fn: (r) => r[\"_measurement\"] == \"configuration_error\") |> filter(fn: (r) => r[\"guild_id\"] == \"$guildID\")"
-        val results: List<FluxTable> = influxQueryApi.query(query)
-
-        return results.map { fluxTable ->
-            fluxTable.records.mapNotNull { fluxRecord ->
-                val description = fluxRecord.getValueByKey("description")?.toString()
-                if (description != null) {
-                    ConfigurationErrorData.ConfigurationErrorWithInstantData(description, fluxRecord.time)
-                } else {
-                    null
-                }
-            }
-        }.flatten()
+    fun get(guildID: String, lookback: String = "-7d"): List<ConfigurationErrorWithTimeData> {
+        val query = "from(bucket:\"${influxConfig.bucket}\") " +
+                "|> range(start: $lookback) " +
+                "|> filter(fn: (r) => r[\"_measurement\"] == \"configuration_error\") " +
+                "|> filter(fn: (r) => r[\"guild_id\"] == \"$guildID\")"
+        return influxQueryApi.query(query, ConfigurationErrorWithTimeData::class.java).sortedByDescending { it.instant?.toEpochMilli() }
     }
 
     fun save(guildId: String, configurationErrorData: ConfigurationErrorData) {

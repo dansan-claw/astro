@@ -15,6 +15,3 @@ It creates all the required services and their web dashboards:
 | Influx  |   |   | localhost:8086 |  |
 
 > Important: editing documents with the MongoDB dashboard **is not recommended** as it tends to mess up data types!
-
-### Sentry
-For Sentry to work correctly make sure to set the `SENTRY_AUTH_TOKEN` environment variable!
