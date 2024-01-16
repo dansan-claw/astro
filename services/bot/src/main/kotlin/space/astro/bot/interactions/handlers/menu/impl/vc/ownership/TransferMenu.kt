@@ -48,7 +48,7 @@ class TransferMenu(
             return
         }
 
-        event.deferReply(true).await()
+        ctx.replyHandler.deferReply()
 
         vcOwnershipManager.changeOwner(ctx.vcOperationCTX, member)
         ctx.vcOperationCTX.queueUpdatedManagers()

@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit
 import java.util.function.Consumer
 import kotlin.reflect.KClass
 
-val log = KotlinLogging.logger {}
+private val log = KotlinLogging.logger {}
 
 abstract class BigQueryBaseClient(
     private val tables: Map<KClass<*>, AnalyticsEventType>,

@@ -1,5 +1,6 @@
 package space.astro.bot.interactions.handlers.button.impl.vc.permissions
 
+import mu.KotlinLogging
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
 import space.astro.bot.components.managers.vc.VCPermissionManager
 import space.astro.bot.core.ui.Embeds
@@ -13,6 +14,8 @@ import space.astro.bot.interactions.handlers.button.ButtonRunnable
 import space.astro.bot.models.discord.vc.VCOperationCTX
 import space.astro.shared.core.daos.TemporaryVCDao
 import space.astro.shared.core.models.database.VCState
+
+private val log = KotlinLogging.logger {  }
 
 @Button(
     id = InteractionIds.Button.VC_LOCK,

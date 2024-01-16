@@ -241,6 +241,7 @@ class CommandHandler(
                     originatedFromInterface = false,
                     originatedFromExistingMessage = false,
                     replyCallback = event,
+                    messageEditCallback = null,
                     modalCallback = event,
                     premiumReplyCallback = event,
                     shardManager = shardManager

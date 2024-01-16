@@ -120,7 +120,10 @@ enum class VCState(
     val permissionDenied: Permission? = null,
     val permissionReset: Permission? = null
 ) {
-    UNLOCKED(null, Permission.VOICE_CONNECT), LOCKED(Permission.VOICE_CONNECT), HIDDEN(Permission.VIEW_CHANNEL), UNHIDDEN(null, Permission.VIEW_CHANNEL);
+    UNLOCKED(null, Permission.VOICE_CONNECT),
+    LOCKED(Permission.VOICE_CONNECT),
+    HIDDEN(Permission.VIEW_CHANNEL),
+    UNHIDDEN(null, Permission.VIEW_CHANNEL);
 }
 
 
@@ -176,7 +179,7 @@ data class InterfaceButton(
 ) {
     companion object {
         fun fromButton(button: Button, position: Pair<Int, Int>) = InterfaceButton(
-            id = button.id!!,
+            id = button.id!!.plus("?interface=true"),
             name = button.label,
             emoji = button.emoji?.formatted,
             buttonStyleKey = button.style.key,

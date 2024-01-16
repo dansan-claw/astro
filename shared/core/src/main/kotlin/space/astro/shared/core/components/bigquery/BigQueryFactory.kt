@@ -6,7 +6,7 @@ import mu.KotlinLogging
 import org.springframework.context.annotation.Bean
 import org.springframework.stereotype.Component
 
-val log = KotlinLogging.logger { }
+private val log = KotlinLogging.logger { }
 
 @Component
 class BigQueryFactory {

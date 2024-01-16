@@ -35,7 +35,7 @@ class BanMenu(
 
         val banned = vcPermissionManager.kickAndBanMultipleMembersAndRoles(
             vcOperationCTX = ctx.vcOperationCTX,
-            users = users,
+            members = users,
             roles = roles
         )
 

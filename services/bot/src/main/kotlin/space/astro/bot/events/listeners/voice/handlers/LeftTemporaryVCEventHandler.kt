@@ -83,6 +83,7 @@ fun VCEventHandler.handleLeftTemporaryVCEvent(
         //////////////////////
         vc.manager.removePermissionOverride(data.member.idLong).queue()
         privateChat?.manager?.removePermissionOverride(data.member.idLong)?.queue()
+        waitingRoom?.manager?.removePermissionOverride(data.member.idLong)?.queue()
     }
 
     

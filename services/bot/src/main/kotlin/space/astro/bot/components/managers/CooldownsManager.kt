@@ -1,10 +1,13 @@
 package space.astro.bot.components.managers
 
 import io.lettuce.core.cluster.api.sync.RedisClusterCommands
+import mu.KotlinLogging
 import org.springframework.stereotype.Component
 import space.astro.bot.config.ApplicationFeaturesConfig
 import space.astro.bot.interactions.InteractionAction
 import space.astro.shared.core.models.redis.RedisKey
+
+private val log = KotlinLogging.logger {  }
 
 @Component
 class CooldownsManager(
@@ -45,7 +48,7 @@ class CooldownsManager(
 
         val timeDifference = now - timestamp
         return if (timeDifference < action.cooldown) {
-            timeDifference
+            action.cooldown - timeDifference
         } else {
             redis.hset(RedisKey.COMMAND_RATELIMIT_FOR_USER.key, field, now.toString())
             0

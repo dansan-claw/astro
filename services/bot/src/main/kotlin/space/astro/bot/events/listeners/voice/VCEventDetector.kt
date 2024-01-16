@@ -119,7 +119,7 @@ class VCEventDetector {
                         val parentIsConnected = connection.id == leftVC.parentCategoryId
                         val generatorOfLeftTemporaryVCIsConnected = connection.id == leftTemporaryVC?.generatorId
 
-                        val hasNotJoinedTemporaryVCOfConnectedGenerator = connection.id == joinedTemporaryVC?.generatorId
+                        val hasNotJoinedTemporaryVCOfConnectedGenerator = connection.id != joinedTemporaryVC?.generatorId
 
                         (isConnected || parentIsConnected || generatorOfLeftTemporaryVCIsConnected)
                                 && hasNotJoinedTemporaryVCOfConnectedGenerator
@@ -133,6 +133,12 @@ class VCEventDetector {
             && (joinedConnection!!.id == leftConnection!!.id || joinedConnection!!.roleID == leftConnection!!.roleID)
         ) {
             joinedConnection = null
+            leftConnection = null
+        }
+
+
+
+        if (leftConnection?.action?.permanent == true) {
             leftConnection = null
         }
 

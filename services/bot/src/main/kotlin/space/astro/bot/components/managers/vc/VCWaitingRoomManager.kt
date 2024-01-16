@@ -103,7 +103,7 @@ class VCWaitingRoomManager(
                 0
             )
 
-            temporaryVC.members.forEach { vcMember ->
+            temporaryVC.members.filter { it.id != owner.id }.forEach { vcMember ->
                 builder.modifyPermissionOverride(
                     permissionOverrides.firstOrNull { it.id == vcMember.id },
                     vcMember,

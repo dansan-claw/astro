@@ -138,7 +138,7 @@ class VCNameManager(
      * @throws ConfigurationException if premium variables have been detected and the guild is not premium
      */
     private fun VCOperationCTX.validatePremiumRequirements(nameTemplate: String) {
-        if (premiumRequirementDetector.canUseVCNameTemplate(guildData, nameTemplate)) {
+        if (!premiumRequirementDetector.canUseVCNameTemplate(guildData, nameTemplate)) {
             throw ConfigurationException(configurationErrorService.premiumVariables(
                 encounteredIn = "applying the name $nameTemplate to a temporary VC"
             ))

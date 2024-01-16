@@ -85,16 +85,25 @@ class ButtonHandler(
 
             val keyParts = event.componentId.split("?")
             var key = keyParts.first()
+            var originatedFromOldInterface = false
 
             if (key.startsWith("cmd>")) {
                 key = mapOldIdToNewId(key.substring(4))
                     ?: throw ConfigurationException(configurationErrorService.invalidOldInterface(event.channel.id))
+
+                originatedFromOldInterface = true
             }
 
             val buttonContainer = buttonMap[key]
-                ?: throw IllegalArgumentException("Couldn't find button container with id ${key}!")
+                ?: run {
+                    log.debug { "Couldn't find button container with id ${key}!" }
+                    return@launch
+                }
             val buttonRunnable = buttonContainer.runnable
-                ?: throw IllegalArgumentException("Couldn't find button runnable with id ${key}!")
+                ?: run {
+                    log.debug { "Couldn't find button runnable with id ${key}!" }
+                    return@launch
+                }
 
             ////////////////
             /// COOLDOWN ///
@@ -147,7 +156,7 @@ class ButtonHandler(
             /////////////////////////////////
             /// BUILD INTERACTION CONTEXT ///
             /////////////////////////////////
-            val originatedFromInterface = keyParts.lastOrNull()?.contains("interface=true") ?: false
+            val originatedFromInterface = originatedFromOldInterface || keyParts.lastOrNull()?.contains("interface=true") ?: false
 
             val interactionContextBase = InteractionContext(
                 guild = guild,
@@ -156,6 +165,7 @@ class ButtonHandler(
                     originatedFromInterface = originatedFromInterface,
                     originatedFromExistingMessage = true,
                     replyCallback = event,
+                    messageEditCallback = event,
                     modalCallback = event,
                     premiumReplyCallback = event,
                     shardManager = shardManager

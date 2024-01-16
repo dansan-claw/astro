@@ -3,12 +3,14 @@ package space.astro.bot.interactions.reply
 import dev.minn.jda.ktx.coroutines.await
 import dev.minn.jda.ktx.events.await
 import kotlinx.coroutines.withTimeoutOrNull
+import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
 import net.dv8tion.jda.api.interactions.InteractionHook
+import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
 import net.dv8tion.jda.api.interactions.callbacks.IModalCallback
 import net.dv8tion.jda.api.interactions.callbacks.IPremiumReplyCallback
 import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback
@@ -19,17 +21,24 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 import net.dv8tion.jda.api.interactions.modals.Modal
 import net.dv8tion.jda.api.sharding.ShardManager
+import net.dv8tion.jda.api.utils.messages.MessageEditBuilder
 import space.astro.bot.core.ui.Buttons
 import space.astro.bot.core.ui.Embeds
 
+private val log = KotlinLogging.logger {  }
+
 class InteractionReplyHandler(
     private var replyCallback: IReplyCallback,
+    private var messageEditCallback: IMessageEditCallback?,
     private var modalCallback: IModalCallback?,
     private var premiumReplyCallback: IPremiumReplyCallback?,
-    private val originatedFromInterface: Boolean,
-    private val originatedFromExistingMessage: Boolean,
+    private var originatedFromInterface: Boolean,
+    private var originatedFromExistingMessage: Boolean,
     private val shardManager: ShardManager
 ) : IInteractionReplyHandler {
+    private enum class ReplyMethod {
+        NEW, EDIT, EDIT_VIA_HOOK
+    }
 
     /////////////
     /// LOGIC ///
@@ -41,20 +50,24 @@ class InteractionReplyHandler(
     /**
      * Tracks that the bot is replying to the interaction
      *
-     * @return whether the bot should edit a previous reply or create a new one
+     * @return the method with which the bot should respond
      */
-    private fun trackReply(): Boolean {
-        val shouldEdit = if (originatedFromInterface) {
-            sentFirstMessage
+    private fun trackReply(): ReplyMethod {
+        val replyMethod = if (sentFirstMessage) {
+            ReplyMethod.EDIT_VIA_HOOK
+        } else if (originatedFromInterface) {
+            ReplyMethod.NEW
+        } else if (originatedFromExistingMessage && messageEditCallback != null) {
+            ReplyMethod.EDIT
         } else {
-            sentFirstMessage
+            ReplyMethod.NEW
         }
 
         sentFirstMessage = true
         ephemeralLocked = true
         deferringLocked = true
 
-        return shouldEdit
+        return replyMethod
     }
 
     private var interactionHook: InteractionHook = replyCallback.hook
@@ -66,16 +79,44 @@ class InteractionReplyHandler(
     /////////////////
     override fun setCallbacks(
         replyCallback: IReplyCallback,
+        messageEditCallback: IMessageEditCallback,
         modalCallback: IModalCallback?,
-        premiumReplyCallback: IPremiumReplyCallback?
+        premiumReplyCallback: IPremiumReplyCallback?,
+        originatedFromInterface: Boolean,
+        originatedFromExistingMessage: Boolean,
     ) {
         this.replyCallback = replyCallback
+        this.messageEditCallback = messageEditCallback
         this.modalCallback = modalCallback
         this.premiumReplyCallback = premiumReplyCallback
+        this.originatedFromInterface = originatedFromInterface
+        this.originatedFromExistingMessage = originatedFromExistingMessage
         sentFirstMessage = false
         interactionHook = replyCallback.hook
         ephemeralLocked = false
         deferringLocked = false
+    }
+
+    override fun setCallbacksFromComponentEvent(event: GenericComponentInteractionCreateEvent) {
+        setCallbacks(
+            replyCallback = event,
+            messageEditCallback = event,
+            modalCallback = event,
+            premiumReplyCallback = event,
+            originatedFromInterface = false,
+            originatedFromExistingMessage = true
+        )
+    }
+
+    override fun setCallbacksFromModalEvent(event: ModalInteractionEvent) {
+        setCallbacks(
+            replyCallback = event,
+            messageEditCallback = event,
+            modalCallback = null,
+            premiumReplyCallback = null,
+            originatedFromInterface = false,
+            originatedFromExistingMessage = true
+        )
     }
 
 
@@ -97,8 +138,16 @@ class InteractionReplyHandler(
             throw IllegalStateException("Trying to defer a reply on an interaction that was already replied to")
         }
 
-        trackReply()
-        replyCallback.deferReply(ephemeral).await()
+        val replyMethod = trackReply()
+        when (replyMethod) {
+            ReplyMethod.NEW -> {
+                interactionHook = replyCallback.deferReply(ephemeral).await()
+            }
+            ReplyMethod.EDIT -> {
+                interactionHook = messageEditCallback!!.deferEdit().await()
+            }
+            ReplyMethod.EDIT_VIA_HOOK -> {}
+        }
     }
 
 
@@ -110,17 +159,31 @@ class InteractionReplyHandler(
         embed: MessageEmbed,
         components: List<LayoutComponent>
     ) {
-        val shouldEdit = trackReply()
+        val replyMethod = trackReply()
 
-        if (!shouldEdit) {
-            interactionHook = replyCallback.replyEmbeds(embed)
-                .setComponents(components)
-                .setEphemeral(ephemeral)
-                .await()
-        } else {
-            interactionHook.editOriginalEmbeds(embed)
-                .setComponents(components)
-                .await()
+        when (replyMethod) {
+            ReplyMethod.NEW -> {
+                interactionHook = replyCallback.replyEmbeds(embed)
+                    .setComponents(components)
+                    .setEphemeral(ephemeral)
+                    .await()
+            }
+            ReplyMethod.EDIT -> {
+                interactionHook = messageEditCallback!!.editMessage(
+                    MessageEditBuilder()
+                        .setEmbeds(embed)
+                        .setComponents(components)
+                        .build()
+                ).await()
+            }
+            ReplyMethod.EDIT_VIA_HOOK -> {
+                interactionHook.editOriginal(
+                    MessageEditBuilder()
+                        .setEmbeds(embed)
+                        .setComponents(components)
+                        .build()
+                ).await()
+            }
         }
     }
 
@@ -151,6 +214,7 @@ class InteractionReplyHandler(
         }
 
         modalCallback?.replyModal(modal)?.await()
+        sentFirstMessage = true
     }
 
 
@@ -171,13 +235,21 @@ class InteractionReplyHandler(
     /// COMPONENTS ///
     //////////////////
     override suspend fun editComponents(components: List<LayoutComponent>) {
-        val shouldEdit = trackReply()
+        val replyMethod = trackReply()
 
-        if (!shouldEdit) {
+        if (replyMethod == ReplyMethod.NEW) {
             throw IllegalStateException("Tried to edit components on an interaction that has not been replied to yet")
         }
 
-        interactionHook.editOriginalComponents(components).await()
+        when (replyMethod) {
+            ReplyMethod.EDIT -> {
+                messageEditCallback!!.editComponents(components).await()
+            }
+            ReplyMethod.EDIT_VIA_HOOK -> {
+                interactionHook.editOriginalComponents(components).await()
+            }
+            else -> {}
+        }
     }
 
 
@@ -206,7 +278,7 @@ class InteractionReplyHandler(
                 it.componentId == buttons[0].id!! || it.componentId == buttons[1].id!!
             }
         }?.let { event ->
-            setCallbacks(event, event, event)
+            setCallbacksFromComponentEvent(event)
 
             if (event.componentId == buttons[1].id)
                 onConfirmation()
@@ -230,7 +302,7 @@ class InteractionReplyHandler(
                     it.componentId in buttonsIds
                 }
             }?.let { event ->
-                setCallbacks(event, event, event)
+                setCallbacksFromComponentEvent(event)
                 onClick(event.componentId)
             } ?: replyEmbed(Embeds.timeExpired)
         }
@@ -250,7 +322,7 @@ class InteractionReplyHandler(
             }
         }.let { event ->
             if (event != null) {
-                setCallbacks(event, event, event)
+                setCallbacksFromComponentEvent(event)
             }
 
             onClick(event?.componentId)
@@ -277,7 +349,7 @@ class InteractionReplyHandler(
                             || (it is ButtonInteractionEvent && it.componentId == cancelButton.id!!)
                 }
             }?.let { event ->
-                setCallbacks(event, event, event)
+                setCallbacksFromComponentEvent(event)
 
                 if (event is StringSelectInteractionEvent)
                     onSelect(event.values)
@@ -293,7 +365,7 @@ class InteractionReplyHandler(
                 }
             }
                 ?.let { event ->
-                    setCallbacks(event, event, event)
+                    setCallbacksFromComponentEvent(event)
 
                     onSelect(event.values)
                 }
@@ -312,7 +384,7 @@ class InteractionReplyHandler(
                 it.modalId == modal.id
             }
         }?.let { event ->
-            setCallbacks(event, null, null)
+            setCallbacksFromModalEvent(event)
             onFill(event)
         }
     }

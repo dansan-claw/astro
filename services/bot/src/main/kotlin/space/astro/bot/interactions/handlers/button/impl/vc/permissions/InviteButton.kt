@@ -29,7 +29,7 @@ class InviteButton(
         ctx: VcInteractionContext,
     ) {
         val memberSelectMenu = interactionComponentBuilder.entitySelectMenu(
-            id = InteractionIds.Menu.VC_BAN,
+            id = InteractionIds.Menu.VC_INVITE,
             placeholder = "Choose the users to invite in your voice channel",
             entityTypes = listOf(EntitySelectMenu.SelectTarget.USER),
             rangeMin = 1,

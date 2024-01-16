@@ -1,11 +1,14 @@
 package space.astro.bot.components.managers.vc
 
+import dev.minn.jda.ktx.coroutines.await
+import kotlinx.coroutines.delay
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.*
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException
 import org.springframework.stereotype.Component
 import space.astro.bot.core.exceptions.ConfigurationException
 import space.astro.bot.core.exceptions.VcOperationException
+import space.astro.bot.core.extentions.modifyMemberPermissionOverride
 import space.astro.bot.core.extentions.modifyPermissionOverride
 import space.astro.bot.models.discord.vc.VCOperationCTX
 import space.astro.bot.services.ConfigurationErrorService
@@ -18,6 +21,7 @@ class VCPermissionManager(
     private val configurationErrorService: ConfigurationErrorService
 ) {
     /**
+     * Remember to save the new temporaryVCData, its state property gets changed when calling this function
      * @throws InsufficientPermissionException
      * @throws ConfigurationException
      */
@@ -47,14 +51,13 @@ class VCPermissionManager(
         }
 
         if (newState.permissionReset != null) {
-            val permissionOverrideInheritedForTargetRole = vcOperationCTX.calculateInheritedPermissions()
-                .firstOrNull { it.id == targetRole.id }
+            val permissionOverrideInheritedForTargetRole = vcOperationCTX.temporaryVC.permissionOverrides.firstOrNull { it.id == targetRole.id }
 
             if (permissionOverrideInheritedForTargetRole != null) {
                 val allowed = permissionOverrideInheritedForTargetRole.allowed.apply { remove(newState.permissionReset) }
                 val denied = permissionOverrideInheritedForTargetRole.denied.apply { remove(newState.permissionReset) }
 
-                vcOperationCTX.temporaryVCManager.modifyPermissionOverride(
+                vcOperationCTX.temporaryVCManager.putPermissionOverride(
                     targetRole,
                     allowed,
                     denied
@@ -70,21 +73,30 @@ class VCPermissionManager(
     }
 
     /**
-     * Gives all [entities] [Permission.VIEW_CHANNEL] and [Permission.VOICE_CONNECT]
+     * Gives all members with a specific id and [roles] [Permission.VIEW_CHANNEL] and [Permission.VOICE_CONNECT]
      */
     fun permit(
         vcOperationCTX: VCOperationCTX,
-        entities: List<IPermissionHolder>
+        memberIds: List<Long>,
+        roles: List<Role>
     ) {
-        entities.forEach { entity ->
-            vcOperationCTX.temporaryVC.manager.modifyPermissionOverride(
+        memberIds.forEach { memberId ->
+            vcOperationCTX.temporaryVCManager.modifyMemberPermissionOverride(
+                memberId,
+                Permission.getRaw(Permission.VIEW_CHANNEL, Permission.VOICE_CONNECT),
+                0
+            )
+        }
+
+        roles.forEach { entity ->
+            vcOperationCTX.temporaryVCManager.modifyPermissionOverride(
                 entity,
                 Permission.getRaw(Permission.VIEW_CHANNEL, Permission.VOICE_CONNECT),
                 0
             )
         }
 
-        vcOperationCTX.temporaryVC.manager.queue()
+        vcOperationCTX.temporaryVCManager.queue()
     }
 
     /**
@@ -92,7 +104,7 @@ class VCPermissionManager(
      *
      * @throws VcOperationException
      */
-    fun kickAndBanMember(
+    suspend fun kickAndBanMember(
         vcOperationCTX: VCOperationCTX,
         member: Member
     ) {
@@ -103,10 +115,11 @@ class VCPermissionManager(
         }
 
         if (member.voiceState!!.channel?.id == vcOperationCTX.temporaryVC.id) {
-            vcOperationCTX.guild.kickVoiceMember(member).queue()
+            vcOperationCTX.guild.kickVoiceMember(member).await()
+            delay(450)
         }
 
-        vcOperationCTX.temporaryVC.manager.modifyPermissionOverride(
+        vcOperationCTX.temporaryVC.manager.putPermissionOverride(
             member,
             0,
             Permission.VOICE_CONNECT.rawValue
@@ -118,10 +131,11 @@ class VCPermissionManager(
      *
      * @return the list of banned [Member]
      */
-    fun kickAndBanMultipleMembers(
+    suspend fun kickAndBanMultipleMembers(
         vcOperationCTX: VCOperationCTX,
         members: List<Member>
     ): List<Member> {
+        val membersToKick = mutableListOf<Member>()
         val banned = mutableListOf<Member>()
         val immuneRoleId = vcOperationCTX.generatorData.permissionsImmuneRole
 
@@ -129,7 +143,7 @@ class VCPermissionManager(
             if (member.roles.none { it.id == immuneRoleId }) {
                 banned.add(member)
 
-                vcOperationCTX.temporaryVC.manager.modifyPermissionOverride(
+                vcOperationCTX.temporaryVC.manager.putPermissionOverride(
                     member,
                     0,
                     Permission.VOICE_CONNECT.rawValue
@@ -137,9 +151,17 @@ class VCPermissionManager(
             }
 
             if (member.voiceState!!.channel?.id == vcOperationCTX.temporaryVC.id) {
-                vcOperationCTX.guild.kickVoiceMember(member).queue()
+                membersToKick.add(member)
             }
         }
+
+        // Those delays are to prevent spam and because when a user exists a temp vc its permissions get removed
+        // But we also need to explicitly deny some other perms after
+        membersToKick.forEach {
+            vcOperationCTX.guild.kickVoiceMember(it).await()
+            delay(250)
+        }
+        delay(200)
 
         vcOperationCTX.temporaryVC.manager.queue()
 
@@ -202,34 +224,35 @@ class VCPermissionManager(
      *
      * @return the list of effectively banned members and roles as [IMentionable]
      */
-    fun kickAndBanMultipleMembersAndRoles(
+    suspend fun kickAndBanMultipleMembersAndRoles(
         vcOperationCTX: VCOperationCTX,
-        users: List<Member>,
+        members: List<Member>,
         roles: List<Role>
     ): List<IMentionable> {
+        val membersToKick = mutableListOf<Member>()
         val banned = mutableListOf<IMentionable>()
         val immuneRoleId = vcOperationCTX.generatorData.permissionsImmuneRole
 
-        users.forEach { user ->
-            if (user.roles.none { it.id == immuneRoleId }) {
-                banned.add(user)
+        members.forEach { member ->
+            if (member.roles.none { it.id == immuneRoleId }) {
+                banned.add(member)
 
-                vcOperationCTX.temporaryVC.manager.modifyPermissionOverride(
-                    user,
+                vcOperationCTX.temporaryVCManager.putPermissionOverride(
+                    member,
                     0,
                     Permission.VOICE_CONNECT.rawValue
                 )
             }
 
-            if (user.voiceState!!.channel?.id == vcOperationCTX.temporaryVC.id) {
-                vcOperationCTX.guild.kickVoiceMember(user).queue()
+            if (member.voiceState!!.channel?.id == vcOperationCTX.temporaryVC.id) {
+                membersToKick.add(member)
             }
         }
 
         roles.forEach { role ->
             if (immuneRoleId != role.id) {
                 banned.add(role)
-                vcOperationCTX.temporaryVC.manager.modifyPermissionOverride(
+                vcOperationCTX.temporaryVCManager.modifyPermissionOverride(
                     role,
                     0,
                     Permission.VOICE_CONNECT.rawValue
@@ -237,7 +260,15 @@ class VCPermissionManager(
             }
         }
 
-        vcOperationCTX.temporaryVC.manager.queue()
+        // Those delays are to prevent spam and because when a user exists a temp vc its permissions get removed
+        // But we also need to explicitly deny some other perms after
+        membersToKick.forEach {
+            vcOperationCTX.guild.kickVoiceMember(it).await()
+            delay(250)
+        }
+        delay(200)
+
+        vcOperationCTX.temporaryVCManager.queue()
 
         return banned
     }

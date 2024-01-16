@@ -33,7 +33,6 @@ class ModalHandler(
     private val configurationErrorEventPublisher: ConfigurationErrorEventPublisher,
     private val interactionContextBuilder: InteractionContextBuilder,
     private val guildDao: GuildDao,
-    private val cooldownsManager: CooldownsManager,
     private val premiumRequirementDetector: PremiumRequirementDetector,
     private val coroutineScope: CoroutineScope,
     private val shardManager: ShardManager
@@ -82,21 +81,27 @@ class ModalHandler(
 
             val key = event.modalId
             val modalContainer = modalMap[key]
-                ?: throw IllegalArgumentException("Couldn't find modal container with id ${key}!")
+                ?: run {
+                    log.debug { "Couldn't find modal container with id ${key}!" }
+                    return@launch
+                }
             val modalRunnable = modalContainer.runnable
-                ?: throw IllegalArgumentException("Couldn't find modal runnable with id ${key}!")
+                ?: run {
+                    log.debug { "Couldn't find modal runnable with id ${key}!" }
+                    return@launch
+                }
 
-            ////////////////
-            /// COOLDOWN ///
-            ////////////////
-            val cooldown = cooldownsManager.getUserActionCooldown(member.id, modalContainer.action)
-            if (cooldown > 0) {
-                event.replyEmbeds(Embeds.error("This action is on cooldown, you will be able to use it again in ${cooldown.asRelativeTimestampFromNow()}"))
-                    .setEphemeral(true)
-                    .queue()
-
-                return@launch
-            }
+            ///////////////////////////////////
+            /// MODALS DON'T HAVE COOLDOWNS ///
+            ///////////////////////////////////
+//            val cooldown = cooldownsManager.getUserActionCooldown(member.id, modalContainer.action)
+//            if (cooldown > 0) {
+//                event.replyEmbeds(Embeds.error("This action is on cooldown, you will be able to use it again in ${cooldown.asRelativeTimestampFromNow()}"))
+//                    .setEphemeral(true)
+//                    .queue()
+//
+//                return@launch
+//            }
 
             /////////////////////
             /// PREMIUM CHECK ///
@@ -147,6 +152,7 @@ class ModalHandler(
                     originatedFromInterface = false,
                     originatedFromExistingMessage = false,
                     replyCallback = event,
+                    messageEditCallback = event,
                     modalCallback = null,
                     premiumReplyCallback = null,
                     shardManager = shardManager

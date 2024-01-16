@@ -1,6 +1,5 @@
 package space.astro.bot.interactions.handlers.command.impl.predashboard
 
-import kotlinx.coroutines.delay
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
@@ -20,7 +19,7 @@ import java.util.*
     description = "Edit Astro's settings in your server",
     requiredPermissions = [Permission.MANAGE_CHANNEL],
     category = CommandCategory.SETTINGS,
-    action = InteractionAction.HIGH_COOLDOWN_SETTINGS
+    action = InteractionAction.HIGH_COOLDOWN_NO_ADMIN
 )
 class SettingsCommand(
     private val configurationErrorDao: ConfigurationErrorDao,
@@ -76,7 +75,7 @@ class SettingsCommand(
 
         val description = "Here are the last detected errors by Astro:" +
                 "\n\n${errors.joinToString("\n\n") { 
-                    "${it.description}" + if (it.instant != null) "\n> ${simpleDateFormat.format(Date.from(it.instant!!))}" else ""
+                    it.description + if (it.instant != null) "\n> ${simpleDateFormat.format(Date.from(it.instant!!))}" else ""
                 }}"
                     .take(MessageEmbed.DESCRIPTION_MAX_LENGTH)
 
@@ -86,49 +85,14 @@ class SettingsCommand(
     }
 
     @SubCommand(
-        name = "clean-temporary-voice-channels",
-        description = "Removes any left over temporary voice channel",
+        name = "reset-temporary-voice-channels",
+        description = "Resets Astro temporary voice channels data",
     )
-    suspend fun cleanVcs(
+    suspend fun resetVcs(
         event: SlashCommandInteractionEvent,
         ctx: SettingsInteractionContext,
-        @CommandOption(
-            name = "hard-reset",
-            description = "Whether Astro should wipe all the temporary vcs data",
-            type = OptionType.BOOLEAN
-        )
-        hardReset: Boolean?
     ) {
-        if (hardReset == true) {
-            temporaryVCDao.deleteAll(ctx.guildId)
-            ctx.replyHandler.replyEmbed(Embeds.default("Temporary voice channels have been reset"))
-        } else {
-            val vcs = temporaryVCDao.getAll(ctx.guildId).toMutableList()
-            val leftOverVcIds = vcs.filter {
-                ctx.guild.getVoiceChannelById(it.id)?.members?.isEmpty() == true
-            }.map { it.id }
-
-            if (leftOverVcIds.isNotEmpty()) {
-                leftOverVcIds.forEach {
-                    delay(1000)
-                    ctx.guild.getVoiceChannelById(it)?.delete()?.queue()
-                }
-
-                vcs.removeAll { it.id in leftOverVcIds }
-                temporaryVCDao.saveAll(ctx.guildId, vcs)
-
-                ctx.replyHandler.replyEmbed(
-                    Embeds.success(
-                        "${leftOverVcIds.size} vcs have been removed from the server as Astro did not catch them while restarting or being offline."
-                    )
-                )
-            } else {
-                ctx.replyHandler.replyEmbed(
-                    Embeds.success(
-                        "This server doesn't have any left over voice channel :)"
-                    )
-                )
-            }
-        }
+        temporaryVCDao.deleteAll(ctx.guildId)
+        ctx.replyHandler.replyEmbed(Embeds.default("Temporary voice channels have been reset"))
     }
 }

@@ -33,6 +33,7 @@ discord:
   application:
     token: ${BOT_TOKEN}
     bot-id: ${BOT_ID:788708323867885568}
+    command-guilds: [1026552055046881402]
 
 bigquery:
   enabled: ${BIGQUERY_ENABLED:false}

@@ -106,6 +106,31 @@ fun<T: IPermissionContainer, M: IPermissionContainerManager<T, M>> IPermissionCo
 }
 
 /**
+ * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+ * @throws java.lang.IllegalArgumentException
+ *
+ * @see [IPermissionContainerManager.putPermissionOverride] for exceptions
+ */
+fun<T: IPermissionContainer, M: IPermissionContainerManager<T, M>> IPermissionContainerManager<T, M>.modifyMemberPermissionOverride(
+    memberId: Long,
+    allow: Long = 0L,
+    deny: Long = 0L
+): M {
+    val permissionOverride = this.channel.memberPermissionOverrides.firstOrNull { it.idLong == memberId }
+    val updatedPermissionOverride = computeAllowedAndDeniedPermissionsFromPermissionOverride(
+        permissionOverride = permissionOverride,
+        allow = allow,
+        deny = deny
+    )
+
+    return putMemberPermissionOverride(
+        memberId,
+        updatedPermissionOverride.first,
+        updatedPermissionOverride.second
+    )
+}
+
+/**
  * Computes the raw allowed and denied permissions from a give [PermissionOverride] and the permissions to [allow] and [deny]
  *
  * @return a [Pair] containing the allowed permissions raw value ([Pair.first]) and the denied permissions raw value ([Pair.second])

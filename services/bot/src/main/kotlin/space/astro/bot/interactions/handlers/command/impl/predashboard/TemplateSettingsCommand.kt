@@ -77,7 +77,7 @@ class TemplateSettingsCommand(
         ctx.replyHandler.replyEmbed(Embeds.success(
             "The template has been created with the name: `$name`" +
                     "\n" +
-                    "\n**Edit this template settings with the `/template edit` commands.**"
+                    "\n**Edit this template settings with the `/template-settings edit` commands.**"
         ))
     }
 
@@ -142,7 +142,7 @@ class TemplateSettingsCommand(
                         || (it is ButtonInteractionEvent && it.componentId == allGenButton.id!!)
             }
         }?.let { newEvent ->
-            ctx.replyHandler.setCallbacks(newEvent, newEvent, newEvent)
+            ctx.replyHandler.setCallbacksFromComponentEvent(newEvent)
 
             if (newEvent is StringSelectInteractionEvent) {
                 val selectedIndexes = newEvent.values.map { it.toInt() }

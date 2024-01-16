@@ -28,9 +28,11 @@ class InviteMenu: AbstractMenu() {
         )
         ctx: VcInteractionContext,
     ) {
-        val members = event.values.mapNotNull {
-            selectValue -> ctx.guild.getMemberById(selectValue.id)
-                ?.takeIf { !it.user.isBot }
+        val members = event.values.mapNotNull { selectValue ->
+            try {
+                ctx.guild.retrieveMemberById(selectValue.id).await()
+                    ?.takeIf { !it.user.isBot }
+            } catch (e: Exception) { null }
         }
 
         if (members.isEmpty()) {

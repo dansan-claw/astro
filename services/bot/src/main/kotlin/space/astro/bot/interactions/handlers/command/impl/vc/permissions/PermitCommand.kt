@@ -40,7 +40,11 @@ class PermitCommand(
     ) {
         ctx.replyHandler.deferReply()
 
-        vcPermissionManager.permit(ctx.vcOperationCTX, listOf(member))
+        vcPermissionManager.permit(
+            vcOperationCTX = ctx.vcOperationCTX,
+            memberIds = listOf(member.idLong),
+            roles = emptyList()
+        )
 
         ctx.replyHandler.replyEmbed(Embeds.default("${member.asMention} can now join your VC!"))
     }
@@ -64,7 +68,11 @@ class PermitCommand(
     ) {
         ctx.replyHandler.deferReply()
 
-        vcPermissionManager.permit(ctx.vcOperationCTX, listOf(role))
+        vcPermissionManager.permit(
+            vcOperationCTX = ctx.vcOperationCTX,
+            memberIds = emptyList(),
+            roles = listOf(role)
+        )
 
         ctx.replyHandler.replyEmbed(Embeds.default("${role.asMention} role can now join your temporary VC!"))
     }

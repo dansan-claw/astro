@@ -83,21 +83,27 @@ class MenuHandler(
             val keyParts = event.componentId.split("?")
             val key = keyParts.first()
             val menuContainer = menuMap[key]
-                ?: throw IllegalArgumentException("Couldn't find menu container with id ${key}!")
+                ?: run {
+                    log.debug { "Couldn't find menu container with id ${key}!" }
+                    return@launch
+                }
             val menuRunnable = menuContainer.runnable
-                ?: throw IllegalArgumentException("Couldn't find menu runnable with id ${key}!")
+                ?: run {
+                    log.debug { "Couldn't find menu runnable with id ${key}!" }
+                    return@launch
+                }
 
-            ////////////////
-            /// COOLDOWN ///
-            ////////////////
-            val cooldown = cooldownsManager.getUserActionCooldown(member.id, menuContainer.action)
-            if (cooldown > 0) {
-                event.replyEmbeds(Embeds.error("This action is on cooldown, you will be able to use it again in ${cooldown.asRelativeTimestampFromNow()}"))
-                    .setEphemeral(true)
-                    .queue()
-
-                return@launch
-            }
+            //////////////////////////////
+            /// NO COOLDOWNS FOR MENUS ///
+            //////////////////////////////
+//            val cooldown = cooldownsManager.getUserActionCooldown(member.id, menuContainer.action)
+//            if (cooldown > 0) {
+//                event.replyEmbeds(Embeds.error("This action is on cooldown, you will be able to use it again in ${cooldown.asRelativeTimestampFromNow()}"))
+//                    .setEphemeral(true)
+//                    .queue()
+//
+//                return@launch
+//            }
 
             /////////////////////
             /// PREMIUM CHECK ///
@@ -146,6 +152,7 @@ class MenuHandler(
                     originatedFromInterface = originatedFromInterface,
                     originatedFromExistingMessage = true,
                     replyCallback = event,
+                    messageEditCallback = event,
                     modalCallback = event,
                     premiumReplyCallback = event,
                     shardManager = shardManager

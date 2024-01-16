@@ -1,5 +1,6 @@
 package space.astro.bot.interactions.handlers.menu.impl.vc.permissions
 
+import net.dv8tion.jda.api.entities.Role
 import net.dv8tion.jda.api.events.interaction.component.EntitySelectInteractionEvent
 import space.astro.bot.components.managers.vc.VCPermissionManager
 import space.astro.bot.core.ui.Embeds
@@ -29,20 +30,39 @@ class PermitMenu(
         ctx: VcInteractionContext,
     ) {
         ctx.replyHandler.deferReply()
+        val memberIds = mutableListOf<Long>()
+        val roles = mutableListOf<Role>()
 
-        val entities = event.values.mapNotNull {
-            ctx.guild.getMemberById(it.id) ?: ctx.guild.getRoleById(it.id)
+        event.values.mapNotNull {
+            val role = ctx.guild.getRoleById(it.id)
+            if (role != null) {
+                roles.add(role)
+            } else {
+                memberIds.add(it.idLong)
+            }
         }
 
         vcPermissionManager.permit(
             vcOperationCTX = ctx.vcOperationCTX,
-            entities = entities
+            memberIds = memberIds,
+            roles = roles
         )
+
+        val response = StringBuilder()
+        if (memberIds.isNotEmpty()) {
+            response.append("Users permitted: ${memberIds.joinToString(", ") { "<@$it>" }}")
+        }
+        if (roles.isNotEmpty()) {
+            response.append("Roles permitted: ${roles.joinToString(", ") { it.asMention }}")
+        }
+        if (memberIds.isEmpty() && roles.isEmpty()) {
+            response.append("You didn't provide valid users / roles")
+        }
 
         ctx.replyHandler.replyEmbed(
             Embeds.default(
             "The following users and roles have been permitted in your voice channel:" +
-                    "\n${entities.joinToString(", ") { it.asMention }}"
+                    "\n${memberIds.joinToString(", ") { "<@$it>" }}"
         ))
     }
 }

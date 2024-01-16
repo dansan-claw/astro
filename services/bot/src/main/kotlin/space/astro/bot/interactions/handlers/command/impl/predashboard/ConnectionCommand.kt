@@ -28,7 +28,6 @@ import space.astro.shared.core.models.database.ConnectionData
 )
 class ConnectionCommand(
     private val premiumRequirementDetector: PremiumRequirementDetector,
-    private val configurationErrorService: ConfigurationErrorService,
     private val guildDao: GuildDao
 ) : AbstractCommand() {
     @SubCommand(
@@ -184,7 +183,6 @@ class ConnectionCommand(
 
         if (updated) {
             ctx.guildData.connections[ctx.connectionIndex] = ctx.connectionData
-
             guildDao.save(ctx.guildData)
         }
 

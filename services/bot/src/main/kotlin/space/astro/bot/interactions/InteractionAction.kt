@@ -7,6 +7,7 @@ import net.dv8tion.jda.api.Permission
  *
  * @property premium
  * @property cooldown in milliseconds
+ * @property botPermissions
  */
 enum class InteractionAction(
     val premium: Boolean,
@@ -35,6 +36,6 @@ enum class InteractionAction(
 
     // PREDASHBOARD
     SETTINGS(false, 2000, listOf(Permission.ADMINISTRATOR)),
-    HIGH_COOLDOWN_SETTINGS(false, 5000, listOf(Permission.ADMINISTRATOR)),
+    HIGH_COOLDOWN_NO_ADMIN(false, 5000, listOf()),
     TEMPLATE_SETTINGS(true, 2000, listOf(Permission.ADMINISTRATOR)),
 }

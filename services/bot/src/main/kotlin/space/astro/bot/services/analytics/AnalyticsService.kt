@@ -8,7 +8,7 @@ import space.astro.shared.core.models.analytics.AnalyticsEvent
 import space.astro.shared.core.models.analytics.AnalyticsEventData
 import space.astro.shared.core.models.analytics.AnalyticsEventReceiver
 
-val log = KotlinLogging.logger { }
+private val log = KotlinLogging.logger { }
 
 @Service
 class AnalyticsService(

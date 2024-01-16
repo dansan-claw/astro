@@ -2,6 +2,8 @@ package space.astro.bot.interactions.reply
 
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
+import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
+import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
 import net.dv8tion.jda.api.interactions.callbacks.IModalCallback
 import net.dv8tion.jda.api.interactions.callbacks.IPremiumReplyCallback
 import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback
@@ -23,9 +25,16 @@ interface IInteractionReplyHandler {
      */
     fun setCallbacks(
         replyCallback: IReplyCallback,
+        messageEditCallback: IMessageEditCallback,
         modalCallback: IModalCallback?,
-        premiumReplyCallback: IPremiumReplyCallback?
+        premiumReplyCallback: IPremiumReplyCallback?,
+        originatedFromInterface: Boolean = false,
+        originatedFromExistingMessage: Boolean = true,
     )
+
+    fun setCallbacksFromComponentEvent(event: GenericComponentInteractionCreateEvent)
+
+    fun setCallbacksFromModalEvent(event: ModalInteractionEvent)
 
 
     ///////////////////////////////

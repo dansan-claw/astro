@@ -38,7 +38,7 @@ class TransferButton(
         }
 
         val memberSelectMenu = interactionComponentBuilder.selectMenu(
-            id = InteractionIds.Menu.VC_TEMPLATE,
+            id = InteractionIds.Menu.VC_TRANSFER,
             placeholder = "Choose the new owner of your voice channel",
             options = members.take(25).map {
                 SelectOption.of(it.effectiveName, it.id)

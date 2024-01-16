@@ -155,7 +155,7 @@ class InterfaceCommand(
         @CommandOption(
             description = "The style of the button",
             type = OptionType.STRING,
-            stringChoices = ["Green, Blue, Red, Gray"]
+            stringChoices = ["Green", "Blue", "Red", "Gray"]
         )
         color: String?,
         @CommandOption(
@@ -348,7 +348,7 @@ class InterfaceCommand(
                     return
                 }
 
-                ctx.replyHandler.setCallbacks(newEvent, newEvent, newEvent)
+                ctx.replyHandler.setCallbacksFromComponentEvent(newEvent)
 
                 if (newEvent is ButtonInteractionEvent) {
                     ctx.replyHandler.replyEmbed(Embeds.canceled)
@@ -380,7 +380,7 @@ class InterfaceCommand(
                         return
                     }
 
-                    ctx.replyHandler.setCallbacks(secondEvent,secondEvent,secondEvent)
+                    ctx.replyHandler.setCallbacksFromComponentEvent(newEvent)
 
                     val buttonID = secondEvent.componentId
 
@@ -439,7 +439,7 @@ class InterfaceCommand(
         @CommandOption(
             description = "The style of the button",
             type = OptionType.STRING,
-            stringChoices = ["Green, Blue, Red, Gray"]
+            stringChoices = ["Green", "Blue", "Red", "Gray"]
         )
         color: String?,
         @CommandOption(
@@ -466,16 +466,16 @@ class InterfaceCommand(
             else -> ButtonStyle.PRIMARY.key
         }
 
-        val buttonIds = ctx.interfaceData.buttons.map { it.id }
-
-        val buttonsAvailable = interfaceManager.defaultInterfaceButtons.filter { it.id !in buttonIds }.take(25)
+        val buttonsAvailable = interfaceManager.defaultInterfaceButtons.take(25)
         val buttonSelectMenu = StringSelectMenu
             .create(InteractionIds.getRandom())
             .addOptions(buttonsAvailable.map { a ->
-                SelectOption.of(a.name ?: a.id, a.id)
-                    .apply {
+                SelectOption.of(a.name.takeIf { !it.isNullOrEmpty() } ?: a.id.split("?").first(), a.id)
+                    .let {
                         if (a.emoji != null)
-                            withEmoji(Emoji.fromFormatted(a.emoji!!))
+                            it.withEmoji(Emoji.fromFormatted(a.emoji!!))
+                        else
+                            it
                     }
             })
             .setPlaceholder("Select an action for the button")
@@ -490,7 +490,7 @@ class InterfaceCommand(
 
             val buttonSelectMenu = StringSelectMenu.create(InteractionIds.getRandom())
                 .addOptions(ctx.interfaceData.buttons.mapIndexed { index, ib ->
-                    SelectOption.of(ib.name ?: ib.id, index.toString())
+                    SelectOption.of(ib.name ?: ib.id.split("?").first(), index.toString())
                         .withEmoji(if (ib.emoji != null) Emoji.fromFormatted(ib.emoji!!) else null)
                 })
                 .setPlaceholder("Select the button to modify")

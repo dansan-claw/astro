@@ -29,7 +29,7 @@ class PermitButton(
         ctx: VcInteractionContext
     ) {
         val memberAndRoleSelectMenu = interactionComponentBuilder.entitySelectMenu(
-            id = InteractionIds.Menu.VC_BAN,
+            id = InteractionIds.Menu.VC_PERMIT,
             placeholder = "Choose the users and roles to permit in your voice channel",
             entityTypes = listOf(EntitySelectMenu.SelectTarget.USER, EntitySelectMenu.SelectTarget.ROLE),
             rangeMin = 1,

@@ -251,7 +251,7 @@ class InteractionContextBuilder(
 
         val selectedIndex = promptUserToSelectEntityAndGetIndex(
             interactionContextBase = interactionContextBase,
-            interactionContextEntitySelection = InteractionContextEntitySelection.CONNECTION,
+            interactionContextEntitySelection = InteractionContextEntitySelection.INTERFACE,
             guildData = guildData
         )
 
@@ -427,11 +427,7 @@ class InteractionContextBuilder(
                         throw InteractionContextBuilderException(Embeds.error("You took too long to select a $entityName"))
                     }
 
-                    interactionContextBase.replyHandler.setCallbacks(
-                        replyCallback = event,
-                        modalCallback = event,
-                        premiumReplyCallback = event
-                    )
+                    interactionContextBase.replyHandler.setCallbacksFromComponentEvent(event)
 
                     if (event is ButtonInteractionEvent) {
                         if (event.componentId == cancelButton.id) {
@@ -495,11 +491,7 @@ class InteractionContextBuilder(
                     throw InteractionContextBuilderException(Embeds.error("You took too long to select a $entityName"))
                 }
 
-                interactionContextBase.replyHandler.setCallbacks(
-                    replyCallback = event,
-                    modalCallback = event,
-                    premiumReplyCallback = event
-                )
+                interactionContextBase.replyHandler.setCallbacksFromComponentEvent(event)
 
                 if (event is ButtonInteractionEvent) {
                     throw InteractionContextBuilderException(Embeds.default("Command canceled"))
