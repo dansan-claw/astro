@@ -1,8 +1,10 @@
 package space.astro.shared.core.services.discord
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import kotlinx.coroutines.reactor.awaitSingle
 import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.entitlement.Entitlement
+import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpStatus
 import org.springframework.http.client.reactive.ReactorClientHttpConnector
 import org.springframework.http.codec.json.Jackson2JsonDecoder
@@ -10,10 +12,14 @@ import org.springframework.http.codec.json.Jackson2JsonEncoder
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.awaitBody
+import org.springframework.web.reactive.function.client.bodyToMono
+import reactor.core.publisher.Mono
 import reactor.netty.http.client.HttpClient
 import reactor.netty.resources.ConnectionProvider
 import space.astro.shared.core.configs.DiscordConfig
 import space.astro.shared.core.configs.WebClientConfig
+import space.astro.shared.core.models.discord.DiscordEntitlementData
+import java.io.Reader
 import java.time.Duration
 import java.util.*
 
@@ -58,7 +64,7 @@ class DiscordEntitlementsFetchService(
         authToken: String,
         guildId: String?,
         userId: String?,
-    ): List<Entitlement> {
+    ): List<DiscordEntitlementData> {
         log.info("Fetching entitlements")
 
         try {
@@ -75,7 +81,9 @@ class DiscordEntitlementsFetchService(
                 .onStatus(
                     { it != HttpStatus.OK },
                     { throw Throwable("${it.statusCode()} - Unexpected Response") })
-                .awaitBody<List<Entitlement>>()
+                .bodyToFlux(DiscordEntitlementData::class.java)
+                .collectList()
+                .awaitSingle()
         } catch (t: Throwable) {
             throw RuntimeException(
                 "Unable to fetch entitlements for bot with id $applicationId!",

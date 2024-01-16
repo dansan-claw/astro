@@ -180,12 +180,17 @@ class InterfaceCommand(
             else -> ButtonStyle.PRIMARY.key
         }
 
-        val usedButtons = ctx.interfaceData.buttons.map { it.id }
-        val availableButtons = interfaceManager.defaultInterfaceButtons.filter { it.id !in usedButtons }.take(25)
+        val usedInteractionIds = ctx.interfaceData.buttons.map { it.id }
+        val availableInterfaceButtons = interfaceManager.defaultInterfaceButtons.filter { it.id !in usedInteractionIds }.take(25)
+
+        if (availableInterfaceButtons.isEmpty()) {
+            ctx.replyHandler.replyEmbed(Embeds.error("You already added all possible actions to this interface!"))
+            return
+        }
 
         val selectMenu = StringSelectMenu.create(InteractionIds.getRandom())
-            .addOptions(availableButtons.mapIndexed { index, action ->
-                SelectOption.of(action.name ?: action.id, index.toString()).apply {
+            .addOptions(availableInterfaceButtons.mapIndexed { index, action ->
+                SelectOption.of(action.name?.takeIf { it.isNotEmpty() } ?: action.id.split("?").first(), index.toString()).apply {
                     if (action.emoji != null)
                         withEmoji(Emoji.fromFormatted(action.emoji!!))
                 }
@@ -198,7 +203,7 @@ class InterfaceCommand(
             selectMenu,
             true
         ) {
-            val buttonSelected = availableButtons[it[0].toInt()]
+            val interfaceButtonSelected = availableInterfaceButtons[it[0].toInt()]
             val position = interfaceManager.calculateNewButtonPosition(ctx.interfaceData.buttons)
                 ?: run {
                     ctx.replyHandler.replyEmbed(
@@ -210,13 +215,13 @@ class InterfaceCommand(
                     return@replyWithSelectMenu
                 }
 
-            buttonSelected.name = name
-            buttonSelected.emoji = emoji
-            buttonSelected.position = position
-            buttonSelected.buttonStyleKey = buttonStyle
-            buttonSelected.buttonDisabled = disabled ?: false
+            interfaceButtonSelected.name = name
+            interfaceButtonSelected.emoji = emoji
+            interfaceButtonSelected.position = position
+            interfaceButtonSelected.buttonStyleKey = buttonStyle
+            interfaceButtonSelected.buttonDisabled = disabled ?: false
 
-            ctx.interfaceData.buttons.add(buttonSelected)
+            ctx.interfaceData.buttons.add(interfaceButtonSelected)
 
             try {
                 interfaceManager.updateInterface(ctx.guild, ctx.interfaceData)
@@ -250,7 +255,7 @@ class InterfaceCommand(
     ) {
         val selectMenu = StringSelectMenu.create(InteractionIds.getRandom())
             .addOptions(ctx.interfaceData.buttons.mapIndexed { index, b ->
-                SelectOption.of(b.name ?: b.id, index.toString())
+                SelectOption.of(b.name?.takeIf { it.isNotEmpty() } ?: b.id.split("?").first(), index.toString())
                     .withEmoji(if (b.emoji != null) Emoji.fromFormatted(b.emoji!!) else null)
             })
             .setPlaceholder("Choose a button to remove")
@@ -466,11 +471,11 @@ class InterfaceCommand(
             else -> ButtonStyle.PRIMARY.key
         }
 
-        val buttonsAvailable = interfaceManager.defaultInterfaceButtons.take(25)
+        val interfaceButtonsExisting = interfaceManager.defaultInterfaceButtons.take(25)
         val buttonSelectMenu = StringSelectMenu
             .create(InteractionIds.getRandom())
-            .addOptions(buttonsAvailable.map { a ->
-                SelectOption.of(a.name.takeIf { !it.isNullOrEmpty() } ?: a.id.split("?").first(), a.id)
+            .addOptions(interfaceButtonsExisting.map { a ->
+                SelectOption.of(a.name?.takeIf { it.isNotEmpty() } ?: a.id.split("?").first(), a.id)
                     .let {
                         if (a.emoji != null)
                             it.withEmoji(Emoji.fromFormatted(a.emoji!!))
@@ -488,9 +493,9 @@ class InterfaceCommand(
         ) { actionSelection ->
             val actionId = actionSelection[0]
 
-            val buttonSelectMenu = StringSelectMenu.create(InteractionIds.getRandom())
+            val buttonToModifySelectMenu = StringSelectMenu.create(InteractionIds.getRandom())
                 .addOptions(ctx.interfaceData.buttons.mapIndexed { index, ib ->
-                    SelectOption.of(ib.name ?: ib.id.split("?").first(), index.toString())
+                    SelectOption.of(ib.name?.takeIf { it.isNotEmpty() } ?: ib.id.split("?").first(), index.toString())
                         .withEmoji(if (ib.emoji != null) Emoji.fromFormatted(ib.emoji!!) else null)
                 })
                 .setPlaceholder("Select the button to modify")
@@ -505,7 +510,7 @@ class InterfaceCommand(
                             "\n• Style > `${ButtonStyle.fromKey(buttonStyle).name.lowercaseAndCapitalize()}`" +
                             "\n• Disabled > `${(disabled ?: false).asTrueOrFalse()}`"
                 ),
-                buttonSelectMenu,
+                buttonToModifySelectMenu,
                 true
             ) {
                 val buttonIndexToModify = it[0].toInt()

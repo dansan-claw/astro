@@ -1,41 +1,16 @@
 info:
   app:
-    name: "Central API"
-    description: "A fast and reliable Central API application to manage data for the web."
+    name: "Entitlement expiration job"
+    description: "Job that deletes expired entitlements."
     version: "1.0.0"
 
 server:
-  port: "${PORT:9000}"
+  port: "${PORT:9002}"
 
-management:
-  metrics:
-    export:
-      prometheus:
-        enabled: true
-  endpoints:
-    web:
-      cors:
-        allowed-origins: "*"
-        allowed-methods: GET, POST
-      exposure:
-        include:
-          - health
-          - info
-          - metrics
-          - prometheus
-  endpoint:
-    prometheus:
-      enabled: true
-    health:
-      probes:
-        enabled: true
-      group:
-        readiness:
-          include:
-            - readinessState
-        liveness:
-          include:
-            - livenessState
+discord:
+  application:
+    application-id: ${DISCORD_APPLICATION_ID:788708323867885568}
+    token: ${DISCORD_APPLICATION_TOKEN}
 
 ##############
 ### SHARED ###
@@ -83,16 +58,3 @@ io:
 #####################
 ### END OF SHARED ###
 #####################
-
-central:
-  api:
-    auth: ${CENTRAL_API_AUTH:iqwoenfuef3289fnv3adj0sajda13nd130d9jasdcb123e1pef3289vn}
-
-discord:
-  application:
-    redirect-uri: ${DISCORD_APPLICATION_REDIRECT_URI:http://localhost:3000/callback}
-    id: ${DISCORD_APPLICATION_ID:788708323867885568}
-    secret: ${DISCORD_APPLICATION_SECRET}
-
-jwt:
-  key: ${JWT_KEY}

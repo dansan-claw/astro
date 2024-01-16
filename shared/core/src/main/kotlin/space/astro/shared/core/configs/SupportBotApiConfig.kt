@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration
  * @property auth
  */
 @Configuration
-@ConfigurationProperties("premium.api")
+@ConfigurationProperties("support.bot")
 class SupportBotApiConfig {
 
     var baseUrl: String = "http://localhost:9001"

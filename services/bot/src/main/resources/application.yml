@@ -21,10 +21,6 @@ management:
           - metrics
           - prometheus
 
-logging:
-  level:
-    root: ${LOG_LEVEL:INFO}
-
 application:
   features:
     premium-restrictions: ${PREMIUM_RESTRICTIONS:false}
@@ -34,6 +30,20 @@ discord:
     token: ${BOT_TOKEN}
     bot-id: ${BOT_ID:788708323867885568}
     command-guilds: [1026552055046881402]
+
+##############
+### SHARED ###
+##############
+logging:
+  level:
+    root: ${LOG_LEVEL:INFO}
+
+
+sentry:
+  dsn: https://3d0b9348d1c4d44884fa2cfd45ad1c4e@o4506570641702912.ingest.sentry.io/4506575870230528
+  # Set traces-sample-rate to 1.0 to capture 100% of transactions for performance monitoring.
+  # We recommend adjusting this value in production.
+  traces-sample-rate: 1.0
 
 bigquery:
   enabled: ${BIGQUERY_ENABLED:false}
@@ -45,11 +55,11 @@ chargebee:
   site-name: ${CHARGEBEE_SITE_NAME}
 kube:
   lifecycle-authorization: ${KUBE_LIFECYCLE_AUTHORIZATION}
-premium:
-  api:
-    base-url: ${PREMIUM_API_BASE_URL:http://localhost:9001}
-    origin-url: ${PREMIUM_API_ORIGIN_URL:http://localhost:3000}
-    auth: ${PREMIUM_API_AUTH:dev-premium-api-auth-token}
+support:
+  bot:
+    base-url: ${SUPPORT_BOT_BASE_URL:http://localhost:9001}
+    origin-url: ${SUPPORT_BOT_ORIGIN_URL:http://localhost:3000}
+    auth: ${SUPPORT_BOT_AUTH:dev-premium-api-auth-token}
 
 io:
   influx:
@@ -64,8 +74,6 @@ io:
     uris: ${REDIS_URIS:redis://localhost:6379}
     cluster: ${REDIS_CLUSTER:false}
 
-sentry:
-  dsn: https://6b38b9b99e0d693f67b3355d0c4c83f6@o4506570641702912.ingest.sentry.io/4506575860203520
-  # Set traces-sample-rate to 1.0 to capture 100% of transactions for performance monitoring.
-  # We recommend adjusting this value in production.
-  traces-sample-rate: 1.0
+#####################
+### END OF SHARED ###
+#####################
