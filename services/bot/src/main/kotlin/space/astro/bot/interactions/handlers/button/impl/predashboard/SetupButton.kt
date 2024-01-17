@@ -108,7 +108,7 @@ class SetupButton(
                             "\nFor additional help use `/help`" +
                             "\n\n*You can change the name, category, position and everything of this channels!*"
                 ),
-                components = Buttons.Bundles.help
+                components = Buttons.Bundles.helpAndLinks
             )
         } catch (e: ErrorResponseException) {
             return when (e.errorResponse) {

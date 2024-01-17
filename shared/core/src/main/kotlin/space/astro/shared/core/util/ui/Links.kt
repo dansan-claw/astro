@@ -14,18 +14,19 @@ object Links {
     const val LOGO = "https://cdn.discordapp.com/avatars/715621848489918495/dc0affdf8de07a3d88c4d192efad649f.png?size=2048"
     const val INTERFACE_BUTTONS_IMAGE = "$WEBSITE/interface-image.png"
 
-    object Documentation {
-        const val DOCUMENTATION = "https://docs.astro-bot.space"
-        const val PREMIUM = "https://docs.astro-bot.space/premium"
-        const val CONNECTION = "https://docs.astro-bot.space/voice-roles/"
-        const val GENERATOR = "https://docs.astro-bot.space/temporary-voice-channels/generators/"
-        const val INTERFACE = "https://docs.astro-bot.space/temporary-voice-channels/interfaces/"
-        const val TEMPLATE = "https://docs.astro-bot.space/temporary-voice-channels/templates/"
-        const val VARIABLES = "https://docs.astro-bot.space/temporary-voice-channels/variables/"
-    }
+//    object Documentation {
+//        const val DOCUMENTATION = "https://docs.astro-bot.space"
+//        const val PREMIUM = "https://docs.astro-bot.space/premium"
+//        const val CONNECTION = "https://docs.astro-bot.space/voice-roles/"
+//        const val GENERATOR = "https://docs.astro-bot.space/temporary-voice-channels/generators/"
+//        const val INTERFACE = "https://docs.astro-bot.space/temporary-voice-channels/interfaces/"
+//        const val TEMPLATE = "https://docs.astro-bot.space/temporary-voice-channels/templates/"
+//        const val VARIABLES = "https://docs.astro-bot.space/temporary-voice-channels/variables/"
+//    }
 
     object ExternalGuides {
         const val GET_ID = "https://support.discord.com/hc/en-us/articles/206346498-Where-can-I-find-my-User-Server-Message-ID-"
         const val ROLE_HIERARCHY = "https://support.discord.com/hc/en-us/articles/214836687-Role-Management-101"
+        const val COMMAND_PERMISSIONS = "https://discord.com/blog/slash-commands-permissions-discord-apps-bots"
     }
 }

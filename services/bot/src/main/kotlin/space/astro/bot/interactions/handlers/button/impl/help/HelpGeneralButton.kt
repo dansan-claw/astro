@@ -19,9 +19,13 @@ class HelpGeneralButton : AbstractButton() {
         event: ButtonInteractionEvent,
         ctx: InteractionContext
     ) {
+        ctx.replyHandler.setEphemeral(false)
         ctx.replyHandler.reply(
             embed = Embeds.helpGeneral,
-            components = listOf(ActionRow.of(Buttons.Bundles.help))
+            components = listOf(
+                ActionRow.of(Buttons.Help.premium, Buttons.Help.generators, Buttons.Help.connections),
+                ActionRow.of(Buttons.Help.variables, Buttons.Help.interfaces, Buttons.Help.templates)
+            )
         )
     }
 }

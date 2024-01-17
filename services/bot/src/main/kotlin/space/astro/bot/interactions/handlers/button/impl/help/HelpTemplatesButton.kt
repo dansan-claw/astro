@@ -19,9 +19,10 @@ class HelpTemplatesButton : AbstractButton() {
         event: ButtonInteractionEvent,
         ctx: InteractionContext
     ) {
+        ctx.replyHandler.setEphemeral(false)
         ctx.replyHandler.reply(
             embed = Embeds.helpTemplates,
-            components = listOf(ActionRow.of(Buttons.Bundles.help))
+            components = listOf(ActionRow.of(Buttons.Bundles.helpAndLinks))
         )
     }
 }

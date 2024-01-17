@@ -19,6 +19,7 @@ class HelpPremiumButton : AbstractButton() {
         event: ButtonInteractionEvent,
         ctx: InteractionContext
     ) {
+        ctx.replyHandler.setEphemeral(false)
         ctx.replyHandler.replyEmbedAndComponent(
             embed = Embeds.helpPremium,
             component = Buttons.premium

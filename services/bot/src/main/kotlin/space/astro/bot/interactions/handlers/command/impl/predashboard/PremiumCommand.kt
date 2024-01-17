@@ -58,7 +58,6 @@ class PremiumCommand(
         event: SlashCommandInteractionEvent,
         ctx: SettingsInteractionContext,
     ) {
-        val guildID = ctx.guildId
         val guild = ctx.guild
 
         val guildDto = ctx.guildData

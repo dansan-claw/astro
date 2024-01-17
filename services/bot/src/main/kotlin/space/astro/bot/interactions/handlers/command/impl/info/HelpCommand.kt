@@ -23,9 +23,13 @@ class HelpCommand : AbstractCommand() {
         event: SlashCommandInteractionEvent,
         ctx: InteractionContext
     ) {
+        ctx.replyHandler.setEphemeral(false)
         ctx.replyHandler.reply(
             embed = Embeds.helpGeneral,
-            components = listOf(ActionRow.of(Buttons.Bundles.help))
+            components = listOf(
+                ActionRow.of(Buttons.Help.premium, Buttons.Help.generators, Buttons.Help.connections),
+                ActionRow.of(Buttons.Help.variables, Buttons.Help.interfaces, Buttons.Help.templates)
+            )
         )
     }
 
@@ -37,6 +41,7 @@ class HelpCommand : AbstractCommand() {
         event: SlashCommandInteractionEvent,
         ctx: InteractionContext
     ) {
+        ctx.replyHandler.setEphemeral(false)
         ctx.replyHandler.replyEmbedAndComponent(
             embed = Embeds.helpPremium,
             component = Buttons.premium
@@ -51,9 +56,10 @@ class HelpCommand : AbstractCommand() {
         event: SlashCommandInteractionEvent,
         ctx: InteractionContext
     ) {
+        ctx.replyHandler.setEphemeral(false)
         ctx.replyHandler.reply(
             embed = Embeds.helpVariables,
-            components = listOf(ActionRow.of(Buttons.Bundles.help))
+            components = listOf(ActionRow.of(Buttons.Bundles.helpAndLinks))
         )
     }
 
@@ -65,9 +71,10 @@ class HelpCommand : AbstractCommand() {
         event: SlashCommandInteractionEvent,
         ctx: InteractionContext
     ) {
+        ctx.replyHandler.setEphemeral(false)
         ctx.replyHandler.reply(
             embed = Embeds.helpGenerators,
-            components = listOf(ActionRow.of(Buttons.Bundles.help))
+            components = listOf(ActionRow.of(Buttons.Bundles.helpAndLinks))
         )
     }
 
@@ -79,9 +86,10 @@ class HelpCommand : AbstractCommand() {
         event: SlashCommandInteractionEvent,
         ctx: InteractionContext
     ) {
+        ctx.replyHandler.setEphemeral(false)
         ctx.replyHandler.reply(
             embed = Embeds.helpInterfaces,
-            components = listOf(ActionRow.of(Buttons.Bundles.help))
+            components = listOf(ActionRow.of(Buttons.Bundles.helpAndLinks))
         )
     }
 
@@ -93,23 +101,25 @@ class HelpCommand : AbstractCommand() {
         event: SlashCommandInteractionEvent,
         ctx: InteractionContext
     ) {
+        ctx.replyHandler.setEphemeral(false)
         ctx.replyHandler.reply(
             embed = Embeds.helpTemplates,
-            components = listOf(ActionRow.of(Buttons.Bundles.help))
+            components = listOf(ActionRow.of(Buttons.Bundles.helpAndLinks))
         )
     }
 
     @SubCommand(
-        name = "templates",
+        name = "connections",
         description = "Learn how to connect voice channels to roles"
     )
     suspend fun connections(
         event: SlashCommandInteractionEvent,
         ctx: InteractionContext
     ) {
+        ctx.replyHandler.setEphemeral(false)
         ctx.replyHandler.reply(
             embed = Embeds.helpConnections,
-            components = listOf(ActionRow.of(Buttons.Bundles.help))
+            components = listOf(ActionRow.of(Buttons.Bundles.helpAndLinks))
         )
     }
 }

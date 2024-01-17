@@ -23,17 +23,18 @@ object Buttons {
 //    }
 
     object Help {
-        val general = Button.of(ButtonStyle.PRIMARY, InteractionIds.Button.HELP_GENERAL, Emojis.help)
-        val premium = Button.of(ButtonStyle.PRIMARY, InteractionIds.Button.HELP_PREMIUM, Emojis.premium)
-        val variables = Button.of(ButtonStyle.PRIMARY, InteractionIds.Button.HELP_VARIABLES, Emojis.variables)
-        val generators = Button.of(ButtonStyle.PRIMARY, InteractionIds.Button.HELP_GENERATORS, Emojis.generator)
-        val interfaces = Button.of(ButtonStyle.PRIMARY, InteractionIds.Button.HELP_INTERFACES, Emojis.vcInterface)
-        val templates = Button.of(ButtonStyle.PRIMARY, InteractionIds.Button.HELP_TEMPLATES, Emojis.template)
-        val connections = Button.of(ButtonStyle.PRIMARY, InteractionIds.Button.HELP_CONNECTIONS, Emojis.connection)
+        val general = Button.of(ButtonStyle.PRIMARY, InteractionIds.Button.HELP_GENERAL, "Help", Emojis.help)
+        val premium = Button.of(ButtonStyle.PRIMARY, InteractionIds.Button.HELP_PREMIUM, "Premium", Emojis.premium)
+        val variables = Button.of(ButtonStyle.PRIMARY, InteractionIds.Button.HELP_VARIABLES, "Variables", Emojis.variables)
+        val generators = Button.of(ButtonStyle.PRIMARY, InteractionIds.Button.HELP_GENERATORS, "Generators help", Emojis.generator)
+        val interfaces = Button.of(ButtonStyle.PRIMARY, InteractionIds.Button.HELP_INTERFACES, "Interfaces help", Emojis.vcInterface)
+        val templates = Button.of(ButtonStyle.PRIMARY, InteractionIds.Button.HELP_TEMPLATES, "Templates help", Emojis.template)
+        val connections = Button.of(ButtonStyle.PRIMARY, InteractionIds.Button.HELP_CONNECTIONS, "Connections help", Emojis.connection)
     }
 
     object Bundles {
-        val help = listOf(Help.general, invite, support, premium)
+        val helpAndLinks = listOf(Help.general, invite, support, premium)
+        val secondaryHelp = listOf(Help.premium, Help.variables, Help.generators, Help.interfaces, Help.templates, Help.connections)
 
         ////////////////////
         /// PREDASHBOARD ///
