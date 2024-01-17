@@ -56,7 +56,7 @@ object Embeds {
         title = "${Emojis.premium.formatted} Help - Premium"
         description = "If you own a professional server Astro premium is exactly what you need to take your voice channel system to the next level!" +
                 "\n\n**Features**" +
-                "\n> • Unlimited generators (instead of 2)" +
+                "\n> • Unlimited generators (instead of 3)" +
                 "\n> • Unlimited interfaces (instead of 1)" +
                 "\n> • Unlimited templates (instead of 3)" +
                 "\n> • Unlimited connections (instead of 1)" +

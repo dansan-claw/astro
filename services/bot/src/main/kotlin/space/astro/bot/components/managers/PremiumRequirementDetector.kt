@@ -44,7 +44,7 @@ class PremiumRequirementDetector(
             return true
         }
 
-        return guildData.connections.size < 2
+        return guildData.connections.size < 3
     }
 
     fun canCreateInterface(guildData: GuildData): Boolean {
@@ -71,7 +71,7 @@ class PremiumRequirementDetector(
 
     fun exceededMaximumGeneratorAmount(guildData: GuildData): Boolean {
         return applicationFeaturesConfig.premiumRestrictions
-                && guildData.generators.size > 2
+                && guildData.generators.size > 3
                 && !isGuildPremium(guildData)
     }
 
