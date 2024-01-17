@@ -5,6 +5,7 @@ import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.Command.Choice
+import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.commands.build.*
 import space.astro.bot.interactions.InteractionAction
@@ -40,6 +41,9 @@ abstract class AbstractCommand : ICommand {
         }
         val commandDescription = commandAnnotation.description
         data = Commands.slash(commandName, commandDescription)
+        if (requiredPermissions.isNotEmpty()) {
+            data.setDefaultPermissions(DefaultMemberPermissions.enabledFor(requiredPermissions.toList()))
+        }
         category = commandAnnotation.category
         action = commandAnnotation.action
 

@@ -205,6 +205,28 @@ class CommandHandler(
                 return@launch
             }
 
+            ////////////////////////
+            /// USER PERMISSIONS ///
+            ////////////////////////
+            val memberPermissions = commandContainer.action.memberPermissions
+            if (memberPermissions.isNotEmpty()) {
+                if (!member.hasPermission(memberPermissions)) {
+                    event.replyEmbeds(
+                        Embeds.error(
+                            "You need the following permissions to run this command: ${
+                                memberPermissions.joinToString(
+                                    ", "
+                                ) { it.getName() }
+                            }"
+                        )
+                    )
+                        .setEphemeral(true)
+                        .queue()
+
+                    return@launch
+                }
+            }
+
             ///////////////////////
             /// BOT PERMISSIONS ///
             ///////////////////////
