@@ -200,10 +200,7 @@ class CommandHandler(
             /////////////////////
             val guildData = guildDao.get(guild.id)
 
-            if (commandContainer.action.premium && (guildData == null || !premiumRequirementDetector.isGuildPremium(
-                    guildData
-                ))
-            ) {
+            if (commandContainer.action.premium && (guildData == null || !premiumRequirementDetector.isGuildPremium(guildData))) {
                 event.replyWithPremiumRequired().queue()
                 return@launch
             }

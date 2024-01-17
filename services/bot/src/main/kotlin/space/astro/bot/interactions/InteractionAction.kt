@@ -36,6 +36,5 @@ enum class InteractionAction(
 
     // PREDASHBOARD
     SETTINGS(false, 2000, listOf(Permission.ADMINISTRATOR)),
-    HIGH_COOLDOWN_NO_ADMIN(false, 5000, listOf()),
-    TEMPLATE_SETTINGS(true, 2000, listOf(Permission.ADMINISTRATOR)),
+    HIGH_COOLDOWN_NO_ADMIN(false, 5000, listOf())
 }

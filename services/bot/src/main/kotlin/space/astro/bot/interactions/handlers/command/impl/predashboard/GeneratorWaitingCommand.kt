@@ -5,6 +5,7 @@ import net.dv8tion.jda.api.entities.channel.ChannelType
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.OptionType
+import space.astro.bot.components.managers.PremiumRequirementDetector
 import space.astro.bot.core.ui.Buttons
 import space.astro.bot.core.ui.Embeds
 import space.astro.bot.core.ui.Emojis
@@ -20,10 +21,11 @@ import space.astro.shared.core.models.database.PermissionsInherited
     description = "Manage the generator waiting room settings",
     requiredPermissions = [Permission.MANAGE_CHANNEL],
     category = CommandCategory.SETTINGS,
-    action = InteractionAction.TEMPLATE_SETTINGS
+    action = InteractionAction.SETTINGS
 )
 class GeneratorWaitingCommand(
-    private val guildDao: GuildDao
+    private val guildDao: GuildDao,
+    private val premiumRequirementDetector: PremiumRequirementDetector
 ) : AbstractCommand() {
     @SubCommand(
         name = "bitrate",
@@ -104,6 +106,11 @@ class GeneratorWaitingCommand(
         )
         create: Boolean
     ) {
+        if (create && !premiumRequirementDetector.canCreateWaitingRoomOnVCGeneration(ctx.guildData)) {
+            ctx.replyHandler.replyPremiumRequired()
+            return
+        }
+
         ctx.guildData.generators[ctx.generatorIndex].autoWaiting = create
         guildDao.save(ctx.guildData)
 

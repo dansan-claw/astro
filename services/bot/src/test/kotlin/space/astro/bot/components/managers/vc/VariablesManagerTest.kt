@@ -1,11 +1,14 @@
-import space.astro.bot.components.managers.vc.VariablesManager
-import kotlin.test.Test
-import kotlin.test.assertFalse
+package space.astro.bot.components.managers.vc
 
-class VariablesManagerTests {
+import org.junit.jupiter.api.Test
+
+import org.junit.jupiter.api.Assertions.*
+
+class VariablesManagerTest {
+
     @Test
     fun testPremiumVariablesRegexMatching() {
-        val shouldNotMatch = "sample name"
+        val shouldNotMatch = "{nickname} sample name"
         val shouldMatch = "cool {n}"
         val shouldMatch2 = "nice {activity_name}"
 
