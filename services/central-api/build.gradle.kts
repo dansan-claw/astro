@@ -22,11 +22,11 @@ plugins {
 
 jib {
     from {
-        image = "openjdk@sha256:f9be8e89a2bbf973dcd6c286f85bb0f68a8f9d5fa7c6241eb59f07add4a24789"
+        image = "openjdk@sha256:cf04661ba3cae4c9d788d503befc635f16ffdc740b00b0010b244d777d03adcf"
     }
 
     to {
-        image = "ghcr.io/Astro-Discord-Bot/$name"
+        image = "ghcr.io/bot-astro/$name"
         tags = setOf(System.getenv("SEMAPHORE_GIT_SHA"), "latest")
         auth {
             username = System.getenv("GITHUB_ACTOR")
