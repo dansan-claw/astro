@@ -1,0 +1,34 @@
+version: v1.0
+name: Deploy entitlements-expiration-job to staging
+
+agent:
+  machine:
+    type: e1-standard-2
+    os_image: ubuntu1804
+
+blocks:
+  - name: Execute helm commands
+    task:
+      secrets:
+        - name: kube
+        - name: helm_entitlements-expiration-job
+      env_vars:
+        - name: KUBECONFIG
+          value: /home/semaphore/.kube/config
+        - name: HELMVALUES
+          value: /home/semaphore/.values/entitlements-expiration-job/staging.yaml
+        - name: NAMESPACE
+          value: astro-staging
+        - name: RELEASE_NAME
+          value: entitlements-expiration-job-staging
+        - name: CHART_LOCATION
+          value: ./services/entitlements-expiration-job/chart
+      jobs:
+        - name: Deploy to Kubernetes
+          commands:
+            - checkout
+            - curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
+            - helm upgrade -i $RELEASE_NAME $CHART_LOCATION
+              --set image.tag=${SEMAPHORE_GIT_SHA}
+              --namespace $NAMESPACE
+              --values $HELMVALUES
