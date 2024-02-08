@@ -32,7 +32,7 @@ blocks:
           commands:
             - ./gradlew :services:bot:build
             - ./gradlew :services:bot:test
-            - ./gradlew :services:bot:jib
+            - ./gradlew :services:bot:jib -Djib.httpTimeout=60000
       epilogue:
         on_pass:
           commands:
