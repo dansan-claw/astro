@@ -14,8 +14,8 @@ repositories {
     maven {
         url = uri("https://maven.pkg.github.com/bot-astro/jda")
         credentials {
-            this.username = property("ghpMavenUser").toString()
-            this.password = property("ghpMavenPat").toString()
+            this.username = System.getenv("GITHUB_ACTOR") ?: property("ghpMavenUser").toString()
+            this.password = System.getenv("GITHUB_TOKEN") ?: property("ghpMavenPat").toString()
         }
     }
     mavenCentral()
@@ -27,8 +27,8 @@ subprojects {
         maven {
             url = uri("https://maven.pkg.github.com/bot-astro/jda")
             credentials {
-                this.username = property("ghpMavenUser").toString()
-                this.password = property("ghpMavenPat").toString()
+                this.username = System.getenv("GITHUB_ACTOR") ?: property("ghpMavenUser").toString()
+                this.password = System.getenv("GITHUB_TOKEN") ?: property("ghpMavenPat").toString()
             }
         }
         mavenCentral()
