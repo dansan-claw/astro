@@ -1,6 +1,8 @@
 package space.astro.bot.models.discord
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder
+import io.lettuce.core.cluster.api.async.RedisClusterAsyncCommands
+import io.lettuce.core.cluster.api.reactive.RedisClusterReactiveCommands
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.utils.SessionController
 import net.dv8tion.jda.api.utils.SessionController.ShardedGateway
@@ -9,7 +11,6 @@ import space.astro.bot.components.discord.ShardManagerConfig
 import space.astro.bot.config.DiscordApplicationConfig
 import space.astro.shared.core.models.redis.RedisKey
 import space.astro.shared.core.models.redis.RedisRateLimiter
-import space.astro.shared.core.services.redis.RedisClientService
 import java.time.Duration
 import java.util.concurrent.Executors
 import java.util.concurrent.Future
@@ -17,7 +18,8 @@ import java.util.concurrent.Future
 class RedisSessionController(
     private val discordApplicationConfig: DiscordApplicationConfig,
     private val shardManagerConfig: ShardManagerConfig,
-    private val redisClientService: RedisClientService
+    private val asyncCommands: RedisClusterAsyncCommands<String, String>,
+    reactiveCommands: RedisClusterReactiveCommands<String, String>,
 ) : SessionControllerAdapter() {
 
     companion object {
@@ -26,7 +28,7 @@ class RedisSessionController(
 
     private val connectionNodes = mutableMapOf<SessionController.SessionConnectNode, Future<*>>()
 
-    private val rateLimiter = RedisRateLimiter(redisClientService.reactiveCommands(), "IDENTIFY", 1, CONNECT_INTERVAL)
+    private val rateLimiter = RedisRateLimiter(reactiveCommands, "IDENTIFY", 1, CONNECT_INTERVAL)
 
     private val executor = Executors.newCachedThreadPool(
         ThreadFactoryBuilder()
@@ -59,14 +61,14 @@ class RedisSessionController(
 
     override fun getGlobalRatelimit(): Long {
         return try {
-            redisClientService.asyncCommands().get(RedisKey.GLOBAL_RATELIMIT.key).get().toLong()
+            asyncCommands.get(RedisKey.GLOBAL_RATELIMIT.key).get().toLong()
         } catch (e: Exception) {
             Long.MIN_VALUE
         }
     }
 
     override fun setGlobalRatelimit(ratelimit: Long) {
-        redisClientService.asyncCommands().set(RedisKey.GLOBAL_RATELIMIT.key, ratelimit.toString()).get()
+        asyncCommands.set(RedisKey.GLOBAL_RATELIMIT.key, ratelimit.toString()).get()
     }
 
     override fun getShardedGateway(api: JDA): ShardedGateway {

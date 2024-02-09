@@ -1,5 +1,7 @@
 package space.astro.support.bot.components.discord
 
+import io.lettuce.core.cluster.api.async.RedisClusterAsyncCommands
+import io.lettuce.core.cluster.api.reactive.RedisClusterReactiveCommands
 import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.Activity
 import net.dv8tion.jda.api.requests.GatewayIntent
@@ -8,7 +10,6 @@ import net.dv8tion.jda.api.sharding.ShardManager
 import net.dv8tion.jda.api.utils.SessionController
 import org.springframework.context.annotation.Bean
 import org.springframework.stereotype.Component
-import space.astro.shared.core.services.redis.RedisClientService
 import space.astro.support.bot.components.jda.JdaToSpringEventBridge
 import space.astro.support.bot.config.DiscordApplicationConfig
 import space.astro.support.bot.config.PodConfig
@@ -20,8 +21,9 @@ private val log = KotlinLogging.logger { }
 class ShardManagerFactory(
     private val shardManagerConfig: ShardManagerConfig,
     private val discordApplicationConfig: DiscordApplicationConfig,
-    private val redisClientService: RedisClientService,
-    private val jdaToSpringEventBridge: JdaToSpringEventBridge
+    private val jdaToSpringEventBridge: JdaToSpringEventBridge,
+    private val asyncCommands: RedisClusterAsyncCommands<String, String>,
+    private val reactiveCommands: RedisClusterReactiveCommands<String, String>
 ) {
 
     private val intents = emptyList<GatewayIntent>()
@@ -75,7 +77,8 @@ class ShardManagerFactory(
         return RedisSessionController(
             discordApplicationConfig,
             shardManagerConfig,
-            redisClientService
+            asyncCommands,
+            reactiveCommands
         )
     }
 
