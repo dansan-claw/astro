@@ -42,7 +42,7 @@ spec:
             memory: {{ .Values.resources.requests.memory }}
         readinessProbe:
           httpGet:
-            path: /actuator/health/readiness
+            path: /ready
             port: {{ .Values.port }}
             httpHeaders:
               - name: Authorization

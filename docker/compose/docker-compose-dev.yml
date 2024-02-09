@@ -23,7 +23,7 @@ services:
     networks:
       - mongo-network
     environment:
-      - ME_CONFIG_MONGODB_SERVER=astro-mongo
+      - ME_CONFIG_MONGODB_SERVER=astro-dev-env_mongo
   redis:
     image: redis:latest
     container_name: ${COMPOSE_PROJECT_NAME}_redis

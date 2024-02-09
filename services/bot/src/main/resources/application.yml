@@ -4,6 +4,9 @@ info:
     description: "The main bot Discord application."
     version: "1.0.0"
 
+server:
+  port: ${PORT:9000}
+
 management:
   endpoints:
     web:
