@@ -1,6 +1,7 @@
 package space.astro.shared.core.models.database
 
 import com.aventrix.jnanoid.jnanoid.NanoIdUtils
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
@@ -8,6 +9,7 @@ import space.astro.shared.core.util.extention.*
 import space.astro.shared.core.util.ui.Colors
 import space.astro.shared.core.util.ui.Links
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 data class GuildData(
     val guildID: String,
     @Deprecated("Chargebee premium system is deprecated")
@@ -29,12 +31,14 @@ data class GuildData(
  * @param skuId Id of the SKU of the entitlement
  * @param endsAt Expiration of the entitlement in epoch millis, NULL if it never expires
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 data class GuildEntitlement(
     val id: String,
     val skuId: String,
     val endsAt: Long?
 )
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 data class TemplateData(
     val id: String = NanoIdUtils.randomNanoId(),
     var name: String,
@@ -45,6 +49,7 @@ data class TemplateData(
     var vcRegion: String? = null
 )
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 data class GeneratorData(
     val id: String,
     var fallbackId: String? = null,
@@ -87,7 +92,7 @@ data class GeneratorData(
 
 )
 
-
+@JsonIgnoreProperties(ignoreUnknown = true)
 enum class PermissionsInherited {
     GENERATOR, CATEGORY, NONE;
 
@@ -100,6 +105,7 @@ enum class PermissionsInherited {
     }
 }
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 enum class InitialPosition {
     BEFORE, AFTER, BOTTOM;
 
@@ -116,6 +122,7 @@ enum class InitialPosition {
  * @param permissionDenied the permission that should be denied when this state is applied
  * @param permissionReset the permissions that should be reset when this state is applied
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 enum class VCState(
     val permissionDenied: Permission? = null,
     val permissionReset: Permission? = null
@@ -126,7 +133,7 @@ enum class VCState(
     UNHIDDEN(null, Permission.VIEW_CHANNEL);
 }
 
-
+@JsonIgnoreProperties(ignoreUnknown = true)
 data class InterfaceData(
     var channelID: String,
     var messageID: String,
@@ -141,6 +148,7 @@ data class InterfaceData(
     fun asMarkdownLink(guildID: String) = "interface".asMessageMarkdownLink(guildID, channelID, messageID)
 }
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 data class EmbedStyle(
     var url: String? = Links.WEBSITE,
     var title: String? = null,
@@ -156,6 +164,7 @@ data class EmbedStyle(
     var footerIconUrl: String? = null
 )
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 data class InterfaceAction(
     /**
      * Action path
@@ -168,6 +177,7 @@ data class InterfaceAction(
     var position: Pair<Int, Int>,
 )
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 data class InterfaceButton(
     var id: String,
     var name: String? = null,
@@ -189,6 +199,7 @@ data class InterfaceButton(
     }
 }
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 data class ConnectionData(
     var id: String,
     var roleID: String,
@@ -218,6 +229,7 @@ data class ConnectionData(
     }
 }
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 enum class ConnectionAction(
     var permanent: Boolean = false
 ) {
@@ -230,6 +242,7 @@ enum class ConnectionAction(
     }
 }
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 data class CommandsSettings(
     var maxUserLimit: Int = 99,
     var minUserLimit: Int = 0,
@@ -240,6 +253,7 @@ data class CommandsSettings(
     var badwordsAllowed: Boolean = true,
 )
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 data class RenameConditions(
     var stateChange: Boolean = true,
     var ownerChange: Boolean = true,
