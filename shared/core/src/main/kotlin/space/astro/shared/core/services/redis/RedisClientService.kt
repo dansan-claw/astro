@@ -49,8 +49,6 @@ class RedisClientService(redisConfig: RedisConfig) {
         } else {
             logger.info { "Using single Redis instance" }
             logger.info { "Uri: $uri" }
-            logger.info { "SLEEP" }
-            Thread.sleep(5000)
             client = RedisClient.create(uri)
             connection = client?.connect()
         }
