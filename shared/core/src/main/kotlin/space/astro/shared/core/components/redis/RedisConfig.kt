@@ -16,7 +16,4 @@ class RedisConfig {
     var cluster = false
     var uris = "redis://localhost:6379"
     var password = ""
-    var host = "localhost"
-    var port = 6379
-    var database = 0
 }
