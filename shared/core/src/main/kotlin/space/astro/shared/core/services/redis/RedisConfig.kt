@@ -17,8 +17,5 @@ import org.springframework.context.annotation.Configuration
 class RedisConfig {
 
     var cluster = false
-    var host: String = "localhost"
-    var port: Int = 6379
-    var password: CharSequence? = null
-    var database: Int = 0
+    var uris = "redis://localhost:6379"
 }
