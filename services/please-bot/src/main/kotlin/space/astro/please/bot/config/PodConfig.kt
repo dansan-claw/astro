@@ -7,8 +7,8 @@ import org.springframework.context.annotation.Configuration
 @ConfigurationProperties("pod")
 class PodConfig {
 
-    var hostname: String = "support-01.astro-bot.space"
-    var ordinal: String = "support-0"
+    var hostname: String = "please-01.astro-bot.space"
+    var ordinal: String = "please-0"
 
     fun getParsedOrdinal() : Int {
         return ordinal.split("-").last().toInt()
