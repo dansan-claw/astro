@@ -82,6 +82,7 @@ io:
     cluster: ${REDIS_CLUSTER:false}
     uris: ${REDIS_URIS:redis://localhost:6379}
 
+
 #####################
 ### END OF SHARED ###
 #####################
@@ -97,8 +98,8 @@ discord:
     guild-id-for-premium-role: ${GUILD_ID_FOR_PREMIUM_ROLE:700607091391594567}
     premium-sku-id: ${PREMIUM_SKU_ID:1096107722115661934}
     premium-role-id: ${PREMIUM_ROLE_ID:761283474241093682}
-spring:
-  data:
-    redis:
-      ssl:
-        enabled: true
+
+shard:
+  manager:
+    total-pods: ${SHARD_MANAGER_TOTAL_PODS:1}
+    total-shards: ${SHARD_MANAGER_TOTAL_SHARDS:1}

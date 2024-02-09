@@ -77,3 +77,8 @@ io:
 #####################
 ### END OF SHARED ###
 #####################
+
+shard:
+  manager:
+    total-pods: ${SHARD_MANAGER_TOTAL_PODS:1}
+    total-shards: ${SHARD_MANAGER_TOTAL_SHARDS:1}
