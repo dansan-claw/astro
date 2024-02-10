@@ -22,6 +22,7 @@ import space.astro.bot.interactions.context.InteractionContextBuilderException
 import space.astro.bot.interactions.reply.InteractionReplyHandler
 import space.astro.bot.services.ConfigurationErrorService
 import space.astro.shared.core.daos.GuildDao
+import space.astro.shared.core.util.extention.asChannelMention
 import space.astro.shared.core.util.extention.asRelativeTimestampFromNow
 import space.astro.shared.core.util.ui.Links
 import kotlin.reflect.full.callSuspend
@@ -89,7 +90,20 @@ class ButtonHandler(
 
             if (key.startsWith("cmd>")) {
                 key = mapOldIdToNewId(key.substring(4))
-                    ?: throw ConfigurationException(configurationErrorService.invalidOldInterface(event.channel.id))
+                    ?: run {
+                        val configErrorData = configurationErrorService.invalidOldInterface(event.channel.id)
+
+                        event.replyEmbeds(Embeds.error(configErrorData.description))
+                            .setEphemeral(true)
+                            .queue()
+
+                        configurationErrorEventPublisher.publishConfigurationErrorEvent(
+                            guildId = guild.id,
+                            configurationErrorData = configErrorData
+                        )
+
+                        return@launch
+                    }
 
                 originatedFromOldInterface = true
             }
