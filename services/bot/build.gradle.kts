@@ -18,7 +18,7 @@ dependencies {
     implementation(libs.jda.ktx) {
         exclude(
             group = "net.dv8tion",
-            module = "jda"
+            module = "JDA"
         )
     }
 
