@@ -14,16 +14,11 @@ dependencies {
             module = "opus-java"
         )
     }
+    // NEVER EVER TRUST JDA KTX AND JDA IN THE SAME PROJECT
     implementation(libs.jda.ktx) {
         exclude(
             group = "net.dv8tion",
             module = "jda"
-        )
-    }
-    implementation(libs.bundles.discord) {
-        exclude(
-            group = "club.minnced",
-            module = "opus-java"
         )
     }
 
