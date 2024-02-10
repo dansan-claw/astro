@@ -20,20 +20,7 @@ data class GuildData(
     var interfaces: MutableList<InterfaceData> = mutableListOf(),
     var errorLogsChannelId: String? = null,
     var allowMissingAdminPerm: Boolean = false,
-) {
-    constructor() : this(
-        guildID = "",
-        upgradedByUserID = null, // Already has a default value, included for clarity
-        entitlements = mutableListOf(),
-        bannedCommands = mutableListOf(),
-        templates = mutableListOf(),
-        connections = mutableListOf(),
-        generators = mutableListOf(),
-        interfaces = mutableListOf(),
-        errorLogsChannelId = null, // Already has a default value, included for clarity
-        allowMissingAdminPerm = false // Already has a default value, included for clarity
-    )
-}
+)
 
 /**
  * Entitlement owned by a guild
