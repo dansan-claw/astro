@@ -4,30 +4,51 @@ plugins {
     base
     java
 
-    kotlin("jvm") version "1.6.10"
-    kotlin("plugin.spring") version "1.6.10"
-    kotlin("plugin.serialization") version "1.6.10"
+    alias(libs.plugins.jvm)
+    alias(libs.plugins.spring)
+    alias(libs.plugins.serialization)
+    alias(libs.plugins.sentry)
 }
 
 repositories {
+    maven {
+        url = uri("https://maven.pkg.github.com/bot-astro/jda")
+        credentials {
+            this.username = System.getenv("GITHUB_ACTOR") ?: property("ghpMavenUser").toString()
+            this.password = System.getenv("GITHUB_TOKEN") ?: property("ghpMavenPat").toString()
+        }
+    }
     mavenCentral()
 }
 
+// Migrate this to buildSrc or conventional builds when version catalogs are supported
 subprojects {
     repositories {
+        maven {
+            url = uri("https://maven.pkg.github.com/bot-astro/jda")
+            credentials {
+                this.username = System.getenv("GITHUB_ACTOR") ?: property("ghpMavenUser").toString()
+                this.password = System.getenv("GITHUB_TOKEN") ?: property("ghpMavenPat").toString()
+            }
+        }
         mavenCentral()
-        maven("https://m2.dv8tion.net/releases")
-        jcenter()
         maven("https://jitpack.io/")
     }
 
     apply(plugin = "org.jetbrains.kotlin.jvm")
     apply(plugin = "org.jetbrains.kotlin.plugin.spring")
     apply(plugin = "org.jetbrains.kotlin.plugin.serialization")
+    apply(plugin = "io.sentry.jvm.gradle")
 
     base {
         archivesName.set("${group.toString().replace(".", "-")}-$name")
     }
 
     group = "${parent?.group}.${parent?.name}"
+
+    kotlin {
+        jvmToolchain {
+            this.languageVersion.set(JavaLanguageVersion.of(17))
+        }
+    }
 }
