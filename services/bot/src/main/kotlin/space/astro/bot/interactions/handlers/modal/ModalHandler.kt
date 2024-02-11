@@ -20,6 +20,7 @@ import space.astro.bot.interactions.context.InteractionContextBuilderException
 import space.astro.bot.interactions.reply.InteractionReplyHandler
 import space.astro.shared.core.daos.GuildDao
 import space.astro.shared.core.util.ui.Links
+import java.lang.reflect.InvocationTargetException
 import kotlin.reflect.full.callSuspend
 
 private val log = KotlinLogging.logger {  }
@@ -195,18 +196,20 @@ class ModalHandler(
             try {
                 modalRunnable.callSuspend(modalContainer, event, interactionContext)
             } catch (e: Exception) {
-                when (e) {
+                val exception = if (e is InvocationTargetException) e.targetException else e
+
+                when (exception) {
                     is ConfigurationException -> {
                         configurationErrorEventPublisher.publishConfigurationErrorEvent(
                             guildId = guild.id,
-                            configurationErrorData = e.configurationErrorData
+                            configurationErrorData = exception.configurationErrorData
                         )
 
-                        interactionContext.replyHandler.replyEmbed(Embeds.error("An error occurred because of an invalid configuration:\n\n${e.configurationErrorData.description}"))
+                        interactionContext.replyHandler.replyEmbed(Embeds.error("An error occurred because of an invalid configuration:\n\n${exception.configurationErrorData.description}"))
                     }
 
                     is InsufficientPermissionException -> {
-                        val configurationError = e.toConfigurationErrorDto()
+                        val configurationError = exception.toConfigurationErrorDto()
 
                         configurationErrorEventPublisher.publishConfigurationErrorEvent(
                             guildId = guild.id,

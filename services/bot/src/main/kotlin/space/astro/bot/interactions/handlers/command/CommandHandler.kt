@@ -36,6 +36,7 @@ import space.astro.shared.core.models.analytics.meta.SlashCommandInvocationOptio
 import space.astro.shared.core.models.analytics.meta.structure.OptionPair
 import space.astro.shared.core.util.extention.asRelativeTimestampFromNow
 import space.astro.shared.core.util.ui.Links
+import java.lang.reflect.InvocationTargetException
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 import kotlin.reflect.KClass
@@ -291,18 +292,20 @@ class CommandHandler(
             try {
                 command.callSuspend(commandContainer, event, interactionContext, *optionArgs)
             } catch (e: Exception) {
-                when (e) {
+                val exception = if (e is InvocationTargetException) e.targetException else e
+
+                when (exception) {
                     is ConfigurationException -> {
                         configurationErrorEventPublisher.publishConfigurationErrorEvent(
                             guildId = guild.id,
-                            configurationErrorData = e.configurationErrorData
+                            configurationErrorData = exception.configurationErrorData
                         )
 
-                        interactionContext.replyHandler.replyEmbed(Embeds.error("An error occurred because of an invalid configuration:\n\n${e.configurationErrorData.description}"))
+                        interactionContext.replyHandler.replyEmbed(Embeds.error("An error occurred because of an invalid configuration:\n\n${exception.configurationErrorData.description}"))
                     }
 
                     is InsufficientPermissionException -> {
-                        val configurationError = e.toConfigurationErrorDto()
+                        val configurationError = exception.toConfigurationErrorDto()
 
                         configurationErrorEventPublisher.publishConfigurationErrorEvent(
                             guildId = guild.id,

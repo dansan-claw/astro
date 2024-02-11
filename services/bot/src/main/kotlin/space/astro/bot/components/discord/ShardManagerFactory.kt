@@ -1,7 +1,6 @@
 package space.astro.bot.components.discord
 
 import dev.minn.jda.ktx.jdabuilder.injectKTX
-import io.lettuce.core.api.async.RedisAsyncCommands
 import io.lettuce.core.cluster.api.async.RedisClusterAsyncCommands
 import io.lettuce.core.cluster.api.reactive.RedisClusterReactiveCommands
 import mu.KotlinLogging
