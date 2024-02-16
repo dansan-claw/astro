@@ -1,5 +1,6 @@
 package space.astro.bot.interactions.handlers.menu.impl.vc.permissions
 
+import dev.minn.jda.ktx.coroutines.await
 import net.dv8tion.jda.api.events.interaction.component.EntitySelectInteractionEvent
 import space.astro.bot.components.managers.vc.VCPermissionManager
 import space.astro.bot.core.ui.Embeds
@@ -30,8 +31,14 @@ class BanMenu(
     ) {
         ctx.replyHandler.deferReply()
 
-        val users = event.values.mapNotNull { ctx.guild.getMemberById(it.id) }
         val roles = event.values.mapNotNull { ctx.guild.getRoleById(it.id) }
+        val users = event.values.apply {
+            val foundRoleIds = roles.map { it.id }
+            removeAll { value -> value.id in foundRoleIds }
+        }.mapNotNull {
+            ctx.guild.getMemberById(it.id)
+                ?: ctx.guild.retrieveMemberById(it.id).await()
+        }
 
         val banned = vcPermissionManager.kickAndBanMultipleMembersAndRoles(
             vcOperationCTX = ctx.vcOperationCTX,
