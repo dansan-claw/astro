@@ -75,7 +75,7 @@ class ConfigurationErrorService {
 
     fun premiumRequiredForOwnerRole() = ConfigurationErrorData(
         description = "Your generator has an owner role configured, but premium is required to use it." +
-                "\nEither upgrade to premium or remove it with `/generator owner role!"
+                "\nEither upgrade to premium or remove it with `/generator owner role`!"
     )
 
     /////////////////
