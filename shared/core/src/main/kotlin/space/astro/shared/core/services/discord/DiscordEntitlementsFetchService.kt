@@ -1,5 +1,6 @@
 package space.astro.shared.core.services.discord
 
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.apache.*
@@ -27,7 +28,9 @@ class DiscordEntitlementsFetchService(
         expectSuccess = true
         install(Logging)
         install(ContentNegotiation) {
-            jackson()
+            jackson {
+                registerModule(JavaTimeModule())
+            }
         }
         install(HttpRequestRetry) {
             retryOnServerErrors(maxRetries = 3)

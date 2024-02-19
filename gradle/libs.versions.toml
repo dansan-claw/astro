@@ -20,6 +20,7 @@ influx = "6.12.0"
 
 # Serializing
 jackson-kotlin = "2.13.0"
+jackson-date = "2.14.1"
 kotlinx-serialization = "1.3.1"
 
 # Kotlin
@@ -77,6 +78,7 @@ influx = { module = "com.influxdb:influxdb-client-java", version.ref = "influx" 
 
 # Serializing
 jackson-kotlin = { module = "com.fasterxml.jackson.module:jackson-module-kotlin", version.ref = "jackson-kotlin"}
+jackson-date = { module = "com.fasterxml.jackson.datatype:jackson-datatype-jsr310", version.ref = "jackson-date" }
 kotlinx-serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization"}
 
 # Kotlin
@@ -133,7 +135,8 @@ coroutines = [
 ]
 serialization = [
     "jackson-kotlin",
-    "kotlinx-serialization"
+    "kotlinx-serialization",
+    "jackson-date"
 ]
 caching = [
     "caffeine",
