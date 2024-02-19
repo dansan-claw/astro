@@ -12,6 +12,7 @@ dependencies {
     implementation(libs.bundles.coroutines)
     implementation(libs.bundles.web)
     implementation(libs.bundles.serialization)
+    implementation(libs.bundles.ktor.client)
 
     implementation(libs.nanoid)
     implementation(libs.jda)

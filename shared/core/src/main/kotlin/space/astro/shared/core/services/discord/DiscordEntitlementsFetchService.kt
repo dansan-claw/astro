@@ -1,54 +1,44 @@
 package space.astro.shared.core.services.discord
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import kotlinx.coroutines.reactor.awaitSingle
+import io.ktor.client.*
+import io.ktor.client.call.*
+import io.ktor.client.engine.apache.*
+import io.ktor.client.plugins.*
+import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.client.plugins.logging.*
+import io.ktor.client.request.*
+import io.ktor.http.*
+import io.ktor.serialization.kotlinx.json.*
+import kotlinx.serialization.json.Json
 import mu.KotlinLogging
-import net.dv8tion.jda.api.entities.entitlement.Entitlement
-import org.springframework.core.ParameterizedTypeReference
-import org.springframework.http.HttpStatus
-import org.springframework.http.client.reactive.ReactorClientHttpConnector
-import org.springframework.http.codec.json.Jackson2JsonDecoder
-import org.springframework.http.codec.json.Jackson2JsonEncoder
 import org.springframework.stereotype.Service
-import org.springframework.web.reactive.function.client.WebClient
-import org.springframework.web.reactive.function.client.awaitBody
-import org.springframework.web.reactive.function.client.bodyToMono
-import reactor.core.publisher.Mono
-import reactor.netty.http.client.HttpClient
-import reactor.netty.resources.ConnectionProvider
+import org.springframework.web.util.UriComponentsBuilder
 import space.astro.shared.core.configs.DiscordConfig
-import space.astro.shared.core.configs.WebClientConfig
 import space.astro.shared.core.models.discord.DiscordEntitlementData
-import java.io.Reader
-import java.time.Duration
+import java.net.URI
 import java.util.*
 
 private val log = KotlinLogging.logger { }
 
 @Service
 class DiscordEntitlementsFetchService(
-    webClientConfig: WebClientConfig,
-    discordConfig: DiscordConfig,
-    private val objectMapper: ObjectMapper
+    private val discordConfig: DiscordConfig,
 ) {
-    private final val provider: ConnectionProvider =
-        ConnectionProvider.builder("discord-entitlements-fetch-service-provider")
-            //.maxConnections(webClientConfig.httpMaxConnections)
-            .maxIdleTime(Duration.ofSeconds(webClientConfig.httpMaxIdleTime))
-            .maxLifeTime(Duration.ofSeconds(webClientConfig.httpMaxLifeTime))
-            //.pendingAcquireTimeout(Duration.ofSeconds(webClientConfig.httpPendingAcquireTimeout))
-            .evictInBackground(Duration.ofSeconds(webClientConfig.httpEvictInBackground))
-            .build()
-
-    private val webClient: WebClient = WebClient.builder()
-        .clientConnector(ReactorClientHttpConnector(HttpClient.create(provider)))
-        .codecs { configurer ->
-            val codecs = configurer.defaultCodecs()
-            codecs.jackson2JsonDecoder(Jackson2JsonDecoder(objectMapper))
-            codecs.jackson2JsonEncoder(Jackson2JsonEncoder(objectMapper))
+    private val httpClient = HttpClient(Apache) {
+        expectSuccess = true
+        install(Logging)
+        install(ContentNegotiation) {
+            json(Json)
         }
-        .baseUrl(discordConfig.baseUrl)
-        .build()
+        install(HttpRequestRetry) {
+            retryOnServerErrors(maxRetries = 3)
+            exponentialDelay()
+        }
+        defaultRequest {
+            contentType(ContentType.Application.Json)
+            accept(ContentType.Application.Json)
+        }
+    }
 
 
     /**
@@ -68,22 +58,16 @@ class DiscordEntitlementsFetchService(
         log.info("Fetching entitlements")
 
         try {
-            return webClient.get()
-                .uri { uriBuilder ->
-                    uriBuilder
-                        .pathSegment("applications", applicationId, "entitlements")
-                        .queryParamIfPresent("guild_id", guildId?.let { Optional.of(it) } ?: Optional.empty<String>())
-                        .queryParamIfPresent("user_id", userId?.let { Optional.of(it) } ?: Optional.empty<String>())
-                        .build()
-                }
-                .header("Authorization", "Bot $authToken")
-                .retrieve()
-                .onStatus(
-                    { it != HttpStatus.OK },
-                    { throw Throwable("${it.statusCode()} - Unexpected Response") })
-                .bodyToFlux(DiscordEntitlementData::class.java)
-                .collectList()
-                .awaitSingle()
+            val uri = UriComponentsBuilder.fromUri(URI(discordConfig.baseUrl))
+                .pathSegment("applications", applicationId, "entitlements")
+                .queryParamIfPresent("guild_id", guildId?.let { Optional.of(it) } ?: Optional.empty<String>())
+                .queryParamIfPresent("user_id", userId?.let { Optional.of(it) } ?: Optional.empty<String>())
+                .build()
+                .toUriString()
+
+            return httpClient.get(uri) {
+                header("Authorization", "Bot $authToken")
+            }.body()
         } catch (t: Throwable) {
             throw RuntimeException(
                 "Unable to fetch entitlements for bot with id $applicationId!",
