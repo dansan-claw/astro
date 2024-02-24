@@ -36,6 +36,6 @@ enum class InteractionAction(
     VC_WAITING_ROOM(true, 2000, listOf(Permission.ADMINISTRATOR), emptyList()),
 
     // PREDASHBOARD
-    SETTINGS(false, 2000, listOf(Permission.ADMINISTRATOR), listOf(Permission.ADMINISTRATOR)),
-    HIGH_COOLDOWN_NO_ADMIN(false, 5000, listOf(), listOf(Permission.ADMINISTRATOR))
+    SETTINGS(false, 2000, listOf(Permission.ADMINISTRATOR), listOf(Permission.MANAGE_CHANNEL)),
+    HIGH_COOLDOWN_NO_ADMIN(false, 5000, listOf(), listOf(Permission.MANAGE_CHANNEL))
 }

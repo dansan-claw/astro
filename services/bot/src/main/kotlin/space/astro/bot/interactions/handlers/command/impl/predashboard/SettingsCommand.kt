@@ -1,9 +1,12 @@
 package space.astro.bot.interactions.handlers.command.impl.predashboard
 
+import dev.minn.jda.ktx.messages.Embed
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.OptionType
+import space.astro.bot.components.discord.ShardManagerConfig
+import space.astro.bot.config.PodConfig
 import space.astro.bot.core.ui.Embeds
 import space.astro.bot.interactions.InteractionAction
 import space.astro.bot.interactions.context.SettingsInteractionContext
@@ -11,6 +14,7 @@ import space.astro.bot.interactions.handlers.command.*
 import space.astro.shared.core.daos.ConfigurationErrorDao
 import space.astro.shared.core.daos.GuildDao
 import space.astro.shared.core.daos.TemporaryVCDao
+import space.astro.shared.core.util.ui.Colors
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -24,7 +28,9 @@ import java.util.*
 class SettingsCommand(
     private val configurationErrorDao: ConfigurationErrorDao,
     private val temporaryVCDao: TemporaryVCDao,
-    private val guildDao: GuildDao
+    private val guildDao: GuildDao,
+    private val podConfig: PodConfig,
+    private val shardManagerConfig: ShardManagerConfig
 ) : AbstractCommand() {
     @SubCommand(
         name = "admin-permission",
@@ -74,13 +80,22 @@ class SettingsCommand(
         val simpleDateFormat = SimpleDateFormat("dd-MM-yyyy HH:mm")
 
         val description = "Here are the last detected errors by Astro:" +
-                "\n\n${errors.joinToString("\n\n") { 
+                "\n\n" +
+                errors.joinToString("\n\n") {
                     it.description + if (it.instant != null) "\n> ${simpleDateFormat.format(Date.from(it.instant!!))}" else ""
-                }}"
-                    .take(MessageEmbed.DESCRIPTION_MAX_LENGTH)
+                }
+
+        val shardId = event.jda.shardInfo.shardId
+        val shardCount = event.jda.shardInfo.shardTotal
+        val podId = podConfig.getParsedOrdinal()
+        val podCount = shardManagerConfig.totalPods
 
         ctx.replyHandler.replyEmbed(
-            Embeds.default(description)
+            Embed(
+                color = Colors.purple.rgb,
+                description = description,
+                footerText = "For help regarding other features of Astro see the buttons below or /help commands • shard $shardId/$shardCount • pod $podId/$podCount"
+            )
         )
     }
 

@@ -20,6 +20,7 @@ influx = "6.12.0"
 
 # Serializing
 jackson-kotlin = "2.13.0"
+jackson-date = "2.14.1"
 kotlinx-serialization = "1.3.1"
 
 # Kotlin
@@ -38,6 +39,9 @@ jda = "5.0.0-beta.17.astro.8_DEV"
 jda-ktx = "0.11.0-beta.19"
 
 chargebee = "3.13.0"
+
+# Ktor
+ktor="2.3.7"
 
 # Analytics
 bigquery = "2.34.2"
@@ -74,6 +78,7 @@ influx = { module = "com.influxdb:influxdb-client-java", version.ref = "influx" 
 
 # Serializing
 jackson-kotlin = { module = "com.fasterxml.jackson.module:jackson-module-kotlin", version.ref = "jackson-kotlin"}
+jackson-date = { module = "com.fasterxml.jackson.datatype:jackson-datatype-jsr310", version.ref = "jackson-date" }
 kotlinx-serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization"}
 
 # Kotlin
@@ -94,6 +99,13 @@ jda = { module = "net.dv8tion:jda", version.ref = "jda" }
 jda-ktx = { module = "club.minnced:jda-ktx", version.ref = "jda-ktx" }
 
 chargebee = { module = "com.chargebee:chargebee-java", version.ref = "chargebee"}
+
+# Ktor client
+ktor-serialization = { group = "io.ktor", name = "ktor-serialization-jackson", version.ref = "ktor" }
+ktor-client-core = { group = "io.ktor", name = "ktor-client-core", version.ref = "ktor" }
+ktor-client-apache = { group = "io.ktor", name = "ktor-client-apache", version.ref = "ktor" }
+ktor-client-logging = { group = "io.ktor", name = "ktor-client-logging", version.ref = "ktor" }
+ktor-client-content-negotiation = { group = "io.ktor", name = "ktor-client-content-negotiation", version.ref = "ktor" }
 
 # Analytics
 bigquery = { module = "com.google.cloud:google-cloud-bigquery", version.ref = "bigquery" }
@@ -123,7 +135,8 @@ coroutines = [
 ]
 serialization = [
     "jackson-kotlin",
-    "kotlinx-serialization"
+    "kotlinx-serialization",
+    "jackson-date"
 ]
 caching = [
     "caffeine",
@@ -133,6 +146,13 @@ jwt = [
     "jjwt-api",
     "jjwt-impl",
     "jjwt-jackson"
+]
+ktor-client = [
+    "ktor-client-core",
+    "ktor-client-apache",
+    "ktor-client-logging",
+    "ktor-serialization",
+    "ktor-client-content-negotiation",
 ]
 discord = [
     "jda",

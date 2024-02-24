@@ -33,7 +33,7 @@ class BanButton(
             placeholder = "Choose the users and roles to ban from your voice channel",
             entityTypes = listOf(EntitySelectMenu.SelectTarget.USER, EntitySelectMenu.SelectTarget.ROLE),
             rangeMin = 1,
-            rangeMax = 10
+            rangeMax = 5
         )
 
         ctx.replyHandler.replyEmbedAndComponent(

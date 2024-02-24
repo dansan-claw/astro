@@ -24,6 +24,10 @@ class PremiumRequirementDetector(
             return true
         }
 
+        if (guildData.upgradedByUserID != null) {
+            return true
+        }
+
         val currentMillis = System.currentTimeMillis()
 
         return guildData.entitlements.any {
@@ -44,7 +48,7 @@ class PremiumRequirementDetector(
             return true
         }
 
-        return guildData.connections.size < 3
+        return guildData.generators.size < 3
     }
 
     fun canCreateInterface(guildData: GuildData): Boolean {
@@ -52,7 +56,7 @@ class PremiumRequirementDetector(
             return true
         }
 
-        return guildData.connections.size < 1
+        return guildData.interfaces.size < 1
     }
 
     fun canCreateTemplate(guildData: GuildData): Boolean {
