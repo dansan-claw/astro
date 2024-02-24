@@ -197,7 +197,7 @@ class ModalHandler(
             try {
                 modalRunnable.callSuspend(modalContainer, event, interactionContext)
             } catch (e: Exception) {
-                val exception = if (e is InvocationTargetException) e.targetException else e
+                val exception = if (e is InvocationTargetException) e.cause ?: e.targetException else e
 
                 when (exception) {
                     is ConfigurationException -> {
@@ -233,6 +233,7 @@ class ModalHandler(
                                 "An unknown error occurred, the developers are aware of it and will investigate it." +
                                         "\n\nError: ${e.message ?: "Unknown"}" +
                                         "\nFull exception: $e" +
+                                        "\nParsed: $exception" +
                                         "\n\nIf you need support join the [support server](${Links.SUPPORT_SERVER})."
                             )
                         )
