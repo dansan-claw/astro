@@ -1,4 +1,4 @@
-package space.astro.api.central.controllers.body
+package space.astro.api.central.models.body
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 

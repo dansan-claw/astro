@@ -85,4 +85,40 @@ class DiscordUserTokenFetchService(
             )
         }
     }
+
+    /**
+     * Exchanges the [refreshToken] for a new [AuthorizationWrapperDto]
+     */
+    suspend fun refreshToken(
+        refreshToken: String
+    ): AuthorizationWrapperDto {
+        try {
+            val tokenPayload = webClient.post()
+                .uri { uriBuilder ->
+                    uriBuilder.pathSegment("oauth2", "token")
+                        .build()
+                }
+                .body(
+                    BodyInserters.fromFormData("client_id", discordApplicationConfig.id)
+                        .with("client_secret", discordApplicationConfig.secret)
+                        .with("grant_type", "refresh_token")
+                        .with("refresh_token", refreshToken)
+                )
+                .retrieve()
+                .onStatus(
+                    { it != HttpStatus.OK },
+                    { throw Throwable("${it.statusCode()} - Unexpected Response") })
+                .awaitBody<TokenPayloadDto>()
+
+            val selfUser = discordUserService.fetchSelfUser(tokenPayload.accessToken)
+            discordUserTokenPersistenceService.updateCredentials(selfUser.id, tokenPayload)
+
+            return AuthorizationWrapperDto(selfUser, tokenPayload)
+        } catch (t: Throwable) {
+            throw RuntimeException(
+                "Unable to refresh access token from refresh token!",
+                t
+            )
+        }
+    }
 }

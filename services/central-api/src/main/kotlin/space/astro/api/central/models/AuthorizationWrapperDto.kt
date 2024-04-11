@@ -4,5 +4,5 @@ import space.astro.shared.core.models.discord.DiscordUserData
 
 data class AuthorizationWrapperDto(
     val user: DiscordUserData,
-    val token: TokenPayloadDto
+    val token: TokenPayloadDto,
 )

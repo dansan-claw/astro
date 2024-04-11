@@ -10,7 +10,6 @@ import space.astro.shared.core.util.ui.Links
 
 data class GuildData(
     val guildID: String,
-    @Deprecated("Chargebee premium system is deprecated")
     var upgradedByUserID: String? = null,
     val entitlements: MutableList<GuildEntitlement> = mutableListOf(),
     var bannedCommands: MutableList<String> = mutableListOf(),

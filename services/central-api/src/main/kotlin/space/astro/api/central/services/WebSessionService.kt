@@ -33,14 +33,14 @@ class WebSessionService(
 
     val hmacShaKey: SecretKey = Keys.hmacShaKeyFor(jwtConfig.getDecodedKey())
 
-    fun createSession(id: String): String {
-        val token = createToken(id)
-        cacheToken(id, token)
+    fun createSession(userID: String): String {
+        val token = createToken(userID)
+        cacheToken(userID, token)
         return token
     }
 
-    private fun cacheToken(id: String, token: String) {
-        val key = buildRedisKey(id, token)
+    private fun cacheToken(userID: String, token: String) {
+        val key = buildRedisKey(userID, token)
         val value = true
 
         sessionCache.put(key, value)
@@ -49,9 +49,9 @@ class WebSessionService(
         )
     }
 
-    private fun createToken(id: String): String {
+    private fun createToken(userID: String): String {
         return DefaultJwtBuilder().setIssuer("astro-web").setIssuedAt(Date.from(Instant.now()))
-            .setId(id).signWith(hmacShaKey).compact()
+            .setId(userID).signWith(hmacShaKey).compact()
     }
 
     fun existsSession(token: String): Boolean {
@@ -59,14 +59,14 @@ class WebSessionService(
             return true
         }
 
-        val id = getIdFromSession(token) ?: return false
+        val id = getUserIdFromSession(token) ?: return false
 
         return redis.exists(
             buildRedisKey(id, token)
         ).get() == 1L
     }
 
-    fun getIdFromSession(token: String): String? {
+    fun getUserIdFromSession(token: String): String? {
         val claims = parser.parseClaimsJws(token)
         val id = claims.body.id
 
@@ -75,8 +75,8 @@ class WebSessionService(
         return id
     }
 
-    fun deleteSessions(id: String) {
-        val key = buildRedisKeyAllSessions(id)
+    fun deleteSessions(userID: String) {
+        val key = buildRedisKeyAllSessions(userID)
 
         val tokens = redis.keys(key)
             .get()
@@ -89,7 +89,7 @@ class WebSessionService(
         return String.format(RedisKey.WEB_SESSION_TOKEN.key, id, token)
     }
 
-    private fun buildRedisKeyAllSessions(id: String): String {
-        return String.format(RedisKey.WEB_SESSION_TOKENS.key, id)
+    private fun buildRedisKeyAllSessions(userID: String): String {
+        return String.format(RedisKey.WEB_SESSION_TOKENS.key, userID)
     }
 }

@@ -9,7 +9,9 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import space.astro.api.central.controllers.body.SubscriptionWebhookData
+import org.springframework.web.server.ServerWebExchange
+import space.astro.api.central.configs.Mappings
+import space.astro.api.central.models.body.SubscriptionWebhookData
 import space.astro.shared.core.daos.GuildDao
 import space.astro.shared.core.daos.UserDao
 import space.astro.shared.core.models.database.GuildUpgradeData
@@ -18,23 +20,35 @@ import space.astro.shared.core.services.chargebee.ChargebeeClientService
 private val log = KotlinLogging.logger { }
 
 @RestController
-@RequestMapping("/chargebee")
 class ChargebeeController(
     val chargebeeClientService: ChargebeeClientService,
     val guildDao: GuildDao,
     val userDao: UserDao
 ) {
-    @GetMapping("/portalSession/{id}")
-    suspend fun createPortalSession(@PathVariable id: String): ResponseEntity<*> {
-        val accessUrl = chargebeeClientService.createPortalSession(id)
+    @GetMapping(Mappings.Chargebee.portalSession)
+    suspend fun createPortalSession(
+        exchange: ServerWebExchange
+    ): ResponseEntity<*> {
+        val userID = exchange.getUserID()
+        val accessUrl = chargebeeClientService.createPortalSession(userID)
+
         return if (accessUrl != null)
             ResponseEntity.ok(accessUrl)
         else
             ResponseEntity.badRequest().body(null)
     }
 
-    @PostMapping("/cancel")
+    @PostMapping(Mappings.Chargebee.eventSubCreate)
+    suspend fun receiveSubscriptionCreation(@RequestBody subscriptionWebhookData: SubscriptionWebhookData): ResponseEntity<*> {
+        // TODO: Handle user and guild subscription creation
+        // TODO: Emit event to support-bot
+        return ResponseEntity.ok(null)
+    }
+
+    @PostMapping(Mappings.Chargebee.eventSubCancel)
     suspend fun receiveSubscriptionCancellation(@RequestBody subscriptionWebhookData: SubscriptionWebhookData): ResponseEntity<*> {
+        // TODO: Handle user subscription creation
+        // TODO: Emit event to support-bot
         try {
             val subID = subscriptionWebhookData.content.subscription.id
             val userID = subscriptionWebhookData.content.customer.id
