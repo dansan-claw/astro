@@ -1,6 +1,5 @@
 package space.astro.api.central.controllers.dashboard
 
-import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
@@ -14,8 +13,6 @@ import space.astro.api.central.models.dashboard.DashboardGuildDto
 import space.astro.api.central.models.dashboard.DashboardGuildRole
 import space.astro.api.central.services.DiscordGuildsFetchService
 import space.astro.shared.core.daos.GuildDao
-
-private val log = KotlinLogging.logger {  }
 
 @RestController
 class DashboardGuildsController(
