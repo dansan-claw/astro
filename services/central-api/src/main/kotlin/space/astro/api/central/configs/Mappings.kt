@@ -2,37 +2,37 @@ package space.astro.api.central.configs
 
 object Mappings {
     object Kube {
-        const val ready = "/ready"
-        const val shutdown = "/shutdown"
+        const val READY = "/ready"
+        const val SHUTDOWN = "/shutdown"
     }
 
     object Status {
-        const val status = "/status"
+        const val STATUS = "/status"
     }
 
     object Chargebee {
         object Prefixes {
-            const val event = "/chargebee/event"
+            const val EVENT = "/chargebee/event"
         }
 
-        const val portalSession = "/chargebee/portal-session"
-        const val eventSubCreate = "${Prefixes.event}/sub/create"
-        const val eventSubCancel = "${Prefixes.event}/sub/cancel"
+        const val PORTAL_SESSION = "/chargebee/portal-session"
+        const val EVENT_SUB_CREATE = "${Prefixes.EVENT}/sub/create"
+        const val EVENT_SUB_CANCEL = "${Prefixes.EVENT}/sub/cancel"
     }
 
     object Dashboard {
         object Prefixes {
-            const val login = "/dashboard/auth/login"
-            const val dashboard = "/dashboard"
+            const val DASHBOARD = "/dashboard"
+            const val LOGIN = "${DASHBOARD}/auth/login"
         }
-        const val login = "${Prefixes.login}/{code}"
-        const val logout = "${Prefixes.dashboard}/auth/logout"
+        const val LOGIN = "${Prefixes.LOGIN}/{code}"
+        const val LOGOUT = "${Prefixes.DASHBOARD}/auth/logout"
 
-        const val usersMe = "${Prefixes.dashboard}/users/@me"
+        const val USERS_ME = "${Prefixes.DASHBOARD}/users/@me"
 
-        const val guilds = "${Prefixes.dashboard}/guilds"
-        const val guild = "${Prefixes.dashboard}${guilds}/{guildID}"
-        const val guildChannels = "${Prefixes.dashboard}${guild}/channels"
-        const val guildRoles = "${Prefixes.dashboard}${guild}/roles"
+        const val GUILDS = "${Prefixes.DASHBOARD}/guilds"
+        const val GUILD = "${GUILDS}/{guildID}"
+        const val GUILD_CHANNELS = "${GUILD}/channels"
+        const val GUILD_ROLES = "${GUILD}/roles"
     }
 }

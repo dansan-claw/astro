@@ -13,12 +13,12 @@ private val log = KotlinLogging.logger { }
 @RestController
 class LifecycleController {
 
-    @GetMapping(Mappings.Kube.ready)
+    @GetMapping(Mappings.Kube.READY)
     suspend fun ready(@RequestHeader("Authorization") auth: String): ResponseEntity<*> {
         return ResponseEntity.noContent().build<Any>()
     }
 
-    @GetMapping(Mappings.Kube.shutdown)
+    @GetMapping(Mappings.Kube.SHUTDOWN)
     suspend fun shutdown(@RequestHeader("Authorization") auth: String): ResponseEntity<*> {
         log.info("Got shutdown request - persisting players...")
         delay(3000)

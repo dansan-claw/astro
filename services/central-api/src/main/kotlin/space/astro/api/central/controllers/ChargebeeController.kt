@@ -24,7 +24,7 @@ class ChargebeeController(
     val guildDao: GuildDao,
     val userDao: UserDao
 ) {
-    @GetMapping(Mappings.Chargebee.portalSession)
+    @GetMapping(Mappings.Chargebee.PORTAL_SESSION)
     suspend fun createPortalSession(
         exchange: ServerWebExchange
     ): ResponseEntity<*> {
@@ -37,14 +37,14 @@ class ChargebeeController(
             ResponseEntity.badRequest().body(null)
     }
 
-    @PostMapping(Mappings.Chargebee.eventSubCreate)
+    @PostMapping(Mappings.Chargebee.EVENT_SUB_CREATE)
     suspend fun receiveSubscriptionCreation(@RequestBody subscriptionWebhookData: SubscriptionWebhookData): ResponseEntity<*> {
         // TODO: Handle user and guild subscription creation
         // TODO: Emit event to support-bot
         return ResponseEntity.ok(null)
     }
 
-    @PostMapping(Mappings.Chargebee.eventSubCancel)
+    @PostMapping(Mappings.Chargebee.EVENT_SUB_CANCEL)
     suspend fun receiveSubscriptionCancellation(@RequestBody subscriptionWebhookData: SubscriptionWebhookData): ResponseEntity<*> {
         // TODO: Handle user subscription creation
         // TODO: Emit event to support-bot

@@ -45,7 +45,7 @@ class AuthWebFilter(
         //////////////
         /// STATUS ///
         //////////////
-        if (requestPath.startsWith(Mappings.Status.status)) {
+        if (requestPath.startsWith(Mappings.Status.STATUS)) {
             return chain.filter(exchange)
         }
 
@@ -53,7 +53,7 @@ class AuthWebFilter(
         /////////////
         /// LOGIN ///
         /////////////
-        if (requestPath.startsWith(Mappings.Dashboard.Prefixes.login)) {
+        if (requestPath.startsWith(Mappings.Dashboard.Prefixes.LOGIN)) {
             return chain.filter(exchange)
         }
 
@@ -61,7 +61,7 @@ class AuthWebFilter(
         ////////////////////////
         /// CHARGEBEE EVENTS ///
         ////////////////////////
-        if (requestPath.startsWith(Mappings.Chargebee.Prefixes.event)) {
+        if (requestPath.startsWith(Mappings.Chargebee.Prefixes.EVENT)) {
             return mono {
                 val webhookTokenEncoded = request.headers["Authorization"]?.get(0)?.removePrefix("Basic ")
 
@@ -84,8 +84,8 @@ class AuthWebFilter(
         /// DASHBOARD & CHARGEBEE PORTAL SESSION ///
         ////////////////////////////////////////////
 
-        if (requestPath.startsWith(Mappings.Dashboard.Prefixes.dashboard)
-            || requestPath.startsWith(Mappings.Chargebee.portalSession))
+        if (requestPath.startsWith(Mappings.Dashboard.Prefixes.DASHBOARD)
+            || requestPath.startsWith(Mappings.Chargebee.PORTAL_SESSION))
         {
             return mono {
                 val sessionToken = request.headers["Authorization"]?.get(0)

@@ -8,7 +8,7 @@ import space.astro.api.central.configs.Mappings
 @RestController
 
 class StatusController {
-    @GetMapping(Mappings.Status.status)
+    @GetMapping(Mappings.Status.STATUS)
     suspend fun status(): ResponseEntity<*> {
         // TODO: Figure out how to fetch shards from all pods
         return ResponseEntity.noContent().build<Any>()

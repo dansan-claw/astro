@@ -21,7 +21,7 @@ class DashboardAuthController(
     val webSessionService: WebSessionService,
 ) {
 
-    @GetMapping(Mappings.Dashboard.login)
+    @GetMapping(Mappings.Dashboard.LOGIN)
     suspend fun authorizeDiscord(@PathVariable code: String): ResponseEntity<*> {
         log.info { "Authorizing discord user with code $code" }
 
@@ -49,7 +49,7 @@ class DashboardAuthController(
         return ResponseEntity.ok(response)
     }
 
-    @GetMapping(Mappings.Dashboard.logout)
+    @GetMapping(Mappings.Dashboard.LOGOUT)
     suspend fun logoutDiscord(
         @RequestHeader("Authorization") sessionToken: String,
         exchange: ServerWebExchange

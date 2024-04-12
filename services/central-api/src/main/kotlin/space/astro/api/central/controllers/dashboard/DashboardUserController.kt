@@ -15,7 +15,7 @@ private val log = KotlinLogging.logger { }
 class DashboardUserController(
     val discordUserService: DiscordUserService,
 ) {
-    @GetMapping(Mappings.Dashboard.usersMe)
+    @GetMapping(Mappings.Dashboard.USERS_ME)
     suspend fun getSelfUser(exchange: ServerWebExchange): ResponseEntity<*> {
         val accessToken = exchange.getAccessToken()
 
