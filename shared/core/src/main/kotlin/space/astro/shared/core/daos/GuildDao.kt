@@ -32,6 +32,10 @@ class GuildDao(
         collection.createIndex(Indexes.ascending(GuildData::guildID.name))
     }
 
+//    fun exists(id: String): GuildData? {
+//
+//    }
+
     fun get(id: String): GuildData? {
         return cacheManager.get(id)
             ?: collection.find(eq(GuildData::guildID.name, id))
