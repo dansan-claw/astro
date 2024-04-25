@@ -2,7 +2,13 @@ package space.astro.shared.core.models.database
 
 import com.aventrix.jnanoid.jnanoid.NanoIdUtils
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
+import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.Region
+import net.dv8tion.jda.api.entities.MessageEmbed
+import net.dv8tion.jda.api.entities.Widget
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
+import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import space.astro.shared.core.util.extention.*
@@ -44,7 +50,16 @@ data class TemplateData(
     var vcLimit: Int? = null,
     var vcBitrate: Int? = null,
     var vcRegion: String? = null
-)
+) {
+    fun validate() : Boolean {
+        return name.isNotEmpty()
+                && enabledGeneratorIds?.all { it.isValidSnowflake() } ?: true
+                && vcName?.length?.let { it in 2..100 } ?: true
+                && vcLimit?.let { it in 0..99 } ?: true
+                && vcBitrate?.let { it in 8000..384000 } ?: true
+                && vcRegion?.let { it in Region.values().map { region -> region.key } } ?: true
+    }
+}
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class GeneratorData(
@@ -86,8 +101,31 @@ data class GeneratorData(
     var waitingBitrate: Int = 0,
     var waitingPosition: InitialPosition = InitialPosition.BEFORE,
     var waitingUserLimit: Int = 0
-
-)
+) {
+    fun validate() : Boolean {
+        return id.isValidSnowflake()
+                && fallbackId?.isValidSnowflake() ?: true
+                && defaultName.length in 2..500
+                && defaultLockedName?.length?.let { it in 2..500 } ?: true
+                && defaultHiddenName?.length?.let { it in 2..500 } ?: true
+                && userLimit in 0..99
+                && bitrate in 0..384000
+                && category?.isValidSnowflake() ?: true
+                && permissionsTargetRole?.isValidSnowflake() ?: true
+                && permissionsImmuneRole?.isValidSnowflake() ?: true
+                && ownerRole?.isValidSnowflake() ?: true
+                && commandsSettings.validate()
+                && chatCategory?.isValidSnowflake() ?: true
+                && chatTopic?.length?.let { it in 0.. TextChannel.MAX_TOPIC_LENGTH } ?: true
+                && chatSlowmode in 0..TextChannel.MAX_SLOWMODE
+                && defaultChatName.length in 2..500
+                && defaultChatText?.length?.let { it in 0..(if (defaultChatTextEmbed) MessageEmbed.DESCRIPTION_MAX_LENGTH else MessageEmbed.TEXT_MAX_LENGTH) } ?: true
+                && waitingCategory?.isValidSnowflake() ?: true
+                && defaultWaitingName.length in 2..500
+                && waitingBitrate in 0..384000
+                && waitingUserLimit in 0..99
+    }
+}
 
 
 enum class PermissionsInherited {
@@ -142,6 +180,13 @@ data class InterfaceData(
     var generateEmbedFields: Boolean = false
 ) {
     fun asMarkdownLink(guildID: String) = "interface".asMessageMarkdownLink(guildID, channelID, messageID)
+
+    fun validate() : Boolean {
+        return channelID.isValidSnowflake()
+                && messageID.isValidSnowflake()
+                && buttons.all { it.validate() }
+                && embedStyle.validate()
+    }
 }
 
 data class EmbedStyle(
@@ -157,7 +202,20 @@ data class EmbedStyle(
     var authorIconUrl: String? = Links.LOGO,
     var footer: String? = "Use the buttons below to manage your voice channel",
     var footerIconUrl: String? = null
-)
+) {
+    fun validate() : Boolean {
+        return url?.length?.let { it < MessageEmbed.URL_MAX_LENGTH } ?: true
+                && title?.length?.let { it < MessageEmbed.TITLE_MAX_LENGTH } ?: true
+                && description?.length?.let { it < MessageEmbed.DESCRIPTION_MAX_LENGTH } ?: true
+                && thumbnail?.length?.let { it < MessageEmbed.URL_MAX_LENGTH } ?: true
+                && image?.length?.let { it < MessageEmbed.URL_MAX_LENGTH } ?: true
+                && authorName?.length?.let { it < MessageEmbed.AUTHOR_MAX_LENGTH } ?: true
+                && authorUrl?.length?.let { it < MessageEmbed.URL_MAX_LENGTH } ?: true
+                && authorIconUrl?.length?.let { it < MessageEmbed.URL_MAX_LENGTH } ?: true
+                && footer?.length?.let { it < MessageEmbed.TEXT_MAX_LENGTH } ?: true
+                && footerIconUrl?.length?.let { it < MessageEmbed.URL_MAX_LENGTH } ?: true
+    }
+}
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class InterfaceAction(
@@ -182,6 +240,12 @@ data class InterfaceButton(
     var position: Pair<Int, Int>,
     var fieldValue: String = id
 ) {
+    fun validate() : Boolean {
+        return id.isValidSnowflake()
+                && position.first in 0..4
+                && position.second in 0..4
+    }
+
     companion object {
         fun fromButton(button: Button, position: Pair<Int, Int>) = InterfaceButton(
             id = button.id!!.plus("?interface=true"),
@@ -200,6 +264,10 @@ data class ConnectionData(
     var roleID: String,
     var action: ConnectionAction = ConnectionAction.ASSIGN
 ) {
+    fun validate() : Boolean {
+        return true // TODO
+    }
+
     override fun toString(): String {
         val joinActionName = when (action) {
             ConnectionAction.ASSIGN -> "receive"
@@ -245,7 +313,15 @@ data class CommandsSettings(
     var minBitrate: Int = 8000,
 
     var badwordsAllowed: Boolean = true,
-)
+) {
+    fun validate() : Boolean {
+        // TODO: Return invalid message for all validate functions so that the user understands what's not valid
+        return maxUserLimit in 0..99
+                && minUserLimit in 0..99
+                && maxBitrate?.let { it in 8000..384000 } ?: true
+                && minBitrate in 8000..384000
+    }
+}
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class RenameConditions(

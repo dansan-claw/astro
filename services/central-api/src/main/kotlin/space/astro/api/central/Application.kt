@@ -14,6 +14,7 @@ import org.springframework.scheduling.annotation.EnableScheduling
         "space.astro.shared.core.components.kmongo",
         "space.astro.shared.core.components.influx",
         "space.astro.shared.core.services.chargebee",
+        "space.astro.shared.core.services.bot",
         "space.astro.shared.core.daos"
     ]
 )

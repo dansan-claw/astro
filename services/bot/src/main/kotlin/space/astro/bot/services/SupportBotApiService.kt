@@ -22,7 +22,6 @@ private val log = KotlinLogging.logger {  }
 class SupportBotApiService(
     webClientConfig: WebClientConfig,
     supportBotApiConfig: SupportBotApiConfig,
-    discordConfig: DiscordConfig,
     private val objectMapper: ObjectMapper
 ) {
     private final val provider: ConnectionProvider =

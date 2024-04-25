@@ -5,4 +5,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class GuildDataSettingsBody(
     val allowMissingAdminPerm: Boolean
-)
+) {
+    fun validate(): Boolean {
+        return true
+    }
+}

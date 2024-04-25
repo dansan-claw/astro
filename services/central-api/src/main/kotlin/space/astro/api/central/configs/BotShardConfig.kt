@@ -4,7 +4,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.context.annotation.Configuration
 
 @Configuration
-@ConfigurationProperties("shard.manager")
+@ConfigurationProperties("bot.shard.manager")
 class BotShardConfig {
     var totalShards: Int = 1
     var totalPods: Int = 1
