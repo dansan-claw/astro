@@ -14,7 +14,9 @@ import space.astro.api.central.models.chargebee.SubscriptionWebhookData
 import space.astro.shared.core.daos.GuildDao
 import space.astro.shared.core.daos.UserDao
 import space.astro.shared.core.models.database.GuildUpgradeData
+import space.astro.shared.core.services.bot.BotApiService
 import space.astro.shared.core.services.chargebee.ChargebeeClientService
+import space.astro.shared.core.services.support.SupportBotApiService
 
 private val log = KotlinLogging.logger { }
 
@@ -39,14 +41,12 @@ class ChargebeeController(
 
     @PostMapping(Mappings.Chargebee.EVENT_SUB_CREATE)
     suspend fun receiveSubscriptionCreation(@RequestBody subscriptionWebhookData: SubscriptionWebhookData): ResponseEntity<*> {
-        // TODO: Handle user and guild subscription creation
         // TODO: Emit event to support-bot
         return ResponseEntity.ok(null)
     }
 
     @PostMapping(Mappings.Chargebee.EVENT_SUB_CANCEL)
     suspend fun receiveSubscriptionCancellation(@RequestBody subscriptionWebhookData: SubscriptionWebhookData): ResponseEntity<*> {
-        // TODO: Handle user subscription creation
         // TODO: Emit event to support-bot
         try {
             val subID = subscriptionWebhookData.content.subscription.id

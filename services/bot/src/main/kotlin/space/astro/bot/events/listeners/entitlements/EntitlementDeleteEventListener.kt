@@ -7,7 +7,7 @@ import net.dv8tion.jda.api.events.entitlement.EntitlementDeleteEvent
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
 import space.astro.bot.config.DiscordApplicationConfig
-import space.astro.bot.services.SupportBotApiService
+import space.astro.shared.core.services.support.SupportBotApiService
 import space.astro.shared.core.daos.GuildDao
 
 private val logger = KotlinLogging.logger {  }

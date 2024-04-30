@@ -1,4 +1,4 @@
-package space.astro.bot.services
+package space.astro.shared.core.services.support
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import mu.KotlinLogging
@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.netty.http.client.HttpClient
 import reactor.netty.resources.ConnectionProvider
-import space.astro.shared.core.configs.DiscordConfig
 import space.astro.shared.core.configs.SupportBotApiConfig
 import space.astro.shared.core.configs.WebClientConfig
 import java.time.Duration

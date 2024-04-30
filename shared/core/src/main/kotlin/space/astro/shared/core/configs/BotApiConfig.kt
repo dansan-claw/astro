@@ -6,5 +6,5 @@ import org.springframework.context.annotation.Configuration
 @Configuration
 @ConfigurationProperties("bot.api")
 class BotApiConfig {
-    val auth: String = "authtoken"
+    var auth: String = "authtoken"
 }

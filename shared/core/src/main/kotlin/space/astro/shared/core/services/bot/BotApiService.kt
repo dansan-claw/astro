@@ -24,7 +24,7 @@ class BotApiService(
     private val objectMapper: ObjectMapper
 ) {
     private final val provider: ConnectionProvider =
-        ConnectionProvider.builder("support-bot-service-provider")
+        ConnectionProvider.builder("bot-service-provider")
             //.maxConnections(webClientConfig.httpMaxConnections)
             .maxIdleTime(Duration.ofSeconds(webClientConfig.httpMaxIdleTime))
             .maxLifeTime(Duration.ofSeconds(webClientConfig.httpMaxLifeTime))
