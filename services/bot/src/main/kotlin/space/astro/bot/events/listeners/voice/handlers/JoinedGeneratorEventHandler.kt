@@ -1,6 +1,7 @@
 package space.astro.bot.events.listeners.voice.handlers
 
 import dev.minn.jda.ktx.coroutines.await
+import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.PermissionOverride
 import net.dv8tion.jda.api.entities.channel.concrete.Category
@@ -16,6 +17,8 @@ import space.astro.bot.models.discord.vc.event.VCEvent
 import space.astro.shared.core.models.database.PermissionsInherited
 import space.astro.shared.core.models.database.TemporaryVCData
 import java.util.concurrent.TimeUnit
+
+private val log = KotlinLogging.logger {  }
 
 /**
  * Handles the creation of temporary voice channels via generators
@@ -253,7 +256,8 @@ suspend fun VCEventHandler.handleJoinedGeneratorEvent(
     try {
         guild.moveVoiceMember(owner, temporaryVC).await()
     } catch (e: Exception) {
-        temporaryVC.delete().queueAfter(1, TimeUnit.SECONDS)
+        log.info { "DELETE - Unknown error moving a user into a temporary VC" }
+        temporaryVC.delete().reason("Unknown error moving a user into a temporary VC").queueAfter(1, TimeUnit.SECONDS)
         throw ConfigurationException(
             configurationErrorService.unknownError(
                 encounteredIn = "moving a user (${owner.id}) into a temporary VC: ${e.message}"
@@ -336,9 +340,15 @@ suspend fun VCEventHandler.handleJoinedGeneratorEvent(
 
     // check if user is still in the created temporary vc before saving the data
     if (owner.voiceState!!.channel?.id != temporaryVC.id) {
-        waitingRoom?.delete()?.queueAfter(1000, TimeUnit.MILLISECONDS)
-        privateChat?.delete()?.queueAfter(2000, TimeUnit.SECONDS)
-        temporaryVC.delete().queueAfter(3000, TimeUnit.SECONDS)
+        waitingRoom?.delete()
+            ?.reason("User left the generated temporary VC too quickly")
+            ?.queueAfter(1000, TimeUnit.MILLISECONDS)
+        privateChat?.delete()
+            ?.reason("User left the generated temporary VC too quickly")
+            ?.queueAfter(2000, TimeUnit.SECONDS)
+        log.info { "DELETE - User left the generated temporary VC too quickly" }
+        temporaryVC.delete()
+            .reason("User left the generated temporary VC too quickly").queueAfter(3000, TimeUnit.SECONDS)
 
         cooldownsManager.markUserGeneratorsCooldown(data.userId)
 

@@ -1,5 +1,6 @@
 package space.astro.bot.interactions.handlers.command.impl.vc.waiting
 
+import mu.KotlinLogging
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import space.astro.bot.components.managers.vc.VCWaitingRoomManager
 import space.astro.bot.core.ui.Embeds
@@ -12,6 +13,8 @@ import space.astro.bot.interactions.handlers.command.CommandCategory
 import space.astro.bot.interactions.handlers.command.SubCommand
 import space.astro.bot.models.discord.vc.VCOperationCTX
 import space.astro.shared.core.daos.TemporaryVCDao
+
+private val log = KotlinLogging.logger {  }
 
 @Command(
     name = "waiting-room",
@@ -65,7 +68,12 @@ class WaitingRoomCommand(
     ) {
         ctx.replyHandler.deferReply()
 
-        ctx.vcOperationCTX.waitingRoom?.delete()?.queue()
+        log.info { "DELETE WAITING: user requested waiting room deletion" }
+
+        ctx.vcOperationCTX.waitingRoom
+            ?.delete()
+            ?.reason("user requested waiting room deletion")
+            ?.queue()
         ctx.vcOperationCTX.temporaryVCData.waitingID = null
         temporaryVCDao.save(ctx.guildId, ctx.vcOperationCTX.temporaryVCData)
 

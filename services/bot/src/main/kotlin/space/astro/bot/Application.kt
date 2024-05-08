@@ -20,6 +20,7 @@ import org.springframework.scheduling.annotation.EnableScheduling
 )
 class Application
 
+// Need to build the image so this comment is for that
 fun main(args: Array<String>) {
     runApplication<Application>(*args)
 }

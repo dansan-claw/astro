@@ -2,6 +2,7 @@ package space.astro.bot.components.managers
 
 import dev.minn.jda.ktx.coroutines.await
 import dev.minn.jda.ktx.messages.Embed
+import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Message
@@ -25,15 +26,17 @@ import space.astro.shared.core.models.database.InterfaceButton
 import space.astro.shared.core.models.database.InterfaceData
 import java.time.Instant
 
+private val log = KotlinLogging.logger {  }
+
 @org.springframework.stereotype.Component
 class InterfaceManager(
-    interactionComponentBuilder: InteractionComponentBuilder
+    private val interactionComponentBuilder: InteractionComponentBuilder
 ) {
     private val MAX_ACTION_ROWS = 5
     private val MAX_COMPONENTS = Message.MAX_COMPONENT_COUNT
     private val MAX_BUTTONS_PER_COMPONENT = Component.Type.BUTTON.maxPerRow
 
-    val defaultInterfaceButtons = listOf(
+    fun getDefaultInterfaceButtons() = mutableListOf(
         InterfaceButton.fromButton(
             interactionComponentBuilder.buttonWithEmoji(InteractionIds.Button.VC_LOCK, ButtonStyle.SECONDARY, Emojis.lock),
             Pair(0, 0)
@@ -107,8 +110,10 @@ class InterfaceManager(
         val interfaceData = InterfaceData(
             channelID = channel.id,
             messageID = "temp_id",
-            buttons = defaultInterfaceButtons.toMutableList()
+            buttons = getDefaultInterfaceButtons()
         )
+
+        log.info { "creating interface: $interfaceData" }
 
         val interfaceMessage = channel.sendMessage(computeMessage(interfaceData)).await()
         interfaceData.messageID = interfaceMessage.id
@@ -170,12 +175,17 @@ class InterfaceManager(
                 .filter { it.position.first == i }
                 .sortedBy { it.position.second }
                 .map { computeButton(it) }
+                .onEach {
+                    log.info { "Computed button: ${it.id} ${it.label} ${it.emoji}" }
+                }
                 .takeIf { it.isNotEmpty() }
                 ?.take(MAX_BUTTONS_PER_COMPONENT)
                 ?.also {
                     components.add(ActionRow.of(it))
                 }
         }
+
+        log.info { "creating interface with components: ${components}" }
 
         return components
     }

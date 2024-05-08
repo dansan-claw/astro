@@ -23,4 +23,6 @@ kubectl -n astro create configmap bot-config --from-env-file=./env/bot/prod.env
 kubectl -n astro create configmap central-api-config --from-env-file=./env/central-api/prod.env
 kubectl -n astro create configmap entitlements-expiration-job-config --from-env-file=./env/entitlements-expiration-job/prod.env
 kubectl -n astro create configmap support-bot-config --from-env-file=./env/support-bot/prod.env
+kubectl -n astro create secret generic gcp-bigquery-creds --from-file=gcp-bigquery-creds.json
+kubectl create secret docker-registry ghcr-secret --docker-server=ghcr.io --docker-username=Giuliopime --docker-password=ghp_PAT -n astro
 ```

@@ -1,5 +1,6 @@
 package space.astro.bot.interactions.handlers.command.impl.vc.chat
 
+import mu.KotlinLogging
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import space.astro.bot.components.managers.vc.VCPrivateChatManager
 import space.astro.bot.core.ui.Embeds
@@ -13,6 +14,8 @@ import space.astro.bot.interactions.handlers.command.SubCommand
 import space.astro.bot.models.discord.vc.VCOperationCTX
 import space.astro.shared.core.daos.TemporaryVCDao
 import space.astro.shared.core.util.extention.asEnabledOrDisabled
+
+private val log = KotlinLogging.logger {  }
 
 @Command(
     name = "chat",
@@ -67,7 +70,11 @@ class ChatCommand(
     ) {
         ctx.replyHandler.deferReply()
 
-        ctx.vcOperationCTX.privateChat?.delete()?.queue()
+        log.info { "DELETE CHAT: delete private text chat from 'chat delete' command" }
+        ctx.vcOperationCTX.privateChat
+            ?.delete()
+            ?.reason("delete private text chat from 'chat delete' command")
+            ?.queue()
         ctx.vcOperationCTX.temporaryVCData.chatID = null
         temporaryVCDao.save(ctx.guildId, ctx.vcOperationCTX.temporaryVCData)
 
