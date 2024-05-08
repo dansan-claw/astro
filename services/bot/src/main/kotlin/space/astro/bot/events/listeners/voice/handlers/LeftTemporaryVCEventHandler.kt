@@ -1,12 +1,15 @@
 package space.astro.bot.events.listeners.voice.handlers
 
 import dev.minn.jda.ktx.messages.Embed
+import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
 import space.astro.bot.core.ui.Emojis
 import space.astro.bot.models.discord.PermissionSets
 import space.astro.bot.models.discord.SimpleMemberRolesManager
 import space.astro.bot.models.discord.vc.VCOperationCTX
 import space.astro.bot.models.discord.vc.event.VCEvent
+
+private val log = KotlinLogging.logger {  }
 
 fun VCEventHandler.handleLeftTemporaryVCEvent(
     event: VCEvent.LeftTemporaryVC,
@@ -26,6 +29,7 @@ fun VCEventHandler.handleLeftTemporaryVCEvent(
     if (newOwner == null) {
         temporaryVCDao.delete(guild.id, event.temporaryVCData.id)
 
+        log.info { "DELETE: Deleting temporary vc, detected ${vc.members.size} users, filtered to ${vc.members.filter { !it.user.isBot }.size} non bots" }
         vc.delete()
             .reason("Deleting temporary vc, detected ${vc.members.size} users, filtered to ${vc.members.filter { !it.user.isBot }.size} non bots")
             .queue()

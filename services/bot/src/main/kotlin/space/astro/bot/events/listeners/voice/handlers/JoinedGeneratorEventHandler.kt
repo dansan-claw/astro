@@ -1,6 +1,7 @@
 package space.astro.bot.events.listeners.voice.handlers
 
 import dev.minn.jda.ktx.coroutines.await
+import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.PermissionOverride
 import net.dv8tion.jda.api.entities.channel.concrete.Category
@@ -16,6 +17,8 @@ import space.astro.bot.models.discord.vc.event.VCEvent
 import space.astro.shared.core.models.database.PermissionsInherited
 import space.astro.shared.core.models.database.TemporaryVCData
 import java.util.concurrent.TimeUnit
+
+private val log = KotlinLogging.logger {  }
 
 /**
  * Handles the creation of temporary voice channels via generators
@@ -253,6 +256,7 @@ suspend fun VCEventHandler.handleJoinedGeneratorEvent(
     try {
         guild.moveVoiceMember(owner, temporaryVC).await()
     } catch (e: Exception) {
+        log.info { "DELETE - Unknown error moving a user into a temporary VC" }
         temporaryVC.delete().reason("Unknown error moving a user into a temporary VC").queueAfter(1, TimeUnit.SECONDS)
         throw ConfigurationException(
             configurationErrorService.unknownError(
@@ -342,6 +346,7 @@ suspend fun VCEventHandler.handleJoinedGeneratorEvent(
         privateChat?.delete()
             ?.reason("User left the generated temporary VC too quickly")
             ?.queueAfter(2000, TimeUnit.SECONDS)
+        log.info { "DELETE - User left the generated temporary VC too quickly" }
         temporaryVC.delete()
             .reason("User left the generated temporary VC too quickly").queueAfter(3000, TimeUnit.SECONDS)
 
