@@ -10,19 +10,24 @@ import org.springframework.web.server.WebFilter
 import org.springframework.web.server.WebFilterChain
 import reactor.core.publisher.Mono
 import space.astro.api.central.configs.CentralApiConfig
-import space.astro.api.central.services.WebSessionService
+import space.astro.api.central.configs.Mappings
+import space.astro.api.central.configs.ExchangeAttributeNames
+import space.astro.api.central.services.discord.DiscordUserTokenFetchService
+import space.astro.api.central.services.discord.DiscordUserTokenPersistenceService
+import space.astro.api.central.services.dashboard.WebSessionService
 import space.astro.shared.core.configs.ChargebeeConfig
 import java.util.Base64
 
 @Component
-class CustomWebFilter(
+class AuthWebFilter(
     private val webSessionService: WebSessionService,
     private val chargebeeConfig: ChargebeeConfig,
-    private val centralApiConfig: CentralApiConfig
+    private val centralApiConfig: CentralApiConfig,
+    private val userTokenPersistenceService: DiscordUserTokenPersistenceService,
+    private val userTokenFetchService: DiscordUserTokenFetchService
 ): WebFilter {
     private val base64Decoder = Base64.getDecoder()
 
-    // This web filter is awful I know, but it's temporary other priorities
     override fun filter(exchange: ServerWebExchange, chain: WebFilterChain): Mono<Void> {
         val request = exchange.request
         val response = exchange.response
@@ -37,12 +42,37 @@ class CustomWebFilter(
             return chain.filter(exchange)
         }
 
-        // chain callback requests
-        if (requestPath.startsWith("/auth/id")) {
+        //////////////
+        /// STATUS ///
+        //////////////
+        if (requestPath.startsWith(Mappings.Status.STATUS)) {
             return chain.filter(exchange)
         }
 
-        if (requestPath.startsWith("/chargebee/cancel")) {
+
+        ////////////////
+        /// API DOCS ///
+        ////////////////
+        if (requestPath.startsWith(Mappings.Docs.API_DOCS)
+            || requestPath.startsWith(Mappings.Docs.WEBJARS)
+            || requestPath.startsWith(Mappings.Docs.SWAGGER))
+        {
+            return chain.filter(exchange)
+        }
+
+
+        /////////////
+        /// LOGIN ///
+        /////////////
+        if (requestPath.startsWith(Mappings.Dashboard.Prefixes.LOGIN)) {
+            return chain.filter(exchange)
+        }
+
+
+        ////////////////////////
+        /// CHARGEBEE EVENTS ///
+        ////////////////////////
+        if (requestPath.startsWith(Mappings.Chargebee.Prefixes.EVENT)) {
             return mono {
                 val webhookTokenEncoded = request.headers["Authorization"]?.get(0)?.removePrefix("Basic ")
 
@@ -61,27 +91,50 @@ class CustomWebFilter(
             }
         }
 
-        if (requestPath.startsWith("/auth/user")
-            || requestPath.startsWith("/chargebee/portalSession"))
+        ////////////////////////////////////////////
+        /// DASHBOARD & CHARGEBEE PORTAL SESSION ///
+        ////////////////////////////////////////////
+
+        if (requestPath.startsWith(Mappings.Dashboard.Prefixes.DASHBOARD)
+            || requestPath.startsWith(Mappings.Chargebee.PORTAL_SESSION))
         {
             return mono {
-                val sessionKey = request.headers["Authorization"]?.get(0)
+                val sessionToken = request.headers["Authorization"]?.get(0)
 
-                val userID = if (sessionKey != null) webSessionService.getIdFromSession(sessionKey) else null
+                if (sessionToken == null) {
+                    response.statusCode = HttpStatus.UNAUTHORIZED
+                    return@mono null
+                }
+
+                val userID = webSessionService.getUserIdFromSession(sessionToken)
+
                 if (userID == null) {
                     response.statusCode = HttpStatus.UNAUTHORIZED
                     return@mono null
                 }
 
-                if (!requestPath.endsWith("/$userID")) {
+                val (tokenPayload, isNotExpired) = userTokenPersistenceService.getToken(userID) ?: run {
                     response.statusCode = HttpStatus.UNAUTHORIZED
                     return@mono null
                 }
+
+                val accessToken = if (isNotExpired) {
+                    tokenPayload.accessToken
+                } else {
+                    val newAuthorizationWrapperDto = userTokenFetchService.refreshToken(tokenPayload.refreshToken)
+                    newAuthorizationWrapperDto.token.accessToken
+                }
+
+                exchange.attributes[ExchangeAttributeNames.USER_ID] = userID
+                exchange.attributes[ExchangeAttributeNames.ACCESS_TOKEN] = accessToken
 
                 chain.filter(exchange).awaitSingleOrNull()
             }
         }
 
+        /////////////////////
+        /// ALL REMAINING ///
+        /////////////////////
         return mono {
             val authHeader = request.headers["Authorization"]?.get(0)
             if (authHeader == null || authHeader != centralApiConfig.auth) {

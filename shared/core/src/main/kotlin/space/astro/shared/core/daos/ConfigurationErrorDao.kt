@@ -33,4 +33,13 @@ class ConfigurationErrorDao(
 
         influxWriteApi.writePoint(point)
     }
+
+    fun clear(guildId: String) {
+        val query = "from(bucket:\"${influxConfig.bucket}\") " +
+                "|> filter(fn: (r) => r[\"_measurement\"] == \"configuration_error\") " +
+                "|> filter(fn: (r) => r[\"guild_id\"] == \"$guildId\") " +
+                "|> delete()"
+
+        influxQueryApi.query(query)
+    }
 }

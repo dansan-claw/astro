@@ -1,4 +1,4 @@
-package space.astro.api.central.services
+package space.astro.api.central.services.dashboard
 
 import com.github.benmanes.caffeine.cache.Cache
 import com.github.benmanes.caffeine.cache.Caffeine
@@ -16,6 +16,9 @@ import java.time.Instant
 import java.util.*
 import javax.crypto.SecretKey
 
+/**
+ * Service to store user web sessions for the frontend dashboard
+ */
 @Service
 class WebSessionService(
     jwtConfig: JwtConfig,
@@ -33,40 +36,25 @@ class WebSessionService(
 
     val hmacShaKey: SecretKey = Keys.hmacShaKeyFor(jwtConfig.getDecodedKey())
 
-    fun createSession(id: String): String {
-        val token = createToken(id)
-        cacheToken(id, token)
+
+    /**
+     * @param userID
+     * @return the session token
+     */
+    fun createSession(userID: String): String {
+        val token = createToken(userID)
+        cacheToken(userID, token)
         return token
     }
 
-    private fun cacheToken(id: String, token: String) {
-        val key = buildRedisKey(id, token)
-        val value = true
-
-        sessionCache.put(key, value)
-        redis.setex(
-            key, SESSION_TTL, value.toString()
-        )
-    }
-
-    private fun createToken(id: String): String {
-        return DefaultJwtBuilder().setIssuer("astro-web").setIssuedAt(Date.from(Instant.now()))
-            .setId(id).signWith(hmacShaKey).compact()
-    }
-
-    fun existsSession(token: String): Boolean {
-        if (sessionCache.getIfPresent(token) != null) {
-            return true
-        }
-
-        val id = getIdFromSession(token) ?: return false
-
-        return redis.exists(
-            buildRedisKey(id, token)
-        ).get() == 1L
-    }
-
-    fun getIdFromSession(token: String): String? {
+    /**
+     * Parses the given [token] and returns the user ID of the session
+     *
+     * @param token
+     *
+     * @return the user ID attached to the token
+     */
+    fun getUserIdFromSession(token: String): String? {
         val claims = parser.parseClaimsJws(token)
         val id = claims.body.id
 
@@ -75,8 +63,13 @@ class WebSessionService(
         return id
     }
 
-    fun deleteSessions(id: String) {
-        val key = buildRedisKeyAllSessions(id)
+    /**
+     * Deletes all sessions of the given [userID]
+     *
+     * @param userID
+     */
+    fun deleteSessions(userID: String) {
+        val key = buildRedisKeyAllSessions(userID)
 
         val tokens = redis.keys(key)
             .get()
@@ -85,11 +78,31 @@ class WebSessionService(
         redis.del(*tokens.toTypedArray())
     }
 
+
+    private fun cacheToken(userID: String, token: String) {
+        val key = buildRedisKey(userID, token)
+        val value = true
+
+        sessionCache.put(key, value)
+        redis.setex(
+            key, SESSION_TTL, value.toString()
+        )
+    }
+
+    private fun createToken(userID: String): String {
+        return DefaultJwtBuilder()
+            .setIssuer("astro-web")
+            .setIssuedAt(Date.from(Instant.now()))
+            .setId(userID)
+            .signWith(hmacShaKey)
+            .compact()
+    }
+
     private fun buildRedisKey(id: String, token: String): String {
         return String.format(RedisKey.WEB_SESSION_TOKEN.key, id, token)
     }
 
-    private fun buildRedisKeyAllSessions(id: String): String {
-        return String.format(RedisKey.WEB_SESSION_TOKENS.key, id)
+    private fun buildRedisKeyAllSessions(userID: String): String {
+        return String.format(RedisKey.WEB_SESSION_TOKENS.key, userID)
     }
 }

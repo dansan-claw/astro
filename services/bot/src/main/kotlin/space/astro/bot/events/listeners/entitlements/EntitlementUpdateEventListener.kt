@@ -7,7 +7,7 @@ import net.dv8tion.jda.api.events.entitlement.EntitlementUpdateEvent
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
 import space.astro.bot.config.DiscordApplicationConfig
-import space.astro.bot.services.SupportBotApiService
+import space.astro.shared.core.services.support.SupportBotApiService
 import space.astro.shared.core.daos.GuildDao
 import space.astro.shared.core.models.database.GuildEntitlement
 
@@ -24,7 +24,7 @@ class EntitlementUpdateEventListener(
     @EventListener
     fun receiveEntitlementUpdateEvent(event: EntitlementUpdateEvent) {
         coroutineScope.launch {
-            supportBotApiService.forwardUpdateEntitlementEvent(event.entitlement)
+            supportBotApiService.addPremiumRoleToUser(event.entitlement.userId)
         }
 
         when (event.entitlement.skuId) {
@@ -36,7 +36,7 @@ class EntitlementUpdateEventListener(
                     guildData.entitlements[entitlementIndex] = GuildEntitlement(
                         event.entitlement.id,
                         event.entitlement.skuId,
-                        event.entitlement.endsAt?.toInstant()?.toEpochMilli()
+                        event.entitlement.timeEnding?.toInstant()?.toEpochMilli()
                     )
 
                     guildDao.save(guildData)
@@ -45,7 +45,7 @@ class EntitlementUpdateEventListener(
                         GuildEntitlement(
                             event.entitlement.id,
                             event.entitlement.skuId,
-                            event.entitlement.endsAt?.toInstant()?.toEpochMilli()
+                            event.entitlement.timeEnding?.toInstant()?.toEpochMilli()
                         )
                     )
 
