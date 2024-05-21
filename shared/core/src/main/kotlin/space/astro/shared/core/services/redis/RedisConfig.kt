@@ -7,10 +7,7 @@ import org.springframework.context.annotation.Configuration
  * Redis configuration variables
  *
  * @property cluster
- * @property host
- * @property port
- * @property password
- * @property database
+ * @property uris
  */
 @Configuration
 @ConfigurationProperties(prefix = "io.redis")

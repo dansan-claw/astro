@@ -148,8 +148,8 @@ promotions:
   # central-api
   - name: Deploy central-api to production
     pipeline_file: deploy/central-api/production.yml
-#  - name: Deploy central-api to staging
-#    pipeline_file: deploy/central-api/staging.yml
+  - name: Deploy central-api to staging
+    pipeline_file: deploy/central-api/staging.yml
 #    auto_promote:
 #      when: |
 #        branch = 'develop' and result = 'passed' and change_in(['/services/central-api/', '/shared/', '/build.gradle.kts', '/settings.gradle.kts', '/.semaphore/'], { branch_range: '$SEMAPHORE_GIT_COMMIT_RANGE' })

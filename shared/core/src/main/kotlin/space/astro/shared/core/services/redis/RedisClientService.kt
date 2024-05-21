@@ -11,12 +11,9 @@ import io.lettuce.core.cluster.api.StatefulRedisClusterConnection
 import io.lettuce.core.cluster.api.async.RedisClusterAsyncCommands
 import io.lettuce.core.cluster.api.reactive.RedisClusterReactiveCommands
 import io.lettuce.core.cluster.api.sync.RedisClusterCommands
-import mu.KotlinLogging
 import org.springframework.context.annotation.Bean
 import org.springframework.stereotype.Service
 import java.time.Duration
-
-private val logger = KotlinLogging.logger { }
 
 /**
  * Service for communication with Redis
