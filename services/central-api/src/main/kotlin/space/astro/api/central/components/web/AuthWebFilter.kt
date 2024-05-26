@@ -35,7 +35,7 @@ class AuthWebFilter(
         val response = exchange.response
         val requestPath = request.path.toString()
 
-        response.headers.set("Access-Control-Allow-Origin", "*")
+        response.headers.set("Access-Control-Allow-Origin", "http://localhost:3000")
         response.headers.set("Access-Control-Allow-Methods", "*")
         response.headers.set("Access-Control-Allow-Headers", "*")
 
