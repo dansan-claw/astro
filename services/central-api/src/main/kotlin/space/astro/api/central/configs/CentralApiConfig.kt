@@ -7,4 +7,6 @@ import org.springframework.context.annotation.Configuration
 @ConfigurationProperties("central.api")
 class CentralApiConfig {
     var auth: String = "password"
+    var sessionCookieName: String = "astro-session"
+    val sessionCookiePassword: String = "QooPWTxNjjzRV4TXvDvnTPiweTAWUrSU"
 }

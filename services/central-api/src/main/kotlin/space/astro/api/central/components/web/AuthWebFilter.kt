@@ -1,5 +1,6 @@
 package space.astro.api.central.components.web
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import kotlinx.coroutines.reactor.awaitSingleOrNull
 import kotlinx.coroutines.reactor.mono
 import org.springframework.http.HttpMethod
@@ -12,9 +13,12 @@ import reactor.core.publisher.Mono
 import space.astro.api.central.configs.CentralApiConfig
 import space.astro.api.central.configs.Mappings
 import space.astro.api.central.configs.ExchangeAttributeNames
+import space.astro.api.central.models.discord.OAuth2AuthorizationResponseDto
 import space.astro.api.central.services.discord.DiscordUserTokenFetchService
 import space.astro.api.central.services.discord.DiscordUserTokenPersistenceService
 import space.astro.api.central.services.dashboard.WebSessionService
+import space.astro.api.central.util.SessionCookieUtil
+import space.astro.shared.core.components.io.DataSerializer
 import space.astro.shared.core.configs.ChargebeeConfig
 import space.astro.shared.core.configs.KubeConfig
 import java.util.Base64
@@ -26,7 +30,8 @@ class AuthWebFilter(
     private val centralApiConfig: CentralApiConfig,
     private val kubeConfig: KubeConfig,
     private val userTokenPersistenceService: DiscordUserTokenPersistenceService,
-    private val userTokenFetchService: DiscordUserTokenFetchService
+    private val userTokenFetchService: DiscordUserTokenFetchService,
+    private val dataSerializer: DataSerializer
 ): WebFilter {
     private val base64Decoder = Base64.getDecoder()
 
@@ -34,6 +39,10 @@ class AuthWebFilter(
         val request = exchange.request
         val response = exchange.response
         val requestPath = request.path.toString()
+
+        val sessionCookie = request.cookies.getFirst(centralApiConfig.sessionCookieName)
+        val sessionObjectAsString = sessionCookie?.let { SessionCookieUtil.unseal(it.value, centralApiConfig.sessionCookiePassword) }
+        val sessionToken = sessionObjectAsString?.let { dataSerializer.deserialize<OAuth2AuthorizationResponseDto>(sessionObjectAsString).token }
 
         response.headers.set("Access-Control-Allow-Origin", "http://localhost:3000")
         response.headers.set("Access-Control-Allow-Methods", "*")
@@ -101,8 +110,6 @@ class AuthWebFilter(
             || requestPath.startsWith(Mappings.Chargebee.PORTAL_SESSION))
         {
             return mono {
-                val sessionToken = request.headers["Authorization"]?.get(0)
-
                 if (sessionToken == null) {
                     response.statusCode = HttpStatus.UNAUTHORIZED
                     return@mono null
