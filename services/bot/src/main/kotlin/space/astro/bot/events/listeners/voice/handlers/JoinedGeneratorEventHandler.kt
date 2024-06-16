@@ -342,13 +342,13 @@ suspend fun VCEventHandler.handleJoinedGeneratorEvent(
     if (owner.voiceState!!.channel?.id != temporaryVC.id) {
         waitingRoom?.delete()
             ?.reason("User left the generated temporary VC too quickly")
-            ?.queueAfter(1000, TimeUnit.MILLISECONDS)
+            ?.queueAfter(1, TimeUnit.SECONDS)
         privateChat?.delete()
             ?.reason("User left the generated temporary VC too quickly")
-            ?.queueAfter(2000, TimeUnit.SECONDS)
+            ?.queueAfter(2, TimeUnit.SECONDS)
         log.info { "DELETE - User left the generated temporary VC too quickly - server ${guild.id}" }
         temporaryVC.delete()
-            .reason("User left the generated temporary VC too quickly").queueAfter(3000, TimeUnit.SECONDS)
+            .reason("User left the generated temporary VC too quickly").queueAfter(3, TimeUnit.SECONDS)
 
         cooldownsManager.markUserGeneratorsCooldown(data.userId)
 

@@ -13,7 +13,8 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 object VariablesManager {
-    private val premiumVariablesRegex = """\{(n|nato|roman|activity_[^\s\\}]+)}""".toRegex()
+//    private val premiumVariablesRegex = """\{(n|nato|roman|activity_[^\s\\}]+)}""".toRegex()
+    private val premiumVariablesRegex = """\{(n|nato|roman)}""".toRegex()
 
     private object Alphabets {
         val nateAlphabet = listOf(

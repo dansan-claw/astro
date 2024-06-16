@@ -36,7 +36,7 @@ caffeine = "3.0.5"
 lettuce = "6.1.5.RELEASE"
 
 # JDA
-jda = "5.0.0-beta.23"
+jda = "5.0.0-beta.24"
 jda-ktx = "0.11.0-beta.19"
 
 chargebee = "3.13.0"
