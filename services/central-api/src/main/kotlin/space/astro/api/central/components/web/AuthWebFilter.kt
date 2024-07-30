@@ -106,9 +106,8 @@ class AuthWebFilter(
             || requestPath.startsWith(Mappings.Chargebee.PORTAL_SESSION))
         {
             val sessionCookie = request.cookies.getFirst(centralApiConfig.sessionCookieName)
-            // no need to sign as token is already signed?
-//            val sessionObjectAsString = sessionCookie?.let { SessionCookieUtil.unseal(it.value, centralApiConfig.sessionCookiePassword) }
-            val sessionToken = sessionCookie?.value?.let { dataSerializer.deserialize<SessionWrapper>(it).data.token }
+            val sessionObjectAsString = sessionCookie?.let { SessionCookieUtil.unseal(it.value, centralApiConfig.sessionCookiePassword) }
+            val sessionToken = sessionObjectAsString?.let { dataSerializer.deserialize<SessionWrapper>(sessionObjectAsString).data.token }
                 ?: request.headers["Authorization"]?.get(0)?.removePrefix("Bearer ")
 
             return mono {

@@ -2,12 +2,9 @@ package space.astro.api.central.controllers.dashboard
 
 import io.swagger.v3.oas.annotations.tags.Tag
 import mu.KotlinLogging
-import org.springframework.http.HttpHeaders
-import org.springframework.http.ResponseCookie
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ServerWebExchange
-import space.astro.api.central.configs.CentralApiConfig
 import space.astro.api.central.configs.Mappings
 import space.astro.api.central.configs.getUserID
 import space.astro.api.central.models.discord.OAuth2AuthorizationResponseDto
@@ -16,13 +13,10 @@ import space.astro.api.central.services.dashboard.DashboardGuildsPersistenceServ
 import space.astro.api.central.services.discord.DiscordUserTokenFetchService
 import space.astro.api.central.services.discord.DiscordUserTokenPersistenceService
 import space.astro.api.central.services.dashboard.WebSessionService
-import space.astro.shared.core.components.io.DataSerializer
 import space.astro.shared.core.util.exceptions.BadRequestException
 import space.astro.shared.core.util.exceptions.UnauthorizedException
 
 private val log = KotlinLogging.logger { }
-
-private const val secondsInAYear: Long = 60 * 60 * 24 * 365
 
 @RestController
 @Tag(name = "dashboard-auth")
@@ -30,9 +24,7 @@ class DashboardAuthController(
     val discordUserTokenFetchService: DiscordUserTokenFetchService,
     val discordUserTokenPersistenceService: DiscordUserTokenPersistenceService,
     val webSessionService: WebSessionService,
-    val dashboardGuildsPersistenceService: DashboardGuildsPersistenceService,
-    val centralApiConfig: CentralApiConfig,
-    val dataSerializer: DataSerializer
+    val dashboardGuildsPersistenceService: DashboardGuildsPersistenceService
 ) {
 
     @GetMapping(Mappings.Dashboard.LOGIN)
@@ -67,23 +59,9 @@ class DashboardAuthController(
             guild
         )
 
-        val cookieValue = dataSerializer.serializeData(response)
-        val cookie = ResponseCookie.from(centralApiConfig.sessionCookieName, cookieValue)
-            .path("/")
-            .maxAge(secondsInAYear)
-            .httpOnly(true)
-            .secure(true)
-            .build()
-
-        val headers = HttpHeaders().apply {
-            set(HttpHeaders.SET_COOKIE, cookie.toString())
-        }
-
         log.info { "Successfully authorized discord user with id ${user.id} - response $response" }
 
-        return ResponseEntity.ok()
-            .headers(headers)
-            .body(response)
+        return ResponseEntity.ok(response)
     }
 
     @GetMapping(Mappings.Dashboard.LOGOUT)
