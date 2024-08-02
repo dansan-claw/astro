@@ -38,8 +38,8 @@ class AuthWebFilter(
 
         response.headers.set("Access-Control-Allow-Credentials", "true")
         response.headers.set("Access-Control-Allow-Origin", centralApiConfig.sessionCookieAllowOrigin)
-//        response.headers.set("Access-Control-Allow-Methods", "*")
-//        response.headers.set("Access-Control-Allow-Headers", centralApiConfig.corsAllowedHeaders)
+        response.headers.set("Access-Control-Allow-Methods", centralApiConfig.corsAllowedMethods)
+        response.headers.set("Access-Control-Allow-Headers", centralApiConfig.corsAllowedHeaders)
 
         // chain preflight requests
         if (request.method == HttpMethod.OPTIONS) {

@@ -14,5 +14,6 @@ class CentralApiConfig {
     var sessionCookieHttpOnly: Boolean = false
     var sessionCookieMaxAgeInSeconds: Long = 2592000
     var sessionCookieSameSite: String = "None"
-    var corsAllowedHeaders: String = "Content-Type, Authorization"
+    var corsAllowedHeaders: String = "content-type, origin, accept, authorization"
+    var corsAllowedMethods: String = "GET, POST, PUT, DELETE, OPTIONS, HEAD"
 }
