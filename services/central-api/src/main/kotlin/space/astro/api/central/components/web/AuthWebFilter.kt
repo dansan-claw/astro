@@ -100,7 +100,8 @@ class AuthWebFilter(
         ////////////////////////////////////////////
 
         if (requestPath.startsWith(Mappings.Dashboard.Prefixes.DASHBOARD)
-            || requestPath.startsWith(Mappings.Chargebee.PORTAL_SESSION))
+            || requestPath.startsWith(Mappings.Chargebee.PORTAL_SESSION)
+            || requestPath.startsWith(Mappings.Chargebee.USER_ACTIVE_SUBSCRIPTIONS))
         {
             val sessionToken = request.cookies.getFirst(centralApiConfig.sessionCookieName)?.value
                 ?: request.headers["Authorization"]?.get(0)?.removePrefix("Bearer ")
