@@ -1,6 +1,7 @@
 package space.astro.api.central.services.discord
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import kotlinx.coroutines.runBlocking
 import org.springframework.http.HttpStatus
 import org.springframework.http.client.reactive.ReactorClientHttpConnector
 import org.springframework.http.codec.json.Jackson2JsonDecoder
@@ -72,7 +73,7 @@ class DiscordGuildsFetchService(
             .retrieve()
             .onStatus(
                 { it != HttpStatus.OK },
-                { throw Throwable("Failed to fetch guild channels - status: ${it.statusCode()}") }
+                { throw Throwable("Failed to fetch guild channels - status: ${it.statusCode()} - ${runBlocking {  it.awaitBody<String>()}}") }
             )
             .awaitBody()
     }

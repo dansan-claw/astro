@@ -23,6 +23,7 @@ import space.astro.shared.core.models.database.InterfaceData
 import space.astro.shared.core.models.database.TemplateData
 import space.astro.shared.core.services.bot.BotApiService
 import space.astro.shared.core.util.exceptions.BotApiPermissionException
+import space.astro.shared.core.util.exceptions.NotFoundException
 
 @RestController
 @Tag(name = "dashboard-data")
@@ -118,6 +119,8 @@ class DashboardGuildDataController(
             return ResponseEntity.ok(guildData)
         } catch (e: BotApiPermissionException) {
             return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).build<Any>()
+        } catch (e: NotFoundException) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build<Any>()
         }
     }
 
@@ -143,7 +146,7 @@ class DashboardGuildDataController(
         val guildData = guildDao.get(guildID)
             ?: return ResponseEntity.notFound().build<Any>()
 
-        val genIndex = guildData.generators.indexOfFirst { it.id === generatorID }
+        val genIndex = guildData.generators.indexOfFirst { it.id == generatorID }
             .takeIf { it != -1 }
             ?: return ResponseEntity.notFound().build<Any>()
 
@@ -168,7 +171,7 @@ class DashboardGuildDataController(
         val guildData = guildDao.get(guildID)
             ?: return ResponseEntity.notFound().build<Any>()
 
-        guildData.generators.removeIf { it.id === generatorID }
+        guildData.generators.removeIf { it.id == generatorID }
 
         // maybe delete from Discord too? same thing for interfaces? not sure honestly
 
@@ -216,6 +219,8 @@ class DashboardGuildDataController(
             return ResponseEntity.ok(guildData)
         } catch (e: BotApiPermissionException) {
             return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).build<Any>()
+        } catch (e: NotFoundException) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build<Any>()
         }
     }
 
@@ -243,7 +248,7 @@ class DashboardGuildDataController(
         val guildData = guildDao.get(guildID)
             ?: return ResponseEntity.notFound().build<Any>()
 
-        val interfaceIndex = guildData.interfaces.indexOfFirst { it.messageID === interfaceID }
+        val interfaceIndex = guildData.interfaces.indexOfFirst { it.messageID == interfaceID }
             .takeIf { it != -1 }
             ?: return ResponseEntity.notFound().build<Any>()
 
@@ -258,6 +263,8 @@ class DashboardGuildDataController(
             return ResponseEntity.ok(guildData)
         } catch (e: BotApiPermissionException) {
             return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).build<Any>()
+        } catch (e: NotFoundException) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build<Any>()
         }
     }
 
@@ -277,7 +284,7 @@ class DashboardGuildDataController(
         val guildData = guildDao.get(guildID)
             ?: return ResponseEntity.notFound().build<Any>()
 
-        guildData.interfaces.removeIf { it.messageID === interfaceID }
+        guildData.interfaces.removeIf { it.messageID == interfaceID }
         guildDao.save(guildData)
         return ResponseEntity.ok(guildData)
     }
@@ -336,7 +343,7 @@ class DashboardGuildDataController(
             return ResponseEntity.badRequest().body(validation.invalidMessage)
         }
 
-        val index = guildData.connections.indexOfFirst { it.id === channelID }
+        val index = guildData.connections.indexOfFirst { it.id == channelID }
             .takeIf { it != -1 }
             ?: return ResponseEntity.notFound().build<Any>()
 
@@ -361,7 +368,7 @@ class DashboardGuildDataController(
         val guildData = guildDao.get(guildID)
             ?: return ResponseEntity.notFound().build<Any>()
 
-        guildData.connections.removeIf { it.id === channelID }
+        guildData.connections.removeIf { it.id == channelID }
         guildDao.save(guildData)
         return ResponseEntity.ok(guildData)
     }
@@ -419,7 +426,7 @@ class DashboardGuildDataController(
             return ResponseEntity.badRequest().body(validation.invalidMessage)
         }
 
-        val index = guildData.templates.indexOfFirst { it.id === templateID }
+        val index = guildData.templates.indexOfFirst { it.id == templateID }
             .takeIf { it != -1 }
             ?: return ResponseEntity.notFound().build<Any>()
 
@@ -444,7 +451,7 @@ class DashboardGuildDataController(
         val guildData = guildDao.get(guildID)
             ?: return ResponseEntity.notFound().build<Any>()
 
-        guildData.templates.removeIf { it.id === templateID }
+        guildData.templates.removeIf { it.id == templateID }
         guildDao.save(guildData)
         return ResponseEntity.ok(guildData)
     }

@@ -1,4 +1,4 @@
-package space.astro.api.central.models.dashboard
+package space.astro.shared.core.models.dashboard
 
 data class DashboardGuildRole(
     val id: String,

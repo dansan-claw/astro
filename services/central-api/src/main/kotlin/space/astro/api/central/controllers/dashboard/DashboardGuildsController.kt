@@ -3,20 +3,24 @@ package space.astro.api.central.controllers.dashboard
 import io.swagger.v3.oas.annotations.tags.Tag
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ServerWebExchange
 import space.astro.api.central.configs.Mappings
 import space.astro.api.central.configs.getAccessToken
 import space.astro.api.central.configs.getUserID
-import space.astro.api.central.models.dashboard.DashboardGuildChannel
+import space.astro.shared.core.models.dashboard.DashboardGuildChannel
 import space.astro.api.central.models.dashboard.DashboardGuildDto
-import space.astro.api.central.models.dashboard.DashboardGuildRole
+import space.astro.api.central.services.bot.PodMetaCalculatorService
+import space.astro.shared.core.models.dashboard.DashboardGuildRole
 import space.astro.api.central.services.discord.DiscordGuildsFetchService
 import space.astro.api.central.services.dashboard.DashboardGuildsPersistenceService
+import space.astro.shared.core.services.bot.BotApiService
+import space.astro.shared.core.util.exceptions.BotApiPermissionException
+import space.astro.shared.core.util.exceptions.NotFoundException
 
 private val log = KotlinLogging.logger {  }
 
@@ -24,7 +28,9 @@ private val log = KotlinLogging.logger {  }
 @Tag(name = "dashboard-discord-data")
 class DashboardGuildsController(
     private val discordGuildsFetchService: DiscordGuildsFetchService,
-    private val dashboardGuildsPersistenceService: DashboardGuildsPersistenceService
+    private val dashboardGuildsPersistenceService: DashboardGuildsPersistenceService,
+    private val podMetaCalculatorService: PodMetaCalculatorService,
+    private val botApiService: BotApiService
 ) {
     @GetMapping(Mappings.Dashboard.GUILDS)
     suspend fun getUserGuilds(
@@ -55,18 +61,14 @@ class DashboardGuildsController(
         @PathVariable guildID: String,
         exchange: ServerWebExchange
     ): ResponseEntity<*> {
-        val accessToken = exchange.getAccessToken()
-        val channels = discordGuildsFetchService.fetchGuildChannels(accessToken = accessToken, guildID = guildID)
+        val endpoint = podMetaCalculatorService.calculatePodEndpoint(guildID)
 
-        return ResponseEntity.ok(channels.map { partialChannel ->
-            DashboardGuildChannel(
-                id = partialChannel.id,
-                name = partialChannel.name,
-                type = partialChannel.type,
-                parentID = partialChannel.parentID,
-                parentName = channels.firstOrNull { it.id == partialChannel.parentID }?.name
-            )
-        })
+        try {
+            val channels = botApiService.getGuildChannels(endpoint, guildID)
+            return ResponseEntity.ok(channels)
+        } catch (e: NotFoundException) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build<Any>()
+        }
     }
 
     @GetMapping(Mappings.Dashboard.GUILD_ROLES)
@@ -74,16 +76,13 @@ class DashboardGuildsController(
         @PathVariable guildID: String,
         exchange: ServerWebExchange
     ): ResponseEntity<*> {
-        val accessToken = exchange.getAccessToken()
-        val roles = discordGuildsFetchService.fetchGuildRoles(accessToken = accessToken, guildID = guildID)
+        val endpoint = podMetaCalculatorService.calculatePodEndpoint(guildID)
 
-        return ResponseEntity.ok(roles.map { partialRole ->
-            DashboardGuildRole(
-                id = partialRole.id,
-                name = partialRole.name,
-                color = partialRole.color,
-                position = partialRole.position
-            )
-        })
+        try {
+            val roles = botApiService.getGuildRoles(endpoint, guildID)
+            return ResponseEntity.ok(roles)
+        } catch (e: NotFoundException) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build<Any>()
+        }
     }
 }

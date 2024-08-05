@@ -10,7 +10,7 @@ class CentralApiConfig {
     var sessionCookieName: String = "astro-session"
     var sessionCookieAllowOrigin: String = "http://localhost:3000"
     var sessionCookieDomain: String? = null
-    var sessionCookieSecure: Boolean = false
+    var sessionCookieSecure: Boolean = true
     var sessionCookieHttpOnly: Boolean = false
     var sessionCookieMaxAgeInSeconds: Long = 2592000
     var sessionCookieSameSite: String = "None"

@@ -1,6 +1,10 @@
 package space.astro.bot.controllers.dashboard
 
 import dev.minn.jda.ktx.coroutines.await
+import net.dv8tion.jda.api.entities.channel.ChannelType
+import net.dv8tion.jda.api.entities.channel.attribute.ICategorizableChannel
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
+import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException
 import net.dv8tion.jda.api.exceptions.PermissionException
@@ -12,16 +16,63 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
 import space.astro.bot.components.managers.InterfaceManager
+import space.astro.shared.core.models.dashboard.DashboardGuildChannel
+import space.astro.shared.core.models.dashboard.DashboardGuildRole
 import space.astro.shared.core.models.database.GeneratorData
 import space.astro.shared.core.models.database.InterfaceData
 import space.astro.shared.core.models.database.PermissionsInherited
 
-@RestController("/api")
+@RestController()
 class DashboardController(
     private val shardManager: ShardManager,
     private val interfaceManager: InterfaceManager
 ) {
-    @GetMapping("/{guildID}/generator/create")
+    @GetMapping("/api/{guildID}/channels")
+    suspend fun getGuildChannels(
+        @PathVariable guildID: String
+    ) : ResponseEntity<*> {
+        val guild = shardManager.getGuildById(guildID)
+            ?: return ResponseEntity.notFound().build<Any>()
+
+        val channels = guild.channels.map { channel ->
+            val parent = if (channel is ICategorizableChannel) {
+                channel.parentCategory
+            } else {
+                null
+            }
+
+            DashboardGuildChannel(
+                id = channel.id,
+                name = channel.name,
+                type = channel.type.id,
+                parentID = parent?.id,
+                parentName = parent?.name
+            )
+        }
+
+        return ResponseEntity.ok(channels)
+    }
+
+    @GetMapping("/api/{guildID}/roles")
+    suspend fun getGuildRoles(
+        @PathVariable guildID: String
+    ) : ResponseEntity<*> {
+        val guild = shardManager.getGuildById(guildID)
+            ?: return ResponseEntity.notFound().build<Any>()
+
+        val roles = guild.roles.map { role ->
+            DashboardGuildRole(
+                id = role.id,
+                name = role.name,
+                color = role.colorRaw,
+                position = role.position
+            )
+        }
+
+        return ResponseEntity.ok(roles)
+    }
+
+    @GetMapping("/api/{guildID}/generator/create")
     suspend fun createGenerator(
         @PathVariable guildID: String
     ) : ResponseEntity<*> {
@@ -47,7 +98,7 @@ class DashboardController(
         }
     }
 
-    @GetMapping("/{guildID}/interface/create/{channelID}")
+    @GetMapping("/api/{guildID}/interface/create/{channelID}")
     suspend fun createInterface(
         @PathVariable guildID: String,
         @PathVariable channelID: String
@@ -71,7 +122,7 @@ class DashboardController(
         }
     }
 
-    @PostMapping("/{guildID}/interface/update")
+    @PostMapping("/api/{guildID}/interface/update")
     suspend fun updateInterface(
         @PathVariable guildID: String,
         @RequestBody interfaceData: InterfaceData

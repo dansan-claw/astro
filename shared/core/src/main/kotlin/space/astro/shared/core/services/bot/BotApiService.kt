@@ -12,9 +12,12 @@ import reactor.netty.http.client.HttpClient
 import reactor.netty.resources.ConnectionProvider
 import space.astro.shared.core.configs.BotApiConfig
 import space.astro.shared.core.configs.WebClientConfig
+import space.astro.shared.core.models.dashboard.DashboardGuildChannel
+import space.astro.shared.core.models.dashboard.DashboardGuildRole
 import space.astro.shared.core.models.database.GeneratorData
 import space.astro.shared.core.models.database.InterfaceData
 import space.astro.shared.core.util.exceptions.BotApiPermissionException
+import space.astro.shared.core.util.exceptions.NotFoundException
 import java.time.Duration
 
 @Service
@@ -42,6 +45,59 @@ class BotApiService(
         .defaultHeader("Authorization", botApiConfig.auth)
         .build()
 
+
+    /**
+     * Gets guild channels from the bot cache
+     *
+     * @param endpoint
+     * @param guildID
+     *
+     * @throws [Throwable] for unknown issues
+     * @return a list of [DashboardGuildChannel]
+     */
+    suspend fun getGuildChannels(
+        endpoint: String,
+        guildID: String
+    ): List<DashboardGuildChannel> {
+        return webClient.get()
+            .uri("${endpoint.removeSuffix("/")}/api/${guildID}/channels")
+            .retrieve()
+            .onStatus(
+                { it == HttpStatus.NOT_FOUND },
+                { throw NotFoundException("data not found for guild with id $guildID")}
+            )
+            .onStatus(
+                { it != HttpStatus.OK },
+                { throw Throwable("${it.statusCode()} - Unexpected Response") })
+            .awaitBody()
+    }
+
+    /**
+     * Gets guild roles from the bot cache
+     *
+     * @param endpoint
+     * @param guildID
+     *
+     * @throws [Throwable] for unknown issues
+     * @return a list of [DashboardGuildRole]
+     */
+    suspend fun getGuildRoles(
+        endpoint: String,
+        guildID: String
+    ): List<DashboardGuildRole> {
+        return webClient.get()
+            .uri("${endpoint.removeSuffix("/")}/api/${guildID}/roles")
+            .retrieve()
+            .onStatus(
+                { it == HttpStatus.NOT_FOUND },
+                { throw NotFoundException("data not found for guild with id $guildID")}
+            )
+            .onStatus(
+                { it != HttpStatus.OK },
+                { throw Throwable("${it.statusCode()} - Unexpected Response") })
+            .awaitBody()
+    }
+
     /**
      * Requests the bot to create a generator
      *
@@ -57,14 +113,15 @@ class BotApiService(
         guildID: String
     ): GeneratorData {
         return webClient.get()
-            .uri { uriBuilder ->
-                uriBuilder.path("$endpoint/api/${guildID}/generator/create")
-                    .build()
-            }
+            .uri("${endpoint.removeSuffix("/")}/api/${guildID}/generator/create")
             .retrieve()
             .onStatus(
                 { it == HttpStatus.METHOD_NOT_ALLOWED },
                 { throw BotApiPermissionException("bot doesn't have permissions to create the generator")}
+            )
+            .onStatus(
+                { it == HttpStatus.NOT_FOUND },
+                { throw NotFoundException("data not found for guild with id $guildID")}
             )
             .onStatus(
                 { it != HttpStatus.OK },
@@ -89,14 +146,15 @@ class BotApiService(
         channelID: String
     ): InterfaceData {
         return webClient.get()
-            .uri { uriBuilder ->
-                uriBuilder.path("$endpoint/api/${guildID}/interface/create/${channelID}")
-                    .build()
-            }
+            .uri("${endpoint.removeSuffix("/")}/api/${guildID}/interface/create/${channelID}")
             .retrieve()
             .onStatus(
                 { it == HttpStatus.METHOD_NOT_ALLOWED },
                 { throw BotApiPermissionException("bot doesn't have permissions to create the generator")}
+            )
+            .onStatus(
+                { it == HttpStatus.NOT_FOUND },
+                { throw NotFoundException("data not found for guild with id $guildID")}
             )
             .onStatus(
                 { it != HttpStatus.OK },
@@ -120,15 +178,16 @@ class BotApiService(
         interfaceData: InterfaceData
     ) {
         return webClient.post()
-            .uri { uriBuilder ->
-                uriBuilder.path("$endpoint/api/${guildID}/interface/update")
-                    .build()
-            }
+            .uri("${endpoint.removeSuffix("/")}/api/${guildID}/interface/update")
             .bodyValue(interfaceData)
             .retrieve()
             .onStatus(
                 { it == HttpStatus.METHOD_NOT_ALLOWED },
                 { throw BotApiPermissionException("bot doesn't have permissions to create the generator")}
+            )
+            .onStatus(
+                { it == HttpStatus.NOT_FOUND },
+                { throw NotFoundException("data not found for guild with id $guildID")}
             )
             .onStatus(
                 { it != HttpStatus.OK },
