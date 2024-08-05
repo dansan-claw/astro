@@ -3,7 +3,7 @@ package space.astro.bot.components.managers.vc
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException
 import org.springframework.stereotype.Component
-import space.astro.bot.components.managers.PremiumRequirementDetector
+import space.astro.shared.core.components.managers.PremiumRequirementDetector
 import space.astro.bot.core.exceptions.ConfigurationException
 import space.astro.bot.core.exceptions.VcOperationException
 import space.astro.bot.core.extentions.modifyPermissionOverride

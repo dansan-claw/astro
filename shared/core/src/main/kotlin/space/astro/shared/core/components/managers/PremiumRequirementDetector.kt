@@ -1,16 +1,13 @@
-package space.astro.bot.components.managers
+package space.astro.shared.core.components.managers
 
 import org.springframework.stereotype.Component
-import space.astro.bot.components.managers.vc.VariablesManager
-import space.astro.bot.config.ApplicationFeaturesConfig
-import space.astro.bot.config.DiscordApplicationConfig
+import space.astro.shared.core.configs.PremiumFeaturesConfig
 import space.astro.shared.core.models.database.GuildData
 import space.astro.shared.core.models.database.GuildEntitlement
 
 @Component
 class PremiumRequirementDetector(
-    private val discordApplicationConfig: DiscordApplicationConfig,
-    private val applicationFeaturesConfig: ApplicationFeaturesConfig,
+    private val premiumFeaturesConfig: PremiumFeaturesConfig
 ) {
     private fun isEntitlementActive(
         entitlement: GuildEntitlement,
@@ -20,7 +17,7 @@ class PremiumRequirementDetector(
     }
 
     fun isGuildPremium(guildData: GuildData): Boolean {
-        if (!applicationFeaturesConfig.premiumRestrictions) {
+        if (!premiumFeaturesConfig.premiumRestrictions) {
             return true
         }
 
@@ -31,12 +28,12 @@ class PremiumRequirementDetector(
         val currentMillis = System.currentTimeMillis()
 
         return guildData.entitlements.any {
-            isEntitlementActive(it, currentMillis) && it.skuId == discordApplicationConfig.premiumServerSkuId
+            isEntitlementActive(it, currentMillis) && it.skuId == premiumFeaturesConfig.premiumServerSkuId
         }
     }
 
     fun canCreateConnection(guildData: GuildData): Boolean {
-        if (isGuildPremium(guildData) || !applicationFeaturesConfig.premiumRestrictions) {
+        if (isGuildPremium(guildData) || !premiumFeaturesConfig.premiumRestrictions) {
             return true
         }
 
@@ -44,7 +41,7 @@ class PremiumRequirementDetector(
     }
 
     fun canCreateGenerator(guildData: GuildData): Boolean {
-        if (isGuildPremium(guildData) || !applicationFeaturesConfig.premiumRestrictions) {
+        if (isGuildPremium(guildData) || !premiumFeaturesConfig.premiumRestrictions) {
             return true
         }
 
@@ -52,7 +49,7 @@ class PremiumRequirementDetector(
     }
 
     fun canCreateInterface(guildData: GuildData): Boolean {
-        if (isGuildPremium(guildData) || !applicationFeaturesConfig.premiumRestrictions) {
+        if (isGuildPremium(guildData) || !premiumFeaturesConfig.premiumRestrictions) {
             return true
         }
 
@@ -60,7 +57,7 @@ class PremiumRequirementDetector(
     }
 
     fun canCreateTemplate(guildData: GuildData): Boolean {
-        if (isGuildPremium(guildData) || !applicationFeaturesConfig.premiumRestrictions) {
+        if (isGuildPremium(guildData) || !premiumFeaturesConfig.premiumRestrictions) {
             return true
         }
 
@@ -68,13 +65,13 @@ class PremiumRequirementDetector(
     }
 
     fun exceededMaximumConnectionsAmount(guildData: GuildData): Boolean {
-        return applicationFeaturesConfig.premiumRestrictions
+        return premiumFeaturesConfig.premiumRestrictions
                 && guildData.connections.size > 1
                 && !isGuildPremium(guildData)
     }
 
     fun exceededMaximumGeneratorAmount(guildData: GuildData): Boolean {
-        return applicationFeaturesConfig.premiumRestrictions
+        return premiumFeaturesConfig.premiumRestrictions
                 && guildData.generators.size > 3
                 && !isGuildPremium(guildData)
     }

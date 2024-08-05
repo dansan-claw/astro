@@ -1,14 +1,14 @@
-package space.astro.bot.components.managers.vc
+package space.astro.shared.core.components.managers
 
 import net.dv8tion.jda.api.entities.Activity
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel
 import net.dv8tion.jda.api.entities.emoji.Emoji
-import space.astro.bot.core.ui.TextUtils
 import space.astro.shared.core.models.database.GeneratorData
 import space.astro.shared.core.models.database.TemporaryVCData
 import space.astro.shared.core.models.database.VCState
 import space.astro.shared.core.util.extention.capitalize
+import space.astro.shared.core.util.ui.TextUtils
 import java.text.SimpleDateFormat
 import java.util.*
 

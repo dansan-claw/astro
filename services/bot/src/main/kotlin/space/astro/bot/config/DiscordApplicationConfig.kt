@@ -12,5 +12,4 @@ class DiscordApplicationConfig {
     var activityText = "/help | astro-bot.space"
     var commandGuilds = emptyList<Long>()
     var whitelistedGuilds = emptyList<Long>()
-    var premiumServerSkuId: String = "1096107722115661934"
 }

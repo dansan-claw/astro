@@ -7,6 +7,7 @@ import net.dv8tion.jda.api.events.entitlement.EntitlementCreateEvent
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
 import space.astro.bot.config.DiscordApplicationConfig
+import space.astro.shared.core.configs.PremiumFeaturesConfig
 import space.astro.shared.core.services.support.SupportBotApiService
 import space.astro.shared.core.daos.GuildDao
 import space.astro.shared.core.models.database.GuildEntitlement
@@ -15,7 +16,7 @@ private val logger = KotlinLogging.logger {  }
 
 @Component
 class EntitlementCreateEventListener(
-    val discordApplicationConfig: DiscordApplicationConfig,
+    val premiumFeaturesConfig: PremiumFeaturesConfig,
     val guildDao: GuildDao,
     val supportBotApiService: SupportBotApiService,
     val coroutineScope: CoroutineScope
@@ -27,7 +28,7 @@ class EntitlementCreateEventListener(
         }
 
         when (event.entitlement.skuId) {
-            discordApplicationConfig.premiumServerSkuId -> {
+            premiumFeaturesConfig.premiumServerSkuId -> {
                 val guildData = guildDao.getOrCreate(event.entitlement.guildId!!)
 
                 val entitlementIndex = guildData.entitlements.indexOfFirst { it.id == event.entitlement.id }

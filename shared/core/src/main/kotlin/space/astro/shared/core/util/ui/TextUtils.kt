@@ -1,4 +1,4 @@
-package space.astro.bot.core.ui
+package space.astro.shared.core.util.ui
 
 object TextUtils {
     val badwords = listOf(

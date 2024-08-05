@@ -14,6 +14,7 @@ import space.astro.bot.core.extentions.modifyPermissionOverride
 import space.astro.bot.models.discord.PermissionSets
 import space.astro.bot.models.discord.vc.VCOperationCTX
 import space.astro.bot.services.ConfigurationErrorService
+import space.astro.shared.core.components.managers.VariablesManager
 import space.astro.shared.core.models.database.GeneratorData
 import space.astro.shared.core.models.database.PermissionsInherited
 import space.astro.shared.core.models.database.TemporaryVCData

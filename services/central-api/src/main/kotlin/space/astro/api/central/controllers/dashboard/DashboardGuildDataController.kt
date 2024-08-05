@@ -16,6 +16,7 @@ import space.astro.api.central.models.dashboard.body.GuildDataInterfaceCreateBod
 import space.astro.api.central.models.dashboard.body.GuildDataSettingsBody
 import space.astro.api.central.services.bot.PodMetaCalculatorService
 import space.astro.api.central.services.dashboard.DashboardGuildsPersistenceService
+import space.astro.shared.core.components.managers.PremiumRequirementDetector
 import space.astro.shared.core.daos.GuildDao
 import space.astro.shared.core.models.database.ConnectionData
 import space.astro.shared.core.models.database.GeneratorData
@@ -31,7 +32,8 @@ class DashboardGuildDataController(
     private val guildDao: GuildDao,
     private val dashboardGuildsPersistenceService: DashboardGuildsPersistenceService,
     private val podMetaCalculatorService: PodMetaCalculatorService,
-    private val botApiService: BotApiService
+    private val botApiService: BotApiService,
+    private val premiumRequirementDetector: PremiumRequirementDetector,
 ) {
     ///////////////////////////////
     /// GETTER FOR ALL SETTINGS ///
@@ -107,6 +109,10 @@ class DashboardGuildDataController(
 
         val guildData = guildDao.get(guildID)
             ?: return ResponseEntity.notFound().build<Any>()
+
+        if (!premiumRequirementDetector.canCreateGenerator(guildData)) {
+            return ResponseEntity.status(HttpStatus.PAYMENT_REQUIRED).build<Any>()
+        }
 
         try {
             val generatorData = botApiService.createGenerator(
@@ -206,6 +212,10 @@ class DashboardGuildDataController(
 
         val guildData = guildDao.get(guildID)
             ?: return ResponseEntity.notFound().build<Any>()
+
+        if (!premiumRequirementDetector.canCreateInterface(guildData)) {
+            return ResponseEntity.status(HttpStatus.PAYMENT_REQUIRED).build<Any>()
+        }
 
         try {
             val interfaceData = botApiService.createInterface(
@@ -310,6 +320,10 @@ class DashboardGuildDataController(
         val guildData = guildDao.get(guildID)
             ?: return ResponseEntity.notFound().build<Any>()
 
+        if (!premiumRequirementDetector.canCreateConnection(guildData)) {
+            return ResponseEntity.status(HttpStatus.PAYMENT_REQUIRED).build<Any>()
+        }
+
         val validation = connectionData.validate()
         if (!validation.isValid) {
             return ResponseEntity.badRequest().body(validation.invalidMessage)
@@ -393,6 +407,10 @@ class DashboardGuildDataController(
 
         val guildData = guildDao.get(guildID)
             ?: return ResponseEntity.notFound().build<Any>()
+
+        if (!premiumRequirementDetector.canCreateTemplate(guildData)) {
+            return ResponseEntity.status(HttpStatus.PAYMENT_REQUIRED).build<Any>()
+        }
 
         val validation = templateData.validate()
         if (!validation.isValid) {

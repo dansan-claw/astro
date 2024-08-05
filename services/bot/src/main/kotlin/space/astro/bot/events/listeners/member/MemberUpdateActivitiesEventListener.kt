@@ -5,7 +5,7 @@ import net.dv8tion.jda.api.events.user.update.UserUpdateActivitiesEvent
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
 import space.astro.bot.components.managers.CooldownsManager
-import space.astro.bot.components.managers.PremiumRequirementDetector
+import space.astro.shared.core.components.managers.PremiumRequirementDetector
 import space.astro.bot.components.managers.vc.VCNameManager
 import space.astro.bot.components.managers.vc.VCPrivateChatManager
 import space.astro.bot.components.managers.vc.VCWaitingRoomManager
@@ -19,7 +19,6 @@ import space.astro.shared.core.daos.TemporaryVCDao
 
 @Component
 class MemberUpdateActivitiesEventListener(
-    val cooldownsManager: CooldownsManager,
     val temporaryVCDao: TemporaryVCDao,
     val guildDao: GuildDao,
     val premiumRequirementDetector: PremiumRequirementDetector,
