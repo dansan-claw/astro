@@ -6,9 +6,9 @@ import org.springframework.context.annotation.Configuration
 @Configuration
 @ConfigurationProperties("bot.endpoint")
 class BotEndpointConfig {
-    val localhost: Boolean = true
-    val port: Long = 9000
-    val podName: String = "astro"
-    val serviceName: String = "bot"
-    val namespace: String = "astro"
+    var localhost: Boolean = true
+    var port: Long = 9000
+    var podName: String = "astro"
+    var serviceName: String = "bot"
+    var namespace: String = "astro"
 }
