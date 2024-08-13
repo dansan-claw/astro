@@ -23,7 +23,6 @@ class ObjectMapperFactory {
             .featuresToEnable(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS)
             .build<ObjectMapper>()
             .setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE)
-            .setSerializationInclusion(JsonInclude.Include.NON_NULL)
             .registerKotlinModule()
     }
 }
