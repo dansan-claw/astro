@@ -2,6 +2,7 @@ package space.astro.shared.core.models.database
 
 import com.aventrix.jnanoid.jnanoid.NanoIdUtils
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
+import io.ktor.client.engine.*
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.Region
 import net.dv8tion.jda.api.entities.MessageEmbed
@@ -320,6 +321,31 @@ data class ConnectionData(
     var roleID: String,
     var action: ConnectionAction = ConnectionAction.ASSIGN
 ) {
+    val permanentReadOnly = action.permanent
+
+    data class ConnectionDataReqBody(
+        var id: String,
+        var roleID: String,
+        var action: ConnectionAction.ConnectionActionReqBody,
+        var permanent: Boolean
+    ) {
+        fun toConnectionData(): ConnectionData {
+            val action = when (action) {
+                ConnectionAction.ConnectionActionReqBody.ASSIGN -> ConnectionAction.ASSIGN
+                ConnectionAction.ConnectionActionReqBody.REMOVE -> ConnectionAction.REMOVE
+                ConnectionAction.ConnectionActionReqBody.TOGGLE -> ConnectionAction.TOGGLE
+            }
+
+            action.permanent = permanent
+
+            return ConnectionData(
+                id = id,
+                roleID = roleID,
+                action = action
+            )
+        }
+    }
+
     fun validate() : ValidationResult {
         val idValidation = id.isValidSnowflake().asValidationResult("invalid channel id")
         val roleIDValidation = roleID.isValidSnowflake().asValidationResult("invalid role id")
@@ -358,6 +384,10 @@ enum class ConnectionAction(
     var permanent: Boolean = false
 ) {
     ASSIGN, REMOVE, TOGGLE;
+
+    enum class ConnectionActionReqBody {
+        ASSIGN, REMOVE, TOGGLE;
+    }
 
     override fun toString(): String = when (this) {
         ASSIGN -> "Assign the role"

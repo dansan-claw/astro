@@ -307,7 +307,7 @@ class DashboardGuildDataController(
     @PostMapping(CentralApiRoutes.Dashboard.GUILD_CREATE_VOICE_ROLE)
     suspend fun createGuildVoiceRole(
         @PathVariable guildID: String,
-        @RequestBody connectionData: ConnectionData,
+        @RequestBody connectionData: ConnectionData.ConnectionDataReqBody,
         exchange: ServerWebExchange
     ) : ResponseEntity<*> {
         val userID = exchange.getUserID()
@@ -324,13 +324,14 @@ class DashboardGuildDataController(
             return ResponseEntity.status(HttpStatus.PAYMENT_REQUIRED).build<Any>()
         }
 
-        val validation = connectionData.validate()
+        val connection = connectionData.toConnectionData()
+        val validation = connection.validate()
         if (!validation.isValid) {
             return ResponseEntity.badRequest().body(validation.invalidMessage)
         }
 
 
-        guildData.connections.add(connectionData)
+        guildData.connections.add(connection)
         guildDao.save(guildData)
         return ResponseEntity.ok(guildData)
     }
@@ -339,7 +340,7 @@ class DashboardGuildDataController(
     suspend fun updateGuildVoiceRole(
         @PathVariable guildID: String,
         @PathVariable channelID: String,
-        @RequestBody connectionData: ConnectionData,
+        @RequestBody connectionData: ConnectionData.ConnectionDataReqBody,
         exchange: ServerWebExchange
     ) : ResponseEntity<*> {
         val userID = exchange.getUserID()
@@ -352,7 +353,8 @@ class DashboardGuildDataController(
         val guildData = guildDao.get(guildID)
             ?: return ResponseEntity.notFound().build<Any>()
 
-        val validation = connectionData.validate()
+        val connection = connectionData.toConnectionData()
+        val validation = connection.validate()
         if (!validation.isValid) {
             return ResponseEntity.badRequest().body(validation.invalidMessage)
         }
@@ -361,7 +363,7 @@ class DashboardGuildDataController(
             .takeIf { it != -1 }
             ?: return ResponseEntity.notFound().build<Any>()
 
-        guildData.connections[index] = connectionData
+        guildData.connections[index] = connection
         guildDao.save(guildData)
         return ResponseEntity.ok(guildData)
     }
