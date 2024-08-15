@@ -1,5 +1,6 @@
 package space.astro.api.central.controllers.dashboard
 
+import com.aventrix.jnanoid.jnanoid.NanoIdUtils
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -414,6 +415,7 @@ class DashboardGuildDataController(
             return ResponseEntity.status(HttpStatus.PAYMENT_REQUIRED).build<Any>()
         }
 
+        templateData.id = NanoIdUtils.randomNanoId()
         val validation = templateData.validate()
         if (!validation.isValid) {
             return ResponseEntity.badRequest().body(validation.invalidMessage)

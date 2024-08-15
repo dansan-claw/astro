@@ -14,6 +14,7 @@ dependencies {
 
     // Database
     implementation(libs.mongo)
+    implementation(libs.nanoid)
 
     implementation(libs.chargebee)
 

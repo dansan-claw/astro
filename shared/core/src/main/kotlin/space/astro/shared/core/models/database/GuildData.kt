@@ -42,7 +42,7 @@ data class GuildEntitlement(
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class TemplateData(
-    val id: String = NanoIdUtils.randomNanoId(),
+    var id: String = NanoIdUtils.randomNanoId(),
     var name: String,
     var enabledGeneratorIds: MutableList<String>? = null,
     var vcName: String? = null,
