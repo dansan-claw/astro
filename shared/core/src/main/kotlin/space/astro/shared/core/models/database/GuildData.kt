@@ -321,13 +321,13 @@ data class ConnectionData(
     var roleID: String,
     var action: ConnectionAction = ConnectionAction.ASSIGN
 ) {
-    val permanentReadOnly = action.permanent
+    val permanentDashboard = action.permanent
 
     data class ConnectionDataReqBody(
         var id: String,
         var roleID: String,
         var action: ConnectionAction.ConnectionActionReqBody,
-        var permanent: Boolean
+        var permanentDashboard: Boolean
     ) {
         fun toConnectionData(): ConnectionData {
             val action = when (action) {
@@ -336,7 +336,7 @@ data class ConnectionData(
                 ConnectionAction.ConnectionActionReqBody.TOGGLE -> ConnectionAction.TOGGLE
             }
 
-            action.permanent = permanent
+            action.permanent = permanentDashboard
 
             return ConnectionData(
                 id = id,
