@@ -88,9 +88,8 @@ class ChargebeeController(
             .request()
 
         val hostedPage: HostedPage = result.hostedPage()
-        val output: JSONObject = hostedPage.jsonObj
 
-        return ResponseEntity.ok(output)
+        return ResponseEntity.ok(hostedPage.jsonObj.toString())
     }
 
     @GetMapping(CentralApiRoutes.Chargebee.USER_ACTIVE_SUBSCRIPTIONS)
