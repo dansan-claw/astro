@@ -33,7 +33,7 @@ import space.astro.shared.core.util.ui.Links
 
 @Command(
     name = "template-settings",
-    description = "Create predefined channel templates and use them anywhere",
+    description = "Manage templates",
     requiredPermissions = [Permission.MANAGE_CHANNEL],
     category = CommandCategory.SETTINGS,
     action = InteractionAction.SETTINGS

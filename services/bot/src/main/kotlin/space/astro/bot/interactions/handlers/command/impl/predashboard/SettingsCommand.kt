@@ -17,18 +17,12 @@ import space.astro.shared.core.util.ui.Links
 
 @Command(
     name = "settings",
-    description = "Edit Astro's settings in your server",
+    description = "Manage Astro's basic settings",
     requiredPermissions = [Permission.MANAGE_CHANNEL],
     category = CommandCategory.SETTINGS,
     action = InteractionAction.HIGH_COOLDOWN_NO_ADMIN
 )
-class SettingsCommand(
-    private val configurationErrorDao: ConfigurationErrorDao,
-    private val temporaryVCDao: TemporaryVCDao,
-    private val guildDao: GuildDao,
-    private val podConfig: PodConfig,
-    private val shardManagerConfig: ShardManagerConfig
-) : AbstractCommand() {
+class SettingsCommand: AbstractCommand() {
     @BaseCommand
     suspend fun run(
         event: SlashCommandInteractionEvent,

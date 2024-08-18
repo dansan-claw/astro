@@ -47,7 +47,7 @@ class GuildJoinEventListener(
             ?.setComponents(
                 ActionRow.of(
                     Buttons.guildDashboard(guild.id),
-                    Buttons.guides,
+                    Buttons.Guides.all,
                     Buttons.support,
                     Buttons.appDirectoryUltimate,
                 )

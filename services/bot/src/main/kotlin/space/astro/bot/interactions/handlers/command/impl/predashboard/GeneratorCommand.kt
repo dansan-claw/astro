@@ -36,7 +36,7 @@ import space.astro.shared.core.util.ui.Links
 
 @Command(
     name = "generator",
-    description = "0",
+    description = "Manage temporary voice channels generators",
     requiredPermissions = [Permission.MANAGE_CHANNEL],
     category = CommandCategory.SETTINGS,
     action = InteractionAction.SETTINGS

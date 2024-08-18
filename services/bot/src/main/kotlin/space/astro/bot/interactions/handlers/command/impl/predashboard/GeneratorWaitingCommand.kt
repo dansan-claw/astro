@@ -1,45 +1,42 @@
 package space.astro.bot.interactions.handlers.command.impl.predashboard
-
-import net.dv8tion.jda.api.Permission
-import net.dv8tion.jda.api.entities.channel.ChannelType
-import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
-import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
-import net.dv8tion.jda.api.interactions.commands.OptionType
-import space.astro.shared.core.components.managers.PremiumRequirementDetector
-import space.astro.bot.core.ui.Buttons
-import space.astro.bot.core.ui.Embeds
-import space.astro.bot.core.ui.Emojis
-import space.astro.bot.interactions.InteractionAction
-import space.astro.bot.interactions.context.GeneratorSettingsInteractionContext
-import space.astro.bot.interactions.context.InteractionContext
-import space.astro.bot.interactions.handlers.command.*
-import space.astro.shared.core.daos.GuildDao
-import space.astro.shared.core.models.database.InitialPosition
-import space.astro.shared.core.models.database.PermissionsInherited
-import space.astro.shared.core.util.ui.Links
-
-@Command(
-    name = "generator-waiting",
-    description = "Manage the generator waiting room settings",
-    requiredPermissions = [Permission.MANAGE_CHANNEL],
-    category = CommandCategory.SETTINGS,
-    action = InteractionAction.SETTINGS
-)
-class GeneratorWaitingCommand(
-    private val guildDao: GuildDao,
-    private val premiumRequirementDetector: PremiumRequirementDetector
-) : AbstractCommand() {
-
-    @BaseCommand
-    suspend fun run(
-        event: SlashCommandInteractionEvent,
-        ctx: InteractionContext
-    ) {
-        event.replyEmbeds(Embeds.default("You can configure temporary voice channel generators in the ${Emojis.dashboard.formatted} [`Dashboard`](${Links.GUILD_DASHBOARD(ctx.guild.id)})"))
-            .addActionRow(Buttons.guildDashboard(ctx.guild.id))
-            .queue()
-    }
-
+//
+//import net.dv8tion.jda.api.Permission
+//import net.dv8tion.jda.api.entities.channel.ChannelType
+//import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
+//import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
+//import net.dv8tion.jda.api.interactions.commands.OptionType
+//import space.astro.shared.core.components.managers.PremiumRequirementDetector
+//import space.astro.bot.core.ui.Buttons
+//import space.astro.bot.core.ui.Embeds
+//import space.astro.bot.core.ui.Emojis
+//import space.astro.bot.interactions.InteractionAction
+//import space.astro.bot.interactions.context.GeneratorSettingsInteractionContext
+//import space.astro.bot.interactions.context.InteractionContext
+//import space.astro.bot.interactions.handlers.command.*
+//import space.astro.shared.core.daos.GuildDao
+//import space.astro.shared.core.models.database.InitialPosition
+//import space.astro.shared.core.models.database.PermissionsInherited
+//import space.astro.shared.core.util.ui.Links
+//
+//@Command(
+//    name = "generator-waiting",
+//    description = "Manage temporary voice ",
+//    requiredPermissions = [Permission.MANAGE_CHANNEL],
+//    category = CommandCategory.SETTINGS,
+//    action = InteractionAction.SETTINGS
+//)
+//class GeneratorWaitingCommand: AbstractCommand() {
+//
+//    @BaseCommand
+//    suspend fun run(
+//        event: SlashCommandInteractionEvent,
+//        ctx: InteractionContext
+//    ) {
+//        event.replyEmbeds(Embeds.default("You can configure temporary voice channel generators in the ${Emojis.dashboard.formatted} [`Dashboard`](${Links.GUILD_DASHBOARD(ctx.guild.id)})"))
+//            .addActionRow(Buttons.guildDashboard(ctx.guild.id))
+//            .queue()
+//    }
+//
 //    @SubCommand(
 //        name = "bitrate",
 //        description = "Set the default bitrate for waiting rooms"
@@ -249,4 +246,4 @@ class GeneratorWaitingCommand(
 //            )
 //        )
 //    }
-}
+//}

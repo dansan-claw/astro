@@ -7,7 +7,7 @@ object Links {
     const val WEBSITE = "https://astro-bot.space"
     const val INVITE = "https://astro-bot.space/invite"
     const val SUPPORT_SERVER = "https://discord.gg/yeXwVhg"
-    const val WEBSITE_PREMIUM = "https://astro-bot.space/ultimate"
+    const val ULTIMATE = "https://astro-bot.space/ultimate"
     const val APP_DIRECTORY_ULTIMATE = "https://discord.com/application-directory/715621848489918495/premium"
     const val DASHBOARD = "https://astro-bot.space/guilds"
     fun GUILD_DASHBOARD(guildId: String) = "https://astro-bot.space/guilds/$guildId"

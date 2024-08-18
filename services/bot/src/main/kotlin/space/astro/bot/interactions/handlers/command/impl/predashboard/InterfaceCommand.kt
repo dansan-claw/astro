@@ -45,7 +45,7 @@ import java.text.SimpleDateFormat
 
 @Command(
     name = "interface",
-    description = "Create, edit and delete interfaces",
+    description = "Manage interfaces",
     requiredPermissions = [Permission.MANAGE_CHANNEL],
     category = CommandCategory.SETTINGS,
     action = InteractionAction.SETTINGS
@@ -98,7 +98,7 @@ class InterfaceCommand(
             embed = Embeds.success(
             "Interface created in ${channel.asMention} (${"message".asMessageMarkdownLink(ctx.guildId, channel.id, interfaceData.messageID)})"
             ),
-            component = Buttons.Help.interfaces
+            component = Buttons.Guides.interfaces
         )
     }
 
