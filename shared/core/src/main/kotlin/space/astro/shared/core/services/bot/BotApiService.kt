@@ -51,17 +51,22 @@ class BotApiService(
         endpoint: String,
         guildID: String
     ): Boolean {
-        val res = webClient.get()
-            .uri("${endpoint.removeSuffix("/")}${BotApiRoutes.DASHBOARD.IS_BOT_IN_GUILD.replace("{guildID}", guildID)}")
-            .retrieve()
-            .awaitBodilessEntity()
+        try {
+            webClient.get()
+                .uri("${endpoint.removeSuffix("/")}${BotApiRoutes.DASHBOARD.IS_BOT_IN_GUILD.replace("{guildID}", guildID)}")
+                .retrieve()
+                .onStatus(
+                    { it == HttpStatus.NOT_FOUND },
+                    { throw NotFoundException("bot not in guild $guildID")}
+                )
+                .onStatus(
+                    { it != HttpStatus.OK },
+                    { throw Throwable("${it.statusCode()} - Unexpected Response") })
+                .awaitBodilessEntity()
 
-        return if (res.statusCode.is2xxSuccessful) {
-            true
-        } else if (res.statusCode == HttpStatus.NOT_FOUND) {
-            false
-        } else {
-            throw Throwable("${res.statusCode} - Unexpected Response")
+            return true
+        } catch (e: NotFoundException) {
+            return false
         }
     }
 
