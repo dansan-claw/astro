@@ -15,6 +15,7 @@ import space.astro.api.central.services.discord.DiscordUserTokenFetchService
 import space.astro.api.central.services.discord.DiscordUserTokenPersistenceService
 import space.astro.api.central.services.dashboard.WebSessionService
 import space.astro.api.central.util.ExchangeAttributeNames
+import space.astro.shared.core.components.web.BotApiRoutes
 import space.astro.shared.core.configs.ChargebeeConfig
 import space.astro.shared.core.configs.KubeConfig
 import java.util.Base64
@@ -61,6 +62,23 @@ class AuthWebFilter(
             || requestPath.startsWith(CentralApiRoutes.Docs.SWAGGER))
         {
             return chain.filter(exchange)
+        }
+
+
+        ////////////
+        /// KUBE ///
+        ////////////
+        if (requestPath.startsWith(CentralApiRoutes.Kube.READY) || requestPath.startsWith(CentralApiRoutes.Kube.SHUTDOWN)) {
+            return mono {
+                val auth = request.headers["Authorization"]?.get(0)
+
+                if (auth != kubeConfig.lifecycleAuthorization) {
+                    response.statusCode = HttpStatus.UNAUTHORIZED
+                    return@mono null
+                } else {
+                    chain.filter(exchange).awaitSingleOrNull()
+                }
+            }
         }
 
 
@@ -148,7 +166,7 @@ class AuthWebFilter(
                     response.statusCode = HttpStatus.UNAUTHORIZED
                     return@mono null
                 }
-            if (authHeader != centralApiConfig.auth && authHeader != kubeConfig.lifecycleAuthorization) {
+            if (authHeader != centralApiConfig.auth) {
                 response.statusCode = HttpStatus.UNAUTHORIZED
                 return@mono null
             }
