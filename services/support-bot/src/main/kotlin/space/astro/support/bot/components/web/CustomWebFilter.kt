@@ -32,7 +32,7 @@ class CustomWebFilter(
             return chain.filter(exchange)
         }
 
-        if (requestPath.startsWith("/ready") || requestPath.startsWith("/shutdown")) {
+        if (requestPath.startsWith("/ready") || requestPath.startsWith("/shutdown") || requestPath.startsWith("/actuator/health/liveness")) {
             return mono {
                 val authHeader = request.headers["Authorization"]?.get(0)
                     ?: run {
