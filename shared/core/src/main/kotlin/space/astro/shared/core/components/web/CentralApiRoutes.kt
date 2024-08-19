@@ -3,6 +3,7 @@ package space.astro.shared.core.components.web
 object CentralApiRoutes {
     object Kube {
         const val READY = "/ready"
+        const val LIVENESS = "/actuator/health/liveness"
         const val SHUTDOWN = "/shutdown"
     }
 
