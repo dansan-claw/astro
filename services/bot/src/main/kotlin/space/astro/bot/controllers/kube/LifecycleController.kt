@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RestController
+import space.astro.shared.core.components.web.BotApiRoutes
 import space.astro.shared.core.configs.KubeConfig
 
 private val log = KotlinLogging.logger { }
@@ -19,12 +20,8 @@ class LifecycleController(
     val shardManager: ShardManager
 ) {
 
-    @GetMapping("/ready")
+    @GetMapping(BotApiRoutes.Kube.READY)
     suspend fun ready(@RequestHeader("Authorization") auth: String): ResponseEntity<*> {
-        if (auth != kubeConfig.lifecycleAuthorization) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build<Any>()
-        }
-
         // only send 204 if all shards are ready on this pod
         // otherwise: ResponseEntity.badRequest().build<Any>()
         val allShardsReady: Boolean = shardManager.shards
@@ -40,11 +37,8 @@ class LifecycleController(
         }
     }
 
-    @GetMapping("/shutdown")
+    @GetMapping(BotApiRoutes.Kube.SHUTDOWN)
     suspend fun shutdown(@RequestHeader("Authorization") auth: String): ResponseEntity<*> {
-        if (auth != kubeConfig.lifecycleAuthorization) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build<Any>()
-        }
         log.info("Got shutdown request - persisting players...")
         delay(3000)
         return ResponseEntity.noContent().build<Any>()

@@ -13,6 +13,7 @@ import space.astro.bot.core.extentions.modifyPermissionOverride
 import space.astro.bot.models.discord.PermissionSets
 import space.astro.bot.models.discord.vc.VCOperationCTX
 import space.astro.bot.services.ConfigurationErrorService
+import space.astro.shared.core.components.managers.VariablesManager
 import space.astro.shared.core.models.database.GeneratorData
 import space.astro.shared.core.models.database.InitialPosition
 import space.astro.shared.core.models.database.PermissionsInherited
@@ -116,9 +117,11 @@ class VCWaitingRoomManager(
         } catch (e: ErrorResponseException) {
             val configError = when (e.errorResponse) {
                 ErrorResponse.MAX_CHANNELS -> configurationErrorService.maximumAmountOfChannelsReached(
+                    guildId = owner.guild.id,
                     encounteredIn = "creating the waiting room of a temporary VC"
                 )
-                else -> configurationErrorService.unknownError(
+                else -> configurationErrorService.unknown(
+                    guildId = owner.guild.id,
                     encounteredIn = "creating the waiting room of a temporary VC: ${e.meaning}"
                 )
             }

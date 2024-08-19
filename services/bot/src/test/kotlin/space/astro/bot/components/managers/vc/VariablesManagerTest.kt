@@ -2,6 +2,7 @@ package space.astro.bot.components.managers.vc
 
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Test
+import space.astro.shared.core.components.managers.VariablesManager
 
 class VariablesManagerTest {
 
@@ -9,10 +10,10 @@ class VariablesManagerTest {
     fun testPremiumVariablesRegexMatching() {
         val shouldNotMatch = "{nickname} sample name"
         val shouldMatch = "cool {n}"
-        val shouldMatch2 = "nice {activity_name}"
+        val shouldNotMatch2 = "nice {activity_name}"
 
         assertFalse(VariablesManager.Checkers.containsPremiumVariable(shouldNotMatch))
         assert(VariablesManager.Checkers.containsPremiumVariable(shouldMatch))
-        assert(VariablesManager.Checkers.containsPremiumVariable(shouldMatch2))
+        assertFalse(VariablesManager.Checkers.containsPremiumVariable(shouldNotMatch2))
     }
 }

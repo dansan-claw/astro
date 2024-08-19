@@ -29,7 +29,7 @@ fun VCEventHandler.handleLeftTemporaryVCEvent(
     if (newOwner == null) {
         temporaryVCDao.delete(guild.id, event.temporaryVCData.id)
 
-        log.info { "DELETE: Deleting temporary vc, detected ${vc.members.size} users, filtered to ${vc.members.filter { !it.user.isBot }.size} non bots" }
+        log.info { "DELETE: Deleting temporary vc, detected ${vc.members.size} users, filtered to ${vc.members.filter { !it.user.isBot }.size} non bots - server ${guild.id}" }
         vc.delete()
             .reason("Deleting temporary vc, detected ${vc.members.size} users, filtered to ${vc.members.filter { !it.user.isBot }.size} non bots")
             .queue()
@@ -76,8 +76,8 @@ fun VCEventHandler.handleLeftTemporaryVCEvent(
             vcOperationCTX.queueUpdatedManagers(
                 failure = { managerType, e ->
                     configurationErrorEventPublisher.publishConfigurationErrorEvent(
-                        guildId = guild.id,
-                        configurationErrorData = configurationErrorService.unknownError(
+                        configurationErrorData = configurationErrorService.unknown(
+                            guildId = guild.id,
                             encounteredIn = "updating ${managerType.readableName}: ${e.message ?: ""}"
                         )
                     )

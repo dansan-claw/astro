@@ -8,7 +8,7 @@ import net.dv8tion.jda.api.exceptions.InsufficientPermissionException
 import net.dv8tion.jda.api.sharding.ShardManager
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
-import space.astro.bot.components.managers.PremiumRequirementDetector
+import space.astro.shared.core.components.managers.PremiumRequirementDetector
 import space.astro.bot.config.DiscordApplicationConfig
 import space.astro.bot.core.exceptions.ConfigurationException
 import space.astro.bot.core.extentions.toConfigurationErrorDto
@@ -202,7 +202,6 @@ class ModalHandler(
                 when (exception) {
                     is ConfigurationException -> {
                         configurationErrorEventPublisher.publishConfigurationErrorEvent(
-                            guildId = guild.id,
                             configurationErrorData = exception.configurationErrorData
                         )
 
@@ -210,10 +209,9 @@ class ModalHandler(
                     }
 
                     is InsufficientPermissionException -> {
-                        val configurationError = exception.toConfigurationErrorDto()
+                        val configurationError = exception.toConfigurationErrorDto(guild.id)
 
                         configurationErrorEventPublisher.publishConfigurationErrorEvent(
-                            guildId = guild.id,
                             configurationErrorData = configurationError
                         )
 
@@ -221,10 +219,9 @@ class ModalHandler(
                     }
 
                     else -> {
-                        val configurationError = ConfigurationErrorData(exception.toString())
+                        val configurationError = ConfigurationErrorData(guild.id, exception.toString())
 
                         configurationErrorEventPublisher.publishConfigurationErrorEvent(
-                            guildId = guild.id,
                             configurationErrorData = configurationError
                         )
 

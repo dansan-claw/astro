@@ -1,6 +1,11 @@
 package space.astro.shared.core.util.extention
 
 /**
+ * Checks whether this [String] is a valid Discord snowflake
+ */
+fun String.isValidSnowflake() = this.length == 19 && this.toLongOrNull() != null
+
+/**
  * Returns a user mention from a string id: <@string>
  */
 fun String.asUserMention() = "<@$this>"

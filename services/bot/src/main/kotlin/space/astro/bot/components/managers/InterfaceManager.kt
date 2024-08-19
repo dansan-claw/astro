@@ -113,8 +113,6 @@ class InterfaceManager(
             buttons = getDefaultInterfaceButtons()
         )
 
-        log.info { "creating interface: $interfaceData" }
-
         val interfaceMessage = channel.sendMessage(computeMessage(interfaceData)).await()
         interfaceData.messageID = interfaceMessage.id
 
@@ -175,17 +173,12 @@ class InterfaceManager(
                 .filter { it.position.first == i }
                 .sortedBy { it.position.second }
                 .map { computeButton(it) }
-                .onEach {
-                    log.info { "Computed button: ${it.id} ${it.label} ${it.emoji}" }
-                }
                 .takeIf { it.isNotEmpty() }
                 ?.take(MAX_BUTTONS_PER_COMPONENT)
                 ?.also {
                     components.add(ActionRow.of(it))
                 }
         }
-
-        log.info { "creating interface with components: ${components}" }
 
         return components
     }

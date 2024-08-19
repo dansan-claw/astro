@@ -6,36 +6,18 @@ import space.astro.bot.interactions.InteractionIds
 import space.astro.shared.core.util.ui.Links
 
 object Buttons {
-//    val website = Button.link(Links.WEBSITE, "Website")
-//    val dashboard = Button.link(Links.DASHBOARD, "Dashboard")
-//    val docs = Button.link(Links.Documentation.DOCUMENTATION, "Docs")
     val invite = Button.link(Links.INVITE, "Invite")
     val support = Button.link(Links.SUPPORT_SERVER, "Support")
-    val premium = Button.link(Links.APP_DIRECTORY_PREMIUM, "Premium")
+    val appDirectoryUltimate = Button.link(Links.APP_DIRECTORY_ULTIMATE, "Ultimate")
+    val dashboard = Button.link(Links.DASHBOARD, "Dashboard")
+    fun guildDashboard(guildId: String) = Button.link(Links.GUILD_DASHBOARD(guildId), "Dashboard")
 
-//    object Docs {
-//        val premium = Button.link(Links.Documentation.PREMIUM, "Premium docs")
-//        val variables = Button.link(Links.Documentation.VARIABLES, "Variable docs")
-//        val connection = Button.link(Links.Documentation.CONNECTION, "Connection docs")
-//        val generator = Button.link(Links.Documentation.GENERATOR, "Generator docs")
-//        val interfaces = Button.link(Links.Documentation.INTERFACE, "Interface docs")
-//        val template = Button.link(Links.Documentation.TEMPLATE, "Template docs")
-//    }
-
-    object Help {
-        val general = Button.of(ButtonStyle.PRIMARY, InteractionIds.Button.HELP_GENERAL, "Help", Emojis.help)
-        val premium = Button.of(ButtonStyle.PRIMARY, InteractionIds.Button.HELP_PREMIUM, "Premium", Emojis.premium)
-        val variables = Button.of(ButtonStyle.PRIMARY, InteractionIds.Button.HELP_VARIABLES, "Variables", Emojis.variables)
-        val generators = Button.of(ButtonStyle.PRIMARY, InteractionIds.Button.HELP_GENERATORS, "Generators help", Emojis.generator)
-        val interfaces = Button.of(ButtonStyle.PRIMARY, InteractionIds.Button.HELP_INTERFACES, "Interfaces help", Emojis.vcInterface)
-        val templates = Button.of(ButtonStyle.PRIMARY, InteractionIds.Button.HELP_TEMPLATES, "Templates help", Emojis.template)
-        val connections = Button.of(ButtonStyle.PRIMARY, InteractionIds.Button.HELP_CONNECTIONS, "Connections help", Emojis.connection)
+    object Guides {
+        val all = Button.link(Links.GUIDES, "Guides")
+        val interfaces = Button.link(Links.GUIDES + "/interface", "Interface guide")
     }
 
     object Bundles {
-        val helpAndLinks = listOf(Help.general, invite, support, premium)
-        val secondaryHelp = listOf(Help.premium, Help.variables, Help.generators, Help.interfaces, Help.templates, Help.connections)
-
         ////////////////////
         /// PREDASHBOARD ///
         ////////////////////

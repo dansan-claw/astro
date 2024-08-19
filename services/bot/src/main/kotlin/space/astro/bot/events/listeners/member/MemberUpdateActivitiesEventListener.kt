@@ -4,8 +4,7 @@ import net.dv8tion.jda.api.entities.channel.ChannelType
 import net.dv8tion.jda.api.events.user.update.UserUpdateActivitiesEvent
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
-import space.astro.bot.components.managers.CooldownsManager
-import space.astro.bot.components.managers.PremiumRequirementDetector
+import space.astro.shared.core.components.managers.PremiumRequirementDetector
 import space.astro.bot.components.managers.vc.VCNameManager
 import space.astro.bot.components.managers.vc.VCPrivateChatManager
 import space.astro.bot.components.managers.vc.VCWaitingRoomManager
@@ -19,7 +18,6 @@ import space.astro.shared.core.daos.TemporaryVCDao
 
 @Component
 class MemberUpdateActivitiesEventListener(
-    val cooldownsManager: CooldownsManager,
     val temporaryVCDao: TemporaryVCDao,
     val guildDao: GuildDao,
     val premiumRequirementDetector: PremiumRequirementDetector,
@@ -35,8 +33,6 @@ class MemberUpdateActivitiesEventListener(
         if (event.user.isBot)
             return
 
-        // TODO: Global user cooldown check here?
-
         val guild = event.guild
         val guildId = guild.id
         val vc = event.member.voiceState!!
@@ -51,7 +47,7 @@ class MemberUpdateActivitiesEventListener(
             ?: return
 
         val guildData = guildDao.get(guildId)
-            ?.takeIf { premiumRequirementDetector.isGuildPremium(it) }
+//            ?.takeIf { premiumRequirementDetector.isGuildPremium(it) }
             ?: return
 
         val generatorData = guildData.generators
@@ -88,15 +84,14 @@ class MemberUpdateActivitiesEventListener(
             vcWaitingRoomManager.performWaitingRoomNameRefresh(vcOperationCTX)
         } catch (e: ConfigurationException) {
             configurationErrorEventPublisher.publishConfigurationErrorEvent(
-                guildId = guildId,
                 configurationErrorData = e.configurationErrorData
             )
         } catch (_: VcOperationException) {}
 
         vcOperationCTX.queueUpdatedManagers { managerType, e ->
             configurationErrorEventPublisher.publishConfigurationErrorEvent(
-                guildId = guildId,
-                configurationErrorData = configurationErrorService.unknownError(
+                configurationErrorData = configurationErrorService.unknown(
+                    guildId = guildId,
                     encounteredIn = "updating ${managerType.readableName} name: ${e.message ?: ""}"
                 )
             )

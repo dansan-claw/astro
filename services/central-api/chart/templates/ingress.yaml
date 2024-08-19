@@ -1,15 +1,15 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ .Values.name }}-ing
+  name: {{ .Values.name }}
   namespace: {{ .Values.namespace }}
 spec:
   tls:
     - hosts:
-        - api.astro-bot.space
+        - {{ .Values.host }}
       secretName: tls
   rules:
-    - host: api.astro-bot.space
+    - host: {{ .Values.host }}
       http:
         paths:
           - path: /
@@ -18,4 +18,4 @@ spec:
               service:
                 name: central-api
                 port:
-                  number: 9001
+                  number: {{ .Values.port }}

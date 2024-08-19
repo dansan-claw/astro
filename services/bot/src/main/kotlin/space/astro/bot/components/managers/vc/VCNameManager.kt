@@ -1,11 +1,12 @@
 package space.astro.bot.components.managers.vc
 
 import org.springframework.stereotype.Component
-import space.astro.bot.components.managers.PremiumRequirementDetector
+import space.astro.shared.core.components.managers.PremiumRequirementDetector
 import space.astro.bot.core.exceptions.ConfigurationException
 import space.astro.bot.core.exceptions.VcOperationException
 import space.astro.bot.models.discord.vc.VCOperationCTX
 import space.astro.bot.services.ConfigurationErrorService
+import space.astro.shared.core.components.managers.VariablesManager
 import space.astro.shared.core.models.database.InitialPosition
 import space.astro.shared.core.models.database.TemporaryVCData
 import space.astro.shared.core.models.database.VCState
@@ -140,6 +141,7 @@ class VCNameManager(
     private fun VCOperationCTX.validatePremiumRequirements(nameTemplate: String) {
         if (!premiumRequirementDetector.canUseVCNameTemplate(guildData, nameTemplate)) {
             throw ConfigurationException(configurationErrorService.premiumVariables(
+                guildId = guild.id,
                 encounteredIn = "applying the name $nameTemplate to a temporary VC"
             ))
         }
@@ -156,7 +158,7 @@ class VCNameManager(
         }
 
         if (!premiumRequirementDetector.canValidateBadwords(guildData)) {
-            throw ConfigurationException(configurationErrorService.premiumRequiredForBadwordsValidation())
+            throw ConfigurationException(configurationErrorService.premiumRequiredForBadwordsValidation(guild.id))
         }
 
         if (!generatorData.commandsSettings.badwordsAllowed && VariablesManager.Checkers.containsBadwords(nameTemplate)) {
@@ -257,6 +259,7 @@ class VCNameManager(
         } catch (e: IllegalArgumentException) {
             throw ConfigurationException(
                 configurationErrorService.invalidChannelName(
+                    guildId = guild.id,
                     encounteredIn = "temporary vc name: $name"
                 )
             )

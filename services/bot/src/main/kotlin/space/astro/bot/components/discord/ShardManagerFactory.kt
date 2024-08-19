@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component
 import space.astro.bot.components.jda.JdaToSpringEventBridge
 import space.astro.bot.config.DiscordApplicationConfig
 import space.astro.bot.config.PodConfig
+import space.astro.bot.config.ShardManagerConfig
 import space.astro.bot.core.extentions.toConfigurationErrorDto
 import space.astro.bot.events.publishers.ConfigurationErrorEventPublisher
 import space.astro.bot.models.discord.RedisSessionController
@@ -75,8 +76,7 @@ class ShardManagerFactory(
             when (it) {
                 is InsufficientPermissionException -> {
                     configurationErrorEventPublisher.publishConfigurationErrorEvent(
-                        guildId = it.guildId.toString(),
-                        configurationErrorData = it.toConfigurationErrorDto()
+                        configurationErrorData = it.toConfigurationErrorDto(it.guildId.toString())
                     )
                 }
             }
@@ -89,7 +89,7 @@ class ShardManagerFactory(
             )
             .setMemberCachePolicy(MemberCachePolicy.VOICE)
             .enableCache(CacheFlag.VOICE_STATE, CacheFlag.MEMBER_OVERRIDES, CacheFlag.ACTIVITY)
-            .setSessionController(sessionController)
+//            .setSessionController(sessionController)
             .setShardsTotal(shardManagerConfig.totalShards)
             .setShards(shardList)
             .setActivity(activity)

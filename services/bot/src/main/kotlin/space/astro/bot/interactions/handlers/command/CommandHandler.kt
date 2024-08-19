@@ -17,7 +17,7 @@ import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
 import space.astro.bot.components.managers.CooldownsManager
-import space.astro.bot.components.managers.PremiumRequirementDetector
+import space.astro.shared.core.components.managers.PremiumRequirementDetector
 import space.astro.bot.config.DiscordApplicationConfig
 import space.astro.bot.core.exceptions.ConfigurationException
 import space.astro.bot.core.extentions.toConfigurationErrorDto
@@ -27,7 +27,6 @@ import space.astro.bot.interactions.context.InteractionContext
 import space.astro.bot.interactions.context.InteractionContextBuilder
 import space.astro.bot.interactions.context.InteractionContextBuilderException
 import space.astro.bot.interactions.reply.InteractionReplyHandler
-import space.astro.shared.core.daos.ConfigurationErrorDao
 import space.astro.shared.core.daos.GuildDao
 import space.astro.shared.core.models.analytics.AnalyticsEvent
 import space.astro.shared.core.models.analytics.AnalyticsEventReceiver
@@ -136,6 +135,7 @@ class CommandHandler(
                 return@launch
             }
 
+
             /////////////////////////////
             /// RETRIEVE COMMAND DATA ///
             /////////////////////////////
@@ -185,6 +185,7 @@ class CommandHandler(
                     else -> throw UnsupportedOperationException("Unable to handle option $name!")
                 }
             }
+
 
             ////////////////
             /// COOLDOWN ///
@@ -299,7 +300,6 @@ class CommandHandler(
                 when (exception) {
                     is ConfigurationException -> {
                         configurationErrorEventPublisher.publishConfigurationErrorEvent(
-                            guildId = guild.id,
                             configurationErrorData = exception.configurationErrorData
                         )
 
@@ -307,10 +307,9 @@ class CommandHandler(
                     }
 
                     is InsufficientPermissionException -> {
-                        val configurationError = exception.toConfigurationErrorDto()
+                        val configurationError = exception.toConfigurationErrorDto(guild.id)
 
                         configurationErrorEventPublisher.publishConfigurationErrorEvent(
-                            guildId = guild.id,
                             configurationErrorData = configurationError
                         )
 
@@ -318,10 +317,9 @@ class CommandHandler(
                     }
 
                     else -> {
-                        val configurationError = ConfigurationErrorData(exception.toString())
+                        val configurationError = ConfigurationErrorData(guild.id, exception.toString())
 
                         configurationErrorEventPublisher.publishConfigurationErrorEvent(
-                            guildId = guild.id,
                             configurationErrorData = configurationError
                         )
 

@@ -7,9 +7,8 @@ import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.utils.SessionController
 import net.dv8tion.jda.api.utils.SessionController.ShardedGateway
 import net.dv8tion.jda.api.utils.SessionControllerAdapter
-import space.astro.bot.components.discord.ShardManagerConfig
+import space.astro.bot.config.ShardManagerConfig
 import space.astro.bot.config.DiscordApplicationConfig
-import space.astro.shared.core.models.redis.RedisKey
 import space.astro.shared.core.models.redis.RedisRateLimiter
 import java.time.Duration
 import java.util.concurrent.Executors
@@ -59,17 +58,17 @@ class RedisSessionController(
         connectionNodes.remove(node)?.cancel(true)
     }
 
-    override fun getGlobalRatelimit(): Long {
-        return try {
-            asyncCommands.get(RedisKey.GLOBAL_RATELIMIT.key).get().toLong()
-        } catch (e: Exception) {
-            Long.MIN_VALUE
-        }
-    }
-
-    override fun setGlobalRatelimit(ratelimit: Long) {
-        asyncCommands.set(RedisKey.GLOBAL_RATELIMIT.key, ratelimit.toString()).get()
-    }
+//    override fun getGlobalRatelimit(): Long {
+//        return try {
+//            asyncCommands.get(RedisKey.GLOBAL_RATELIMIT.key).get().toLong()
+//        } catch (e: Exception) {
+//            Long.MIN_VALUE
+//        }
+//    }
+//
+//    override fun setGlobalRatelimit(ratelimit: Long) {
+//        asyncCommands.set(RedisKey.GLOBAL_RATELIMIT.key, ratelimit.toString()).get()
+//    }
 
     override fun getShardedGateway(api: JDA): ShardedGateway {
         return ShardedGateway(gateway, -1)

@@ -5,14 +5,11 @@ info:
     version: "1.0.0"
 
 server:
-  port: ${PORT:9001}
+  port: 9001
 
 management:
   endpoints:
     web:
-      cors:
-        allowed-origins: "*"
-        allowed-methods: GET, POST
       exposure:
         include:
           - health
@@ -49,50 +46,4 @@ sentry:
   dsn: https://57acc0d723f47fa990648188825a43bb@o4506708022263808.ingest.sentry.io/4506708031963136
   # Set traces-sample-rate to 1.0 to capture 100% of transactions for performance monitoring.
   # We recommend adjusting this value in production.
-  traces-sample-rate: 0.25
-
-bigquery:
-  enabled: ${BIGQUERY_ENABLED:false}
-  dataset-name: ${BIGQUERY_DATASET_NAME:astro_local}
-
-chargebee:
-  api-key: ${CHARGEBEE_API_KEY}
-  webhook-token: ${CHARGEBEE_WEBHOOK_TOKEN}
-  site-name: ${CHARGEBEE_SITE_NAME}
-kube:
-  lifecycle-authorization: ${KUBE_LIFECYCLE_AUTHORIZATION}
-support:
-  bot:
-    base-url: ${SUPPORT_BOT_BASE_URL:http://localhost:9001}
-    origin-url: ${SUPPORT_BOT_ORIGIN_URL:http://localhost:3000}
-    auth: ${SUPPORT_BOT_AUTH:dev-premium-api-auth-token}
-
-io:
-  influx:
-    bucket: ${INFLUX_BUCKET:astro-logs}
-    org: ${INFLUX_ORG:astro-org}
-    token: ${INFLUX_TOKEN:astroverysecuretoken}
-    url: ${INFLUX_URL:http://localhost:8086}
-  kmongo:
-    connection-string: ${KMONGO_CONNECTION_STRING:mongodb://localhost:27017}
-    database: ${KMONGO_DATABASE:AstroDev}
-  redis:
-    uris: ${REDIS_URIS:redis://localhost:6379}
-    cluster: ${REDIS_CLUSTER:false}
-
-#####################
-### END OF SHARED ###
-#####################
-
-central:
-  api:
-    auth: ${CENTRAL_API_AUTH:iqwoenfuef3289fnv3adj0sajda13nd130d9jasdcb123e1pef3289vn}
-
-discord:
-  application:
-    redirect-uri: ${DISCORD_APPLICATION_REDIRECT_URI:http://localhost:3000/callback}
-    id: ${DISCORD_APPLICATION_ID:788708323867885568}
-    secret: ${DISCORD_APPLICATION_SECRET}
-
-jwt:
-  key: ${JWT_KEY}
+  traces-sample-rate: 0.05

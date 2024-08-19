@@ -9,8 +9,14 @@ dependencies {
     implementation(libs.bundles.jwt)
     implementation(libs.bundles.caching)
 
+    // Discord
+    implementation(libs.jda)
+
     // Database
     implementation(libs.mongo)
+    implementation(libs.nanoid)
+
+    implementation(libs.chargebee)
 
     // Project
     implementation(project(":shared:core"))

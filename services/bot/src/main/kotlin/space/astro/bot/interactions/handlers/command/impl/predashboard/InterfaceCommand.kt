@@ -23,7 +23,7 @@ import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 import net.dv8tion.jda.api.requests.ErrorResponse
 import net.dv8tion.jda.api.sharding.ShardManager
 import space.astro.bot.components.managers.InterfaceManager
-import space.astro.bot.components.managers.PremiumRequirementDetector
+import space.astro.shared.core.components.managers.PremiumRequirementDetector
 import space.astro.bot.core.ui.Buttons
 import space.astro.bot.core.ui.Embeds
 import space.astro.bot.core.ui.Emojis
@@ -45,7 +45,7 @@ import java.text.SimpleDateFormat
 
 @Command(
     name = "interface",
-    description = "Create, edit and delete interfaces",
+    description = "Manage interfaces",
     requiredPermissions = [Permission.MANAGE_CHANNEL],
     category = CommandCategory.SETTINGS,
     action = InteractionAction.SETTINGS
@@ -82,7 +82,7 @@ class InterfaceCommand(
                             "\nPossible solutions:" +
                             "\n• Get ${Emojis.premium.formatted}" +
                             "\n• Delete an existing interface with `/interface delete`"),
-                component = Buttons.premium
+                component = Buttons.appDirectoryUltimate
             )
             return
         }
@@ -98,7 +98,7 @@ class InterfaceCommand(
             embed = Embeds.success(
             "Interface created in ${channel.asMention} (${"message".asMessageMarkdownLink(ctx.guildId, channel.id, interfaceData.messageID)})"
             ),
-            component = Buttons.Help.interfaces
+            component = Buttons.Guides.interfaces
         )
     }
 
