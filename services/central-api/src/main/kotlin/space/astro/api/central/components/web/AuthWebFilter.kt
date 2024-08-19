@@ -68,7 +68,10 @@ class AuthWebFilter(
         ////////////
         /// KUBE ///
         ////////////
-        if (requestPath.startsWith(CentralApiRoutes.Kube.READY) || requestPath.startsWith(CentralApiRoutes.Kube.SHUTDOWN)) {
+        if (requestPath.startsWith(CentralApiRoutes.Kube.READY)
+            || requestPath.startsWith(CentralApiRoutes.Kube.SHUTDOWN)
+            || requestPath.startsWith(CentralApiRoutes.Kube.LIVENESS)
+            ) {
             return mono {
                 val auth = request.headers["Authorization"]?.get(0)
 
