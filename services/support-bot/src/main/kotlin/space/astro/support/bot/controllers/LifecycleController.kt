@@ -17,16 +17,16 @@ class LifecycleController(
 ) {
 
     @GetMapping("/ready")
-    suspend fun ready(@RequestHeader("Authorization") auth: String): ResponseEntity<*> {
+    suspend fun ready(): ResponseEntity<*> {
         // only send 204 if all shards are ready on this pod
         // otherwise: ResponseEntity.badRequest().build<Any>()
-        val allShardsReady: Boolean = shardManager.shards
+        val shardsReady = shardManager.shards
             .map { it.status }
-            .all { it == JDA.Status.LOADING_SUBSYSTEMS || it == JDA.Status.CONNECTED }
+            .count { it == JDA.Status.LOADING_SUBSYSTEMS || it == JDA.Status.CONNECTED }
 
         log.info("Getting probed /ready: ${shardManager.shards.count { it.status == JDA.Status.CONNECTED }}")
 
-        return if (allShardsReady) {
+        return if (shardsReady >= 1) {
             ResponseEntity.noContent().build<Any>()
         } else {
             log.info("Not Ready --> Returning 500")
@@ -35,7 +35,7 @@ class LifecycleController(
     }
 
     @GetMapping("/shutdown")
-    suspend fun shutdown(@RequestHeader("Authorization") auth: String): ResponseEntity<*> {
+    suspend fun shutdown(): ResponseEntity<*> {
         log.info("Got shutdown request - persisting players...")
         delay(3000)
         return ResponseEntity.noContent().build<Any>()
