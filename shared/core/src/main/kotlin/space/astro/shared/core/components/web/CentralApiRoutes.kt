@@ -56,6 +56,7 @@ object CentralApiRoutes {
         const val GUILD_CREATE_TEMPLATE = "$GUILD/data/template"
         const val GUILD_SINGLE_TEMPLATE = "$GUILD/data/template/{templateID}"
 
+        const val GUILD_ENTITLEMENTS_REFRESH = "$GUILD/entitlements/refresh"
         const val GUILD_UPGRADE = "$GUILD/upgrade/{subscriptionID}"
         const val GUILD_DOWNGRADE = "$GUILD/downgrade"
 

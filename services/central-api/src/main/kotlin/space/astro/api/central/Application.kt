@@ -22,7 +22,8 @@ import org.springframework.scheduling.annotation.EnableScheduling
         "space.astro.shared.core.services.chargebee",
         "space.astro.shared.core.services.bot",
         "space.astro.shared.core.services.support",
-        "space.astro.shared.core.daos"
+        "space.astro.shared.core.daos",
+        "space.astro.shared.core.services.discord",
     ]
 )
 @OpenAPIDefinition(
