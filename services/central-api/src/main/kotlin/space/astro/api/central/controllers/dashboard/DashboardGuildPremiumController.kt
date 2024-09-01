@@ -65,7 +65,7 @@ class DashboardGuildPremiumController(
             }
         }
 
-        return ResponseEntity.ok().build<Any>()
+        return ResponseEntity.ok(guildData)
     }
 
     @GetMapping(CentralApiRoutes.Dashboard.GUILD_UPGRADE)
