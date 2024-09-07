@@ -19,7 +19,7 @@ import space.astro.bot.interactions.context.InteractionContextBuilder
 import space.astro.bot.interactions.context.InteractionContextBuilderException
 import space.astro.bot.interactions.reply.InteractionReplyHandler
 import space.astro.shared.core.daos.GuildDao
-import space.astro.shared.core.models.influx.ConfigurationErrorData
+import space.astro.shared.core.models.database.ConfigurationErrorData
 import space.astro.shared.core.util.ui.Links
 import java.lang.reflect.InvocationTargetException
 import kotlin.reflect.full.callSuspend

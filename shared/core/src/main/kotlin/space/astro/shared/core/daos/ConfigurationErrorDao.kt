@@ -9,7 +9,7 @@ import com.mongodb.client.model.ReplaceOptions
 import org.litote.kmongo.descending
 import org.springframework.stereotype.Repository
 import space.astro.shared.core.models.database.GuildData
-import space.astro.shared.core.models.influx.ConfigurationErrorData
+import space.astro.shared.core.models.database.ConfigurationErrorData
 
 @Repository
 class ConfigurationErrorDao(

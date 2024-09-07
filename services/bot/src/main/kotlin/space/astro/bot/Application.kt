@@ -14,7 +14,6 @@ import org.springframework.scheduling.annotation.EnableScheduling
         "space.astro.shared.core.components.bigquery",
         "space.astro.shared.core.services.redis",
         "space.astro.shared.core.components.kmongo",
-        "space.astro.shared.core.components.influx",
         "space.astro.shared.core.daos",
         "space.astro.shared.core.services",
         "space.astro.shared.core.services.chargebee",

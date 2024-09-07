@@ -34,7 +34,7 @@ import space.astro.shared.core.models.analytics.AnalyticsEventType
 import space.astro.shared.core.models.analytics.SlashCommandInvocationEventData
 import space.astro.shared.core.models.analytics.meta.SlashCommandInvocationOptionsMetaData
 import space.astro.shared.core.models.analytics.meta.structure.OptionPair
-import space.astro.shared.core.models.influx.ConfigurationErrorData
+import space.astro.shared.core.models.database.ConfigurationErrorData
 import space.astro.shared.core.util.extention.asRelativeTimestampFromNow
 import space.astro.shared.core.util.ui.Links
 import java.lang.reflect.InvocationTargetException
