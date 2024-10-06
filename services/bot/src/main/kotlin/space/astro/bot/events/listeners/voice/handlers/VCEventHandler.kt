@@ -138,8 +138,6 @@ class VCEventHandler(
                         // ignore failure
                     }
                 )
-
-
             } catch (_: Exception) {}
         }
 

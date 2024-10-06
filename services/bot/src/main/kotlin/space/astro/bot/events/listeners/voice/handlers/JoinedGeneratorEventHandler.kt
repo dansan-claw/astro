@@ -1,6 +1,7 @@
 package space.astro.bot.events.listeners.voice.handlers
 
 import dev.minn.jda.ktx.coroutines.await
+import dev.minn.jda.ktx.messages.Embed
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.PermissionOverride
@@ -16,6 +17,7 @@ import space.astro.bot.models.discord.SimpleMemberRolesManager
 import space.astro.bot.models.discord.vc.event.VCEvent
 import space.astro.shared.core.models.database.PermissionsInherited
 import space.astro.shared.core.models.database.TemporaryVCData
+import space.astro.shared.core.util.ui.Colors
 import java.util.concurrent.TimeUnit
 
 private val log = KotlinLogging.logger {  }
@@ -332,6 +334,22 @@ suspend fun VCEventHandler.handleJoinedGeneratorEvent(
 
     if (creationChatMessage != null) {
         if (!premiumRequirementDetector.canSendMessageInVCChatOnVCGeneration(guildData)) {
+            try {
+                event.vcEventData.member.user.openPrivateChannel().queue(
+                    { dmChannel ->
+                        dmChannel.sendMessageEmbeds(Embed {
+                            color = Colors.red.rgb
+                            description = "An error occurred while you were using temporary voice channels." +
+                                    "\n**Checkout the error [on the dashboard error report page](https://astro-bot.space/guilds/${guildId}/errors)!**" +
+                                    "\n\n*If you are not an administrator of the server please report this message to one of them!*"
+                        }).queue({}, {})
+                    },
+                    {
+                        // ignore failure
+                    }
+                )
+            } catch (_: Exception) {}
+
             configurationErrorEventPublisher.publishConfigurationErrorEvent(
                 configurationErrorService.premiumRequiredForAutoChatMessageOnCreation(guildId)
             )
