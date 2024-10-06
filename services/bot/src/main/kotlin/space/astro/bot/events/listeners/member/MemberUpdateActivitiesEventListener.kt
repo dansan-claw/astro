@@ -47,7 +47,7 @@ class MemberUpdateActivitiesEventListener(
             ?: return
 
         val guildData = guildDao.get(guildId)
-//            ?.takeIf { premiumRequirementDetector.isGuildPremium(it) }
+            ?.takeIf { premiumRequirementDetector.isGuildPremium(it) }
             ?: return
 
         val generatorData = guildData.generators
