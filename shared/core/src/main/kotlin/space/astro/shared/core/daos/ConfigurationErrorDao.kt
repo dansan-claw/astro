@@ -8,7 +8,6 @@ import com.mongodb.client.model.Indexes
 import com.mongodb.client.model.ReplaceOptions
 import org.litote.kmongo.descending
 import org.springframework.stereotype.Repository
-import space.astro.shared.core.models.database.GuildData
 import space.astro.shared.core.models.database.ConfigurationErrorData
 
 @Repository
@@ -33,7 +32,7 @@ class ConfigurationErrorDao(
 
     fun save(configurationErrorData: ConfigurationErrorData) {
         collection.replaceOne(
-            eq(GuildData::guildID.name, configurationErrorData.guildId),
+            eq(ConfigurationErrorData::guildId.name, configurationErrorData.guildId),
             configurationErrorData,
             ReplaceOptions().upsert(true)
         )
