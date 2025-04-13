@@ -4,6 +4,8 @@ import org.springframework.stereotype.Service
 import space.astro.shared.core.models.database.ConfigurationErrorData
 import space.astro.shared.core.util.extention.asChannelMention
 
+// test for cicd
+
 @Service
 class ConfigurationErrorService {
     ///////////////
