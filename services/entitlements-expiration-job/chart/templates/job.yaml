@@ -11,6 +11,8 @@ spec:
     spec:
       template:
         spec:
+          nodeSelector:
+            node.kubernetes.io/agent: "astro"
           containers:
             - name: {{ .Values.name }}
               image: {{ .Values.image.group }}/{{ .Values.image.name }}:{{ .Values.image.tag }}

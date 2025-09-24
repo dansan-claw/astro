@@ -19,6 +19,8 @@ spec:
       annotations:
         random: '0'
     spec:
+      nodeSelector:
+        node.kubernetes.io/agent: "astro"
       containers:
       - name: {{ .Values.name }}
         image: {{ .Values.image.group }}/{{ .Values.image.name }}:{{ .Values.image.tag }}
@@ -76,7 +78,7 @@ spec:
       volumes:
       - name: gcp-bigquery-creds
         secret:
-          secretName: gcp-bigquery-creds-prod
+          secretName: gcp-bigquery-creds
       imagePullSecrets:
       - name: docker-registry
       terminationGracePeriodSeconds: 30
