@@ -19,5 +19,5 @@ spec:
                     name: {{ .Values.config }}
           restartPolicy: OnFailure
           imagePullSecrets:
-            - name: ghcr-secret
+            - name: docker-registry
       backoffLimit: 4

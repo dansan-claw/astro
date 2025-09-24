@@ -56,4 +56,4 @@ spec:
                   - name: Authorization
                     value: {{ .Values.auth }}
       imagePullSecrets:
-        - name: ghcr-secret
+        - name: docker-registry

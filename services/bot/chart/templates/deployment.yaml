@@ -76,9 +76,9 @@ spec:
       volumes:
       - name: gcp-bigquery-creds
         secret:
-          secretName: gcp-bigquery-creds
+          secretName: gcp-bigquery-creds-prod
       imagePullSecrets:
-      - name: ghcr-secret
+      - name: docker-registry
       terminationGracePeriodSeconds: 30
   serviceName: {{ .Values.name }}
   podManagementPolicy: Parallel
