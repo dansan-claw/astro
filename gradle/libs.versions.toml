@@ -5,8 +5,8 @@ nanoid = "2.0.0"
 datetime = "0.4.0"
 
 # Spring
-spring = "6.1.10"
-spring-boot = "3.3.1"
+spring = "6.1.21"
+spring-boot = "3.3.13"
 openapi = "2.6.0"
 
 # Logging
