@@ -24,6 +24,7 @@ import org.springframework.scheduling.annotation.EnableScheduling
 )
 class Application
 
+// build
 fun main(args: Array<String>) {
     runApplication<Application>(*args)
 }
