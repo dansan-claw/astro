@@ -54,8 +54,44 @@ You can read the story of this project [on my blog post](https://giuliopime.dev/
 - [IntelliJ](https://www.jetbrains.com/idea/) (not necessary but recommended)
 
 ### Understanding the codebase
-This project contains 4 services:
-- `bot`: the Discord bot itself
+Everything runs via SpringBoot and there is a `shared-core` module that contains the shared code between the services.  
+Code is mostly well documented / self-explanatory, so you should be able to take a look at it and get an idea of how things work quite easily.  
+
+This project contains four services:  
+#### `bot`
+The Discord bot itself, it receives events from Discord and responds to them.  
+All events are bridged from JDA (the Java library to interact with the Discord API) to SpringBoot.  
+
+Regarding interactions, like slash commands, buttons, menus and modal, their logic is almost all unified in some `interaction` classes:  
+- `InteractionReplyHandler`: used by all interactions to submit replies to the user  
+- `InteractionAction`: a type-independent interaction declaration, it's implementation can be a command, button, menu, etc... 
+- `InteractionContext`: groups together everything needed by any type of interaction to run, has subclasses for interaction categories
+
+It includes a small REST api for retrieving roles and channels that the dashboard needs to present the user with.  
+The dashboard doesn't directly query the bot service, but instead queries `central-api` which in turn queries the bot service.  
+
+It interacts with:
+- BigQuery: for storing statistics about the bot usage
+- MongoDB: storage for user / guild settings
+- Redis: volatile cache and storage for temporary voice channels data
+
+#### `central-api`
+A REST api for the bot, it's used by the dashboard to retrieve settings and data from the bot database.  
+The dashboard requests the list of roles and channels of a given guild, and to respond to this, this API queries the `bot` service api.  
+Since they are both running on k8s and the bot is sharded and divided in pods, the central api needs to calculate the correct pod to send the request to.  
+This is done by calculating the shard id of the guild via the guild id, and then the pod by knowing the amount of shards and pods.  
+
+User authentication is managed via a combination of JWT tokens and session cookies.  
+
+#### `entitlements-expiration-job`
+Simple service that checks for expired Discord premium application entitlements and updates the bot database.  
+Nothing fancy, ran as a k8s cronjob.  
+
+#### `support-bot`
+A Discord bot that manages the support server of the bot, mainly used to apply the premium role to premium users.
+Includes a REST api used by the `bot` service, when it receives an entitlement event from Discord, it sends a request to the support bot to update the user's role.   
+
+It also includes a small service that checks for expired Discord premium application entitlements and updates the bot database.  
 - `central-api`: the REST api for the bot
 - `entitlements-expiration-job`: simple service that checks for expired Discord premium application entitlements and updates the bot database
 - `support-bot`: a Discord bot that manages the support server of the bot, mainly used to apply the premium role to premium users
