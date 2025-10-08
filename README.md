@@ -37,7 +37,7 @@ This project contains 4 services:
 - `entitlements-expiration-job`: simple service that checks for expired Discord premium application entitlements and updates the bot database
 - `support-bot`: a Discord bot that manages the support server of the bot, mainly used to apply the premium role to premium users
 
-##### BigQuery
+#### BigQuery
 BigQuery is used for gathering statistics about the bot usage, mainly commands used, guilds joined / left and temporary voice channels generated.  
 It is completely optional and you can skip configuring it if you don't need it.  
 
@@ -100,12 +100,13 @@ While for production, you should use the JSON key.
     The `/env` folder contains a `.env.template` file for each service + 1 common `.env.template` shared by all services.  
     Create a `dev.env` file for each service inside the `/env` folder and, in each of them, copy both the content of `/env/shared-core/.env.template` and the content of the `.env.template` file of the service.  
 3) Fill the `dev.env` files, each variable has a comment explaining what it does.  
-4) Run the services.  
+4) If you forked the repo, update the `ghcrOrg` value in `gradle.properties` to your GitHub username or organization name.  
+5) Run the services.  
    If using IntelliJ, you will be provided with four run configurations, one for each service, already configured to pick up the correct environment files.  
 
 All the services should be up and running at this point.  
 
-##### MongoDB and Redis dashboards
+#### MongoDB and Redis dashboards
 You can use some web dashboards for local dev with MongoDB and Redis:
 
 | Service | web dashboard                           |    
@@ -116,7 +117,7 @@ You can use some web dashboards for local dev with MongoDB and Redis:
 > [!CAUTION]
 > Editing documents with the MongoDB dashboard **is not recommended** as it tends to mess up data types!
 
-##### OpenAPI
+#### OpenAPI
 You can access the OpenAPI documentation for each service at the following URLs:
 
 | Service     | development url                                                         |
@@ -136,7 +137,75 @@ You can access the OpenAPI documentation for each service at the following URLs:
 - Redis instance
 - MongoDB instance
 - [Semaphore](http://semaphore.io) account
-- [kubectl](https://kubernetes.io/docs/tasks/tools/) installed on your local machine
+- [Sentry](https://sentry.io)
+- [kubectl](https://kubernetes.io/docs/tasks/tools/) installed on your local machine and with access to your k8s cluster.
+
+### Create .env files
+Create the production `prod.env` files (you can also use the development ones created in the previous section, just remember in the following steps that your files are called `dev.end`).    
+The `/env` folder contains a `.env.template` file for each service + 1 common `.env.template` shared by all services.  
+Create a `prod.env` file for each service inside the `/env` folder and, in each of them, copy both the content of `/env/shared-core/.env.template` and the content of the `.env.template` file of the service.
+
+### Create Kubernetes resources
+#### Namespace
+```shell
+kubectl create namespace astro
+```
+#### Config maps
+```shell
+kubectl -n astro create configmap bot-config --from-env-file=./env/bot/prod.env
+kubectl -n astro create configmap central-api-config --from-env-file=./env/central-api/prod.env
+kubectl -n astro create configmap entitlements-expiration-job-config --from-env-file=./env/entitlements-expiration-job/prod.env
+kubectl -n astro create configmap support-bot-config --from-env-file=./env/support-bot/prod.env
+```
+
+#### Secrets
+Follow the instructions in the [BigQuery section](#bigquery) to obtain the service account JSON key.  
+You can skip this step if you don't wanna enable BigQuery.  
+```shell
+kubectl -n astro create secret generic gcp-bigquery-creds --from-file=service-account-key.json
+```
+
+This allows your cluster to pull images from GitHub Container Registry.  
+Replace `your_github_username` and `your_github_token` with your GitHub username and token ([token instructions](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens)).   
+```shell
+EXPORT DOCKER_USERNAME=your_github_username
+EXPORT DOCKER_PASSWORD=your_github_token
+kubectl create secret docker-registry ghcr-secret --docker-server=ghcr.io --docker-username=$DOCKER_USERNAME --docker-password=$DOCKER_PASSWORD -n astro
+```
+
+### Configure Helm values
+Each service has a `/chart` folder that contains Helm charts that get deployed on Kubernetes using Semaphore promotions.    
+You need to configure the value files, so for each service copy the `/service/{service_name}/chart/template.values.yaml` to `/service/{service_name}/chart/values.yaml` and fill the values.  
+
+### Configure Semaphore
+1) Create a new organization
+2) Fork this repository
+3) Create a new project in the newly created organization, using your forked repository
+4) Update the `ghcrOrg` value in `gradle.properties` to your GitHub username or organization name.
+5) Go into Organization settings > Secrets and add the following secrets:
+   1) `github` with these environment variables:
+   
+      | Environment Variable | Description                                       |
+      |----------------------|---------------------------------------------------|
+      | GITHUB_ACTOR         | GitHub username for actions                       |
+      | GITHUB_TOKEN         | GitHub token for authentication, [instructions](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) |
+   2) `sentry` with these environment variables:  
+   
+      | Environment Variable | Description                          |
+      |----------------------|--------------------------------------|
+      | SENTRY_AUTH_TOKEN    | Sentry auth token, [instructions](https://docs.sentry.io/account/auth-tokens/)® |
+   3) `kube` with the following configuration files:
+
+      | Configuration Files | Description                                     |
+      |---------------------|-------------------------------------------------|
+      | `/home/semaphore/.kube/config`   | Upload the kubeconfig file for your k8s cluster |
+   4) for each service, create a secret using the same name as the service and add in `Configuration Files`: `/home/semaphore/.values/{service-name}/production.yaml` as the path (replace {service-name}) and provide the `values.yaml` file to it (you should have configured them previously in `services/{service-name}/charts/values.yaml`).
+
+Now when you commit to any branch, Semaphore will automatically:  
+- build the Docker image for each service
+- upload it to GitHub Container Registry
+- give you a button to deploy the new image to your Kubernetes cluster
+
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -173,16 +242,5 @@ Distributed under the AGPL-3.0 license. See `LICENSE.txt` for more information.
 - [Discord server](https://astro-bot.space/support)
 - [hi@astro-bot.space](mailto:hi@astro-bot.space)
 - [giuliopime.dev](https://giuliopime.dev)
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
-
-<!-- ACKNOWLEDGMENTS -->
-## Acknowledgments
-
-* []()
-* []()
-* []()
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
