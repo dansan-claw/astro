@@ -20,7 +20,7 @@ spec:
         random: '0'
     spec:
       nodeSelector:
-        node.kubernetes.io/agent: "astro"
+        gport.giuliopime.dev/agent: "as-sailboat"
       containers:
       - name: {{ .Values.name }}
         image: {{ .Values.image.group }}/{{ .Values.image.name }}:{{ .Values.image.tag }}
