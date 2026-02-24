@@ -7,7 +7,7 @@ agent:
     os_image: ubuntu2004
   containers:
     - name: main
-      image: semaphoreci/openjdk:17
+      image: semaphoreci/agent:v2.4.0
 
 blocks:
   # bot
@@ -23,7 +23,10 @@ blocks:
       prologue:
         commands:
           - apt-get update -y
-          - apt-get install lftp -y
+          - apt-get install -y software-properties-common
+          - add-apt-repository ppa:openjdk-r/ppa -y
+          - apt-get update -y
+          - apt-get install -y openjdk-17-jdk openssh-client lftp
           - cache restore gradle-caches_bot
           - cache restore gradle-wrapper_bot
           - checkout
@@ -54,7 +57,10 @@ blocks:
       prologue:
         commands:
           - apt-get update -y
-          - apt-get install lftp -y
+          - apt-get install -y software-properties-common
+          - add-apt-repository ppa:openjdk-r/ppa -y
+          - apt-get update -y
+          - apt-get install -y openjdk-17-jdk openssh-client lftp
           - cache restore gradle-caches_central-api
           - cache restore gradle-wrapper_central-api
           - checkout
@@ -85,7 +91,10 @@ blocks:
       prologue:
         commands:
           - apt-get update -y
-          - apt-get install lftp -y
+          - apt-get install -y software-properties-common
+          - add-apt-repository ppa:openjdk-r/ppa -y
+          - apt-get update -y
+          - apt-get install -y openjdk-17-jdk openssh-client lftp
           - cache restore gradle-caches_support-bot
           - cache restore gradle-wrapper_support-bot
           - checkout
@@ -116,7 +125,10 @@ blocks:
       prologue:
         commands:
           - apt-get update -y
-          - apt-get install lftp -y
+          - apt-get install -y software-properties-common
+          - add-apt-repository ppa:openjdk-r/ppa -y
+          - apt-get update -y
+          - apt-get install -y openjdk-17-jdk openssh-client lftp
           - cache restore gradle-caches_entitlements-expiration-job
           - cache restore gradle-wrapper_entitlements-expiration-job
           - checkout
