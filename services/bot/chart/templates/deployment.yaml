@@ -60,8 +60,8 @@ spec:
             httpHeaders:
             - name: Authorization
               value: {{ .Values.auth }}
-          initialDelaySeconds: 1
-          periodSeconds: 5
+          initialDelaySeconds: 360
+          periodSeconds: 20
           failureThreshold: 10
         lifecycle:
           preStop:
