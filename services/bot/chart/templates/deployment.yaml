@@ -61,7 +61,7 @@ spec:
             - name: Authorization
               value: {{ .Values.auth }}
           initialDelaySeconds: 360
-          periodSeconds: 20
+          periodSeconds: 60
           failureThreshold: 10
         lifecycle:
           preStop:
@@ -83,4 +83,4 @@ spec:
       - name: docker-registry
       terminationGracePeriodSeconds: 30
   serviceName: {{ .Values.name }}
-  podManagementPolicy: OrderedReady
+  podManagementPolicy: Parallel
