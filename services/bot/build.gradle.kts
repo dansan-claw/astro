@@ -36,7 +36,7 @@ dependencies {
 
 jib {
     from {
-        image = "amazoncorretto:17-al2023-headless"
+        image = "eclipse-temurin:17-jre-alpine"
     }
 
     to {
@@ -52,9 +52,9 @@ jib {
         jvmFlags = listOf(
 //            "-Xms1200m",
 //            "-Xmx2800m",
-            "-XX:UseContainerSupport",
             "-XX:MaxRAMPercentage=80",
             "-XX:+PrintCommandLineFlags",
+            "-XX:+PrintFlagsFinal",
             "-XshowSettings:vm",
             "-Xlog:os+container=trace"
         )
