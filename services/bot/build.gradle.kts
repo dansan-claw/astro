@@ -52,6 +52,7 @@ jib {
         jvmFlags = listOf(
 //            "-Xms1200m",
 //            "-Xmx2800m",
+            "-XX:UseContainerSupport",
             "-XX:MaxRAMPercentage=80",
             "-XX:+PrintCommandLineFlags",
             "-XshowSettings:vm",
