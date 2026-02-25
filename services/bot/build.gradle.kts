@@ -36,7 +36,7 @@ dependencies {
 
 jib {
     from {
-        image = "amazoncorretto@sha256:ffe99c76c9304663a7adc8a292c186215f78fc918bfd0b3b0a4b57b3c0d90fd1"
+        image = "amazoncorretto:17-al2023-headless"
     }
 
     to {
@@ -52,7 +52,10 @@ jib {
         jvmFlags = listOf(
 //            "-Xms1200m",
 //            "-Xmx2800m",
-            "-XX:MaxRAMPercentage=80"
+            "-XX:MaxRAMPercentage=80",
+            "-XX:+PrintCommandLineFlags",
+            "-XshowSettings:vm",
+            "-Xlog:os+container=trace"
         )
     }
 }
