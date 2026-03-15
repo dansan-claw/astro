@@ -41,12 +41,31 @@ services:
       - "8082:8001"
     networks:
       - redis-network
+  
+  piper-tts:
+    build:
+      context: ../services/piper-tts
+      dockerfile: Dockerfile
+    container_name: ${COMPOSE_PROJECT_NAME}_piper-tts
+    restart: no
+    ports:
+      - "8100:8000"
+    networks:
+      - piper-network
+    environment:
+      - DEFAULT_VOICE=en_US-lessac-medium
+    volumes:
+      - piper-voices:/data/piper-voices
+
 volumes:
   redis:
   mongo:
+  piper-voices:
 
 networks:
   mongo-network:
     name: mongo-network
   redis-network:
     name: redis-network
+  piper-network:
+    name: piper-network
