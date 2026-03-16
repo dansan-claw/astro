@@ -1,0 +1,27 @@
+FROM amazoncorretto:17-al2023
+
+WORKDIR /app
+
+# Install necessary tools
+RUN yum install -y findutils
+
+# Copy gradle wrapper and build files
+COPY gradlew gradlew
+COPY gradle gradle
+COPY gradle.properties gradle.properties
+COPY settings.gradle.kts settings.gradle.kts
+COPY build.gradle.kts build.gradle.kts
+
+# Copy version catalog
+COPY gradle/libs.versions.toml gradle/libs.versions.toml
+
+# Copy source code
+COPY shared shared
+COPY services services
+
+# Build the application
+RUN ./gradlew :services:bot:bootJar --no-daemon -x test
+
+EXPOSE 9000
+
+ENTRYPOINT ["java", "-jar", "-XX:+PrintCommandLineFlags", "-XshowSettings:vm", "-XX:MinRAMPercentage=60.0", "-XX:MaxRAMPercentage=60.0", "services/bot/build/libs/bot-1.0-SNAPSHOT.jar"]

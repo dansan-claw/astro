@@ -163,5 +163,6 @@ discord = [
 [plugins]
 jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin"}
 spring = { id = "org.jetbrains.kotlin.plugin.spring", version.ref = "kotlin"}
+spring-boot = { id = "org.springframework.boot", version.ref = "spring-boot"}
 serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin"}
 sentry = { id = "io.sentry.jvm.gradle", version.ref = "sentryPlugin" }

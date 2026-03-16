@@ -1,5 +1,10 @@
 version = "1.0-SNAPSHOT"
 
+plugins {
+    id("com.google.cloud.tools.jib")
+    alias(libs.plugins.spring.boot)
+}
+
 dependencies {
     // Generalized dependency bundles
     implementation(libs.bundles.base)
@@ -20,10 +25,6 @@ dependencies {
 
     // Project
     implementation(project(":shared:core"))
-}
-
-plugins {
-    id("com.google.cloud.tools.jib")
 }
 
 jib {

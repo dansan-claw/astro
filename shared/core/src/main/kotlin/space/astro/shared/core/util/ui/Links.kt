@@ -4,31 +4,31 @@ package space.astro.shared.core.util.ui
  * Utility class for Astro most used links
  */
 object Links {
-    const val WEBSITE = "https://astro-bot.space"
-    const val INVITE = "https://astro-bot.space/invite"
+    const val WEBSITE = "http://localhost:3001"
+    const val INVITE = "http://localhost:3001"
     const val SUPPORT_SERVER = "https://discord.gg/yeXwVhg"
-    const val ULTIMATE = "https://astro-bot.space/ultimate"
+    const val ULTIMATE = "http://localhost:3001"
     const val APP_DIRECTORY_ULTIMATE = "https://discord.com/discovery/applications/715621848489918495/store/1096107722115661934"
-    const val DASHBOARD = "https://astro-bot.space/guilds"
-    fun GUILD_DASHBOARD(guildId: String) = "https://astro-bot.space/guilds/$guildId"
-    const val GUIDES = "https://astro-bot.space/guides"
-    const val VOTE = "https://top.gg/bot/715621848489918495/vote"
-    const val GITHUB = "https://github.com/bot-astro/astro"
-    const val BLOG_ARTICLE = "https://giuliopime.dev/blog/so-i-built-a-discord-bot"
+    const val DASHBOARD = "http://localhost:3001"
+    fun GUILD_DASHBOARD(guildId: String) = "http://localhost:3001/guilds/$guildId"
+    const val GUIDES = "http://localhost:3001/guides"
+    const val VOTE = "http://localhost:3001"
+    const val GITHUB = "https://github.com/dansan-claw/astro"
+    const val BLOG_ARTICLE = "https://github.com/dansan-claw/astro"
 
     const val LOGO = "https://cdn.discordapp.com/avatars/715621848489918495/dc0affdf8de07a3d88c4d192efad649f.png?size=2048"
-    const val INTERFACE_BUTTONS_IMAGE = "$WEBSITE/new-interface-image.png"
-    const val EXAMPLE_CUSTOM_INTERFACE = "$WEBSITE/custom-interface-example.png"
+    const val INTERFACE_BUTTONS_IMAGE = ""
+    const val EXAMPLE_CUSTOM_INTERFACE = ""
 
-    const val EXAMPLE_CONNECTION = "$WEBSITE/role_link_demo.gif"
+    const val EXAMPLE_CONNECTION = ""
 
     object Guides {
-        const val ALL = "https://astro-bot.space/guides"
-        const val BASIC = "https://astro-bot.space/guides/basic"
-        const val GENERATOR = "https://astro-bot.space/guides/generator"
-        const val TEMPLATE = "https://astro-bot.space/guides/template"
-        const val INTERFACE = "https://astro-bot.space/guides/interface"
-        const val VOICE_ROLE = "https://astro-bot.space/guides/voice-role"
+        const val ALL = "http://localhost:3001/guides"
+        const val BASIC = "http://localhost:3001/guides/basic"
+        const val GENERATOR = "http://localhost:3001/guides/generator"
+        const val TEMPLATE = "http://localhost:3001/guides/template"
+        const val INTERFACE = "http://localhost:3001/guides/interface"
+        const val VOICE_ROLE = "http://localhost:3001/guides/voice-role"
     }
 
     object ExternalGuides {

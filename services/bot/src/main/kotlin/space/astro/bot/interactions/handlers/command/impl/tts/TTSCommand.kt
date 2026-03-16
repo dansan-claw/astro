@@ -6,6 +6,7 @@ import net.dv8tion.jda.api.entities.GuildVoiceState
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.managers.AudioManager
+import space.astro.bot.core.ui.Embeds
 import space.astro.bot.interactions.InteractionAction
 import space.astro.bot.interactions.context.InteractionContext
 import space.astro.bot.interactions.handlers.command.AbstractCommand
@@ -49,21 +50,20 @@ class TTSCommand(
         @CommandOption(
             name = "voice",
             description = "Voice to use (optional)",
-            type = OptionType.STRING,
-            required = false
+            type = OptionType.STRING
         )
         voice: String?
     ) {
         // Check if user is in a voice channel
         val memberVoiceState = event.member?.voiceState
         if (memberVoiceState == null || !memberVoiceState.inAudioChannel()) {
-            ctx.replyHandler.reply("You need to be in a voice channel to use TTS!")
+            ctx.replyHandler.replyEmbed(Embeds.error("You need to be in a voice channel to use TTS!"))
             return
         }
 
         val voiceChannel = memberVoiceState.channel
         if (voiceChannel == null) {
-            ctx.replyHandler.reply("Could not find your voice channel!")
+            ctx.replyHandler.replyEmbed(Embeds.error("Could not find your voice channel!"))
             return
         }
 
@@ -72,21 +72,21 @@ class TTSCommand(
 
         // Check TTS service health
         if (!ttsService.isHealthy()) {
-            ctx.replyHandler.reply("TTS service is currently unavailable. Please try again later.")
+            ctx.replyHandler.replyEmbed(Embeds.error("TTS service is currently unavailable. Please try again later."))
             return
         }
 
         // Synthesize speech
         val audioData = ttsService.synthesize(text, voice)
         if (audioData == null) {
-            ctx.replyHandler.reply("Failed to generate speech. Please try again.")
+            ctx.replyHandler.replyEmbed(Embeds.error("Failed to generate speech. Please try again."))
             return
         }
 
         // Join voice channel and play audio
         val guild = event.guild
         if (guild == null) {
-            ctx.replyHandler.reply("This command can only be used in a server.")
+            ctx.replyHandler.replyEmbed(Embeds.error("This command can only be used in a server."))
             return
         }
 
@@ -105,10 +105,10 @@ class TTSCommand(
             val durationSeconds = audioData.size / 44000.0
             val waitTime = (durationSeconds * 1000).toLong() + 500 // Add buffer
             
-            ctx.replyHandler.reply("🔊 Speaking: \"${text.take(100)}${if (text.length > 100) "..." else ""}\"")
+            ctx.replyHandler.replyEmbed(Embeds.default("🔊 Speaking: \"${text.take(100)}${if (text.length > 100) "..." else ""}\""))
             
-            // Schedule disconnect after audio finishes
-            Thread.sleep(waitTime.coerceAtMost(30000)) // Max 30 seconds
+            // Schedule disconnect after audio finishes using non-blocking delay
+            kotlinx.coroutines.delay(waitTime.coerceAtMost(30000)) // Max 30 seconds
             
             // Disconnect if still connected
             if (audioManager.isConnected) {
@@ -117,7 +117,7 @@ class TTSCommand(
             
         } catch (e: Exception) {
             log.error(e) { "Error playing TTS audio" }
-            ctx.replyHandler.reply("Error playing audio: ${e.message}")
+            ctx.replyHandler.replyEmbed(Embeds.error("Error playing audio: ${e.message}"))
             audioManager.closeAudioConnection()
         }
     }

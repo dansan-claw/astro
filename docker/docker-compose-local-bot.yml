@@ -1,0 +1,93 @@
+name: "astro-dev-env"
+
+services:
+  mongo:
+    image: mongo:latest
+    container_name: ${COMPOSE_PROJECT_NAME}_mongo
+    restart: no
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo:/data
+    networks:
+      - mongo-network
+    environment:
+      - MONGO_INITDB_DATABASE=AstroDev
+  mongo-express:
+    image: mongo-express:latest
+    container_name: ${COMPOSE_PROJECT_NAME}_mongo-express
+    restart: no
+    ports:
+      - "8081:8081"
+    networks:
+      - mongo-network
+    environment:
+      - ME_CONFIG_MONGODB_SERVER=astro-dev-env_mongo
+  redis:
+    image: redis:latest
+    container_name: ${COMPOSE_PROJECT_NAME}_redis
+    restart: no
+    volumes:
+      - redis:/data
+    ports:
+      - "6379:6379"
+    networks:
+      - redis-network
+  redis-insight:
+    image: redislabs/redisinsight
+    container_name: ${COMPOSE_PROJECT_NAME}_redis-insight
+    restart: no
+    ports:
+      - "8082:8001"
+    networks:
+      - redis-network
+  
+  piper-tts:
+    build:
+      context: ../services/piper-tts
+      dockerfile: Dockerfile
+    container_name: ${COMPOSE_PROJECT_NAME}_piper-tts
+    restart: no
+    ports:
+      - "8100:8000"
+    networks:
+      - piper-network
+    environment:
+      - DEFAULT_VOICE=en_US-lessac-medium
+    volumes:
+      - piper-voices:/data/piper-voices
+
+  bot:
+    build:
+      context: ..
+      dockerfile: Dockerfile.local
+    container_name: ${COMPOSE_PROJECT_NAME}_bot
+    restart: no
+    ports:
+      - "9000:9000"
+    networks:
+      - mongo-network
+      - redis-network
+      - piper-network
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+    env_file:
+      - ../env/shared-core/dev.env
+      - ../env/bot/dev.env
+    depends_on:
+      - mongo
+      - redis
+      - piper-tts
+
+volumes:
+  redis:
+  mongo:
+  piper-voices:
+
+networks:
+  mongo-network:
+    name: mongo-network
+  redis-network:
+    name: redis-network
+  piper-network:
+    name: piper-network

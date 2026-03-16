@@ -2,6 +2,7 @@ version = "1.0-SNAPSHOT"
 
 plugins {
     id("com.google.cloud.tools.jib")
+    alias(libs.plugins.spring.boot)
 }
 
 dependencies {
@@ -9,6 +10,7 @@ dependencies {
     implementation(libs.bundles.web)
     implementation(libs.bundles.coroutines)
     implementation(libs.bundles.caching)
+    implementation(libs.bundles.ktor.client)
     implementation(libs.jda) {
         exclude(
             group = "club.minnced",
