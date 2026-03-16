@@ -38,5 +38,8 @@ enum class InteractionAction(
 
     // PREDASHBOARD
     SETTINGS(false, 2000, listOf(Permission.ADMINISTRATOR), listOf(Permission.MANAGE_CHANNEL), false),
-    HIGH_COOLDOWN_NO_ADMIN(false, 5000, listOf(), listOf(Permission.MANAGE_CHANNEL), false)
+    HIGH_COOLDOWN_NO_ADMIN(false, 5000, listOf(), listOf(Permission.MANAGE_CHANNEL), false),
+
+    // AI FEATURES
+    TTS(false, 5000, listOf(Permission.VOICE_SPEAK), emptyList(), false)
 }

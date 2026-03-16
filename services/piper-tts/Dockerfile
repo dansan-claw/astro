@@ -18,10 +18,12 @@ RUN wget -O /tmp/piper.tar.gz \
 RUN mkdir -p /data/piper-voices
 
 # Download default voice (en_US-lessac-medium)
-RUN wget -O /tmp/voice.tar.gz \
-    https://huggingface.co/rhasspy/piper-voices/resolve/v1.0.0/en/en_US/lessac/medium/en_US-lessac-medium.tar.gz \
-    && tar -xzf /tmp/voice.tar.gz -C /data/piper-voices \
-    && rm /tmp/voice.tar.gz
+# Voice files from https://huggingface.co/rhasspy/piper-voices/tree/main/en/en_US/lessac/medium
+RUN mkdir -p /data/piper-voices/en_US-lessac-medium \
+    && wget -O /data/piper-voices/en_US-lessac-medium/en_US-lessac-medium.onnx \
+       "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_US/lessac/medium/en_US-lessac-medium.onnx" \
+    && wget -O /data/piper-voices/en_US-lessac-medium/en_US-lessac-medium.onnx.json \
+       "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_US/lessac/medium/en_US-lessac-medium.onnx.json"
 
 # Set up Python service
 WORKDIR /app
